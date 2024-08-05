@@ -1,0 +1,44 @@
+[
+  {
+    "name": "The Coffee Shop",
+    "description": "The best coffee in town",
+    "location": {
+      "address": "123 Main St",
+      "suburb": "Downtown",
+      "city": "Big City"
+    },
+    "contact": {
+      "name": "Joe",
+      "location": {
+        "address": "123 Main St",
+        "suburb": "Downtown",
+        "city": "Big City"
+      },
+      "cell": "555-555-5555",
+      "email": "coffee@example.com"
+    },
+    "account_number": "00-4321-56789",
+    "account_name": "The Coffee Shop"
+  },
+  {
+    "name": "AGL Property Care and Maintenance",
+    "description": "If you will it; it is no dream",
+    "location": {
+      "address": "465 Example St",
+      "suburb": "Downtown",
+      "city": "Bigger City"
+    },
+    "contact": {
+      "name": "Admin",
+      "location": {
+        "address": "465 Example St",
+        "suburb": "Downtown",
+        "city": "Bigger City"
+      },
+      "cell": "555-555-5555",
+      "email": "admin@agl.co.nz"
+    },
+    "account_number": "00-1234-56789",
+    "account_name": "AGL_PC&M"
+  }
+]
