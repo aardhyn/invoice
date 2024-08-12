@@ -22,4 +22,4 @@ server:
 
 client:
 	cd client \
-	&& echo 'Not yet implemented';
+	&& pnpm dev

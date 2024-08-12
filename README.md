@@ -1,6 +1,6 @@
 # invoice
 
-AGL Invoice builder
+Invoice builder and tracking software
 
 ## Building
 
@@ -18,4 +18,10 @@ Run the build the backend, run the migrations, and start the server
 
 ```bash
 make server
+```
+
+Run the frontend client in development mode
+
+```bash
+make client
 ```
