@@ -7,6 +7,7 @@ diesel::table! {
         contact_id -> Nullable<Int4>,
         location_id -> Nullable<Int4>,
         name -> Varchar,
+        description -> Nullable<Varchar>,
     }
 }
 
@@ -24,7 +25,7 @@ diesel::table! {
     location (location_id) {
         location_id -> Int4,
         address -> Varchar,
-        suburb -> Varchar,
+        suburb -> Nullable<Varchar>,
         city -> Varchar,
     }
 }

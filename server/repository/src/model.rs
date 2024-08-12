@@ -22,7 +22,7 @@ pub struct LocationEntity {
 #[diesel(table_name = location)]
 pub struct NewLocationEntity {
   pub address: String,
-  pub suburb: String,
+  pub suburb: Option<String>,
   pub city: String,
 }
 #[derive(Queryable, Selectable, Serialize)]
@@ -87,6 +87,7 @@ pub struct BusinessEntity {
   pub contact_id: Option<i32>,
   pub location_id: Option<i32>,
   name: String,
+  description: Option<String>,
 }
 #[derive(Insertable, Debug, Deserialize)]
 #[diesel(table_name = business)]
@@ -95,6 +96,7 @@ pub struct NewBusinessEntity {
   pub contact_id: Option<i32>,
   pub location_id: Option<i32>,
   pub name: String,
+  pub description: Option<String>,
 }
 #[derive(Queryable, Selectable, Serialize)]
 #[diesel(table_name = business)]
