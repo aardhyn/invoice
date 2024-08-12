@@ -1,8 +1,6 @@
 .env
+
 .vscode
 .idea
 
-debug/
-target/
-Cargo.lock
-
+.DS_Store
