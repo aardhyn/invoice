@@ -1,23 +1,7 @@
-use repository::service::{self, BusinessList, CreateBusiness, CreatedBusiness};
+use repository::service::{self, CreateBusiness, CreatedBusiness};
 use rocket::{http::Status, serde::json::Json};
 
 use crate::util::response::APIResponse;
-
-#[get("/business.list")]
-pub fn business_list() -> APIResponse<BusinessList, String> {
-  service::list_businesses().map_or_else(
-    |e| APIResponse {
-      status: Some(Status::BadRequest),
-      data: None,
-      error: Some(e.to_string()),
-    },
-    |businesses| APIResponse {
-      status: Some(Status::Ok),
-      data: Some(businesses),
-      error: None,
-    },
-  )
-}
 
 #[post("/business.create", data = "<data>")]
 pub fn business_create(data: Json<CreateBusiness>) -> APIResponse<CreatedBusiness, String> {
