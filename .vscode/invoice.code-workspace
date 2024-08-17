@@ -1,0 +1,20 @@
+{
+  "folders": [
+    { "path": "..", "name": "monorepo" },
+    { "path": "../client" },
+    { "path": "../database" },
+    { "path": "../server" }
+  ],
+  "settings": {
+    "makefile.configureOnOpen": false,
+    "cSpell.words": [
+      "dotenv",
+      "dotenvy",
+      "Insertable",
+      "libpq",
+      "tanstack",
+      "tsbuildinfo",
+      "tseslint"
+    ]
+  }
+}
