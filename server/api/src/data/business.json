@@ -22,11 +22,11 @@
   },
   {
     "name": "AGL Property Care and Maintenance",
-    "description": "If you will it; it is no dream",
+    "description": "A maintenance team you can trust",
     "location": {
       "address": "465 Example St",
-      "suburb": "Downtown",
-      "city": "Bigger City"
+      "suburb": "Further Downtown",
+      "city": "City"
     },
     "contact": {
       "name": "Admin",
