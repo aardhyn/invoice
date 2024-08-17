@@ -14,13 +14,13 @@ Build and run the database container
 make database
 ```
 
-Run the build the backend, run the migrations, and start the server
+Build the backend, run migrations, and start the REST API
 
 ```bash
 make server
 ```
 
-Run the frontend client in development mode
+Build and run the web client in development mode
 
 ```bash
 make client
