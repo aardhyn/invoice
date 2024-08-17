@@ -148,10 +148,8 @@ pub struct BusinessListItem {
   pub business_id: i32,
   pub name: String,
 }
-#[derive(Debug, Serialize)]
-pub struct BusinessList {
-  pub businesses: Vec<BusinessListItem>,
-}
+
+pub type BusinessList = Vec<BusinessListItem>;
 
 pub fn list_businesses() -> Result<BusinessList, String> {
   use crate::schema::business;
@@ -164,13 +162,13 @@ pub fn list_businesses() -> Result<BusinessList, String> {
     .load(connection)
     .expect("Error loading businesses");
 
-  Ok(BusinessList {
-    businesses: businesses
-      .into_iter()
-      .map(|business| BusinessListItem {
-        business_id: business.business_id,
-        name: business.name.clone(),
-      })
-      .collect(),
-  })
+  let list = businesses
+    .into_iter()
+    .map(|business| BusinessListItem {
+      business_id: business.business_id,
+      name: business.name.clone(),
+    })
+    .collect();
+
+  Ok(list)
 }
