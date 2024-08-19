@@ -8,7 +8,7 @@ interface ImportMetaEnv {
   /**
    * The root URL of the API.
    */
-  readonly VITE_API_DOMAIN: string;
+  readonly VITE_API_URL: string;
 }
 
 interface ImportMeta {

@@ -13,15 +13,22 @@ database:
 database.down:
 	docker compose --env-file .env down;
 
+database.rebuild:
+	make database.down \
+	&& make database;
+
 database.connect:
 	docker exec -it database psql -U postgres -d postgres;
 
-server:
+migrate:
 	cd server/repository \
-	&& diesel migration run --database-url $(DATABASE_URL) \
-	&& cd ../api \
+	&& diesel migration run --database-url $(DATABASE_URL);
+
+server:
+	make migrate \
+	&& cd server/api \
 	&& cargo run;
 
 client:
 	cd client \
-	&& pnpm dev
+	&& pnpm dev;
