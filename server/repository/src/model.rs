@@ -111,3 +111,36 @@ pub struct BusinessEntityListItem {
   pub business_id: i32,
   pub name: String,
 }
+
+// Client //
+
+#[derive(Queryable, Selectable, Serialize)]
+#[diesel(table_name = client)]
+pub struct ClientEntity {
+  client_id: i32,
+  contact_id: i32,
+  name: String,
+  description: Option<String>,
+}
+
+#[derive(Insertable, Deserialize)]
+#[diesel(table_name = client)]
+pub struct NewClientEntity {
+  pub contact_id: i32,
+  pub name: String,
+  pub description: Option<String>,
+}
+
+#[derive(Queryable, Selectable, Serialize)]
+#[diesel(table_name = client)]
+pub struct CreatedClientEntity {
+  pub client_id: i32,
+  pub name: String,
+}
+
+#[derive(Debug, Serialize, Queryable, Selectable)]
+#[diesel(table_name = client)]
+pub struct ClientEntityListItem {
+  pub client_id: i32,
+  pub name: String,
+}

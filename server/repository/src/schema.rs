@@ -12,6 +12,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    client (client_id) {
+        client_id -> Int4,
+        contact_id -> Nullable<Int4>,
+        name -> Varchar,
+        description -> Nullable<Varchar>,
+    }
+}
+
+diesel::table! {
     contact (contact_id) {
         contact_id -> Int4,
         location_id -> Int4,
@@ -41,10 +50,12 @@ diesel::table! {
 diesel::joinable!(business -> contact (contact_id));
 diesel::joinable!(business -> location (location_id));
 diesel::joinable!(business -> payment (payment_id));
+diesel::joinable!(client -> contact (contact_id));
 diesel::joinable!(contact -> location (location_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     business,
+    client,
     contact,
     location,
     payment,
