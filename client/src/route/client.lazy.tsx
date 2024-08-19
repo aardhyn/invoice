@@ -1,53 +1,47 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useBusinessListQuery } from "api/business";
-import { useCreateBusinessMutation } from "api/business/create";
+import { useClientListQuery, useCreateClientMutation } from "api/client";
 
-export const Route = createLazyFileRoute("/business")({
+export const Route = createLazyFileRoute("/client")({
   component: Page,
 });
 
 function Page() {
-  const { data: businessList, isSuccess } = useBusinessListQuery();
+  const { data: clientList, isSuccess } = useClientListQuery();
   const {
-    mutate: createBusiness,
+    mutate: createClient,
     isError,
     error,
     isPending,
-  } = useCreateBusinessMutation();
+  } = useCreateClientMutation();
 
   return (
     <>
       <section>
-        <h2>Businesses</h2>
+        <h2>Clients</h2>
         <ul>
-          {businessList?.data?.map((business) => (
-            <li key={business.business_id}>{business.name}</li>
+          {clientList?.data?.map((client) => (
+            <li key={client.client_id}>{client.name}</li>
           ))}
         </ul>
-        {isSuccess && !businessList?.data?.length && (
+        {isSuccess && !clientList?.data?.length && (
           <p>
-            <em>No businesses found</em>
+            <em>No clients found</em>
           </p>
         )}
       </section>
       <section>
-        <h2>Create Business</h2>
+        <h2>Create Client</h2>
         <form
           method="POST"
           onSubmit={async (event) => {
             event?.preventDefault();
             const formData = new FormData(event.currentTarget);
 
-            createBusiness({
+            createClient({
               name: formData.get("name") as string,
               description: formData.get("description") as string,
-              location: {
-                address: formData.get("address") as string,
-                suburb: formData.get("suburb") as string,
-                city: formData.get("city") as string,
-              },
               contact: {
-                name: formData.get("contact-name") as string,
+                name: formData.get("name") as string, // taken from name... but, todo: do we need a client::name if we have client::contact::name?
                 cell: formData.get("cell") as string,
                 email: formData.get("email") as string,
                 location: {
@@ -56,8 +50,6 @@ function Page() {
                   city: formData.get("contact-city") as string,
                 },
               },
-              account_number: formData.get("account-number") as string,
-              account_name: formData.get("account-name") as string,
             });
           }}
         >
@@ -72,29 +64,7 @@ function Page() {
           </label>
 
           <fieldset>
-            <legend>Address</legend>
-            <label>
-              Street
-              <input type="text" name="address" required />
-            </label>
-            <br />
-            <label>
-              Suburb
-              <input type="text" name="suburb" />
-            </label>
-            <br />
-            <label>
-              City
-              <input type="text" name="city" required />
-            </label>
-          </fieldset>
-
-          <fieldset>
             <legend>Contact</legend>
-            <label>
-              Client
-              <input type="text" name="contact-name" required />
-            </label>
             <br />
             <label>
               Cellphone
@@ -123,19 +93,6 @@ function Page() {
                 <input type="text" name="contact-city" required />
               </label>
             </fieldset>
-          </fieldset>
-
-          <fieldset>
-            <legend>Payment</legend>
-            <label>
-              Account Name
-              <input type="text" name="account-name" required />
-            </label>
-            <br />
-            <label>
-              Account Number
-              <input type="text" name="account-number" required />
-            </label>
           </fieldset>
 
           {isError && <p>{JSON.stringify(error)}</p>}

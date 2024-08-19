@@ -11,8 +11,17 @@ export const Route: RootRoute = createRootRoute({
     return (
       <main>
         <h1>Invoice</h1>
-        <Link to="/business">businesses</Link>
-        <Link to="/">Home</Link>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/business">Businesses</Link>
+          </li>
+          <li>
+            <Link to="/client">Clients</Link>
+          </li>
+        </ul>
         <Outlet />
         <TanStackRouterDevtools />
       </main>
