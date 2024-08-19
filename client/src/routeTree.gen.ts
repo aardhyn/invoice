@@ -17,9 +17,15 @@ import { Route as IndexImport } from './route/index'
 
 // Create Virtual Routes
 
+const ClientLazyImport = createFileRoute('/client')()
 const BusinessLazyImport = createFileRoute('/business')()
 
 // Create/Update Routes
+
+const ClientLazyRoute = ClientLazyImport.update({
+  path: '/client',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./route/client.lazy').then((d) => d.Route))
 
 const BusinessLazyRoute = BusinessLazyImport.update({
   path: '/business',
@@ -49,6 +55,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessLazyImport
       parentRoute: typeof rootRoute
     }
+    '/client': {
+      id: '/client'
+      path: '/client'
+      fullPath: '/client'
+      preLoaderRoute: typeof ClientLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -57,6 +70,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
   BusinessLazyRoute,
+  ClientLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -68,7 +82,8 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/business"
+        "/business",
+        "/client"
       ]
     },
     "/": {
@@ -76,6 +91,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/business": {
       "filePath": "business.lazy.tsx"
+    },
+    "/client": {
+      "filePath": "client.lazy.tsx"
     }
   }
 }

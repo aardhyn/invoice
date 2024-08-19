@@ -3,7 +3,7 @@ extern crate rocket;
 
 use error::{handle_not_found, handle_unprocessable_entity};
 use middleware::cors;
-use route::{business_create, business_list, error};
+use route::{business_create, business_list, client_create, client_list, error};
 
 mod middleware;
 mod route;
@@ -21,7 +21,13 @@ async fn main() -> Result<(), rocket::Error> {
     )
     .mount(
       "/",
-      routes![cors::all_options, business_create, business_list],
+      routes![
+        cors::all_options,
+        business_create,
+        business_list,
+        client_create,
+        client_list
+      ],
     )
     .launch()
     .await?;
