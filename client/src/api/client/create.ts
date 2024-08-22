@@ -10,11 +10,11 @@ export type CreateClient = {
 
 export function useCreateClientMutation() {
   return useMutation({
-    mutationFn(business: CreateClient) {
+    mutationFn(client: CreateClient) {
       return fetch(endpoint("client.create"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(business),
+        body: JSON.stringify(client),
       });
     },
     onSuccess() {
