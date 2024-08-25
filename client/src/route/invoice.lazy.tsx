@@ -57,7 +57,6 @@ function Page() {
               due_date: new Date(
                 formData.get("due_date") as string,
               ).toISOString(),
-              payment_id: Number(formData.get("payment_id")),
               client_id: Number(formData.get("client_id")),
             });
           }}

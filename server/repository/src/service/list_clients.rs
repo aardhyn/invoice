@@ -4,8 +4,6 @@ use crate::connection::establish_connection;
 use crate::model::*;
 use diesel::prelude::*;
 
-// List Businesses //
-
 pub type ClientListItem = ClientEntityListItem;
 
 pub type ClientList = Vec<ClientListItem>;

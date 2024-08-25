@@ -1,9 +1,8 @@
 #[macro_use]
 extern crate rocket;
 
-use error::{handle_not_found, handle_unprocessable_entity};
 use middleware::cors;
-use route::{business_create, business_list, client_create, client_list, error};
+use route::*;
 
 mod middleware;
 mod route;
@@ -26,7 +25,9 @@ async fn main() -> Result<(), rocket::Error> {
         business_create,
         business_list,
         client_create,
-        client_list
+        client_list,
+        invoice_create,
+        invoice_list
       ],
     )
     .launch()
