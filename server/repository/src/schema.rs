@@ -31,6 +31,23 @@ diesel::table! {
 }
 
 diesel::table! {
+    invoice (invoice_id) {
+        invoice_id -> Int4,
+        name -> Varchar,
+        description -> Nullable<Varchar>,
+        due_date -> Timestamptz,
+        created_timestamp -> Timestamptz,
+        payment_id -> Nullable<Int4>,
+        payment_data -> Jsonb,
+        business_id -> Nullable<Int4>,
+        client_id -> Nullable<Int4>,
+        client_data -> Jsonb,
+        location_id -> Nullable<Int4>,
+        location_data -> Jsonb,
+    }
+}
+
+diesel::table! {
     location (location_id) {
         location_id -> Int4,
         address -> Varchar,
@@ -52,11 +69,16 @@ diesel::joinable!(business -> location (location_id));
 diesel::joinable!(business -> payment (payment_id));
 diesel::joinable!(client -> contact (contact_id));
 diesel::joinable!(contact -> location (location_id));
+diesel::joinable!(invoice -> business (business_id));
+diesel::joinable!(invoice -> client (client_id));
+diesel::joinable!(invoice -> location (location_id));
+diesel::joinable!(invoice -> payment (payment_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     business,
     client,
     contact,
+    invoice,
     location,
     payment,
 );

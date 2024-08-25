@@ -1,5 +1,9 @@
 use crate::schema::*;
-use diesel::prelude::*;
+use chrono::{DateTime, Utc};
+use diesel::{
+  prelude::*,
+  sql_types::{Date, Jsonb},
+};
 use serde::{Deserialize, Serialize};
 
 //
@@ -25,7 +29,7 @@ pub struct NewLocationEntity {
   pub suburb: Option<String>,
   pub city: String,
 }
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Queryable, Selectable)]
 #[diesel(table_name = location)]
 pub struct CreatedLocationEntity {
   pub location_id: i32,
@@ -33,7 +37,7 @@ pub struct CreatedLocationEntity {
 
 // Contact //
 
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Queryable, Selectable)]
 #[diesel(table_name = contact)]
 pub struct ContactEntity {
   contact_id: i32,
@@ -42,7 +46,7 @@ pub struct ContactEntity {
   email: String,
   cell: String,
 }
-#[derive(Insertable, Deserialize)]
+#[derive(Insertable)]
 #[diesel(table_name = contact)]
 pub struct NewContactEntity {
   pub location_id: i32,
@@ -50,7 +54,7 @@ pub struct NewContactEntity {
   pub email: String,
   pub cell: String,
 }
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Queryable, Selectable)]
 #[diesel(table_name = contact)]
 pub struct CreatedContactEntity {
   pub contact_id: i32,
@@ -58,7 +62,7 @@ pub struct CreatedContactEntity {
 
 // Payment //
 
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Queryable, Selectable)]
 #[diesel(table_name = payment)]
 pub struct PaymentEntity {
   payment_id: i32,
@@ -71,7 +75,7 @@ pub struct NewPaymentEntity {
   pub account_number: String,
   pub account_name: String,
 }
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Queryable, Selectable)]
 #[diesel(table_name = payment)]
 pub struct CreatedPaymentEntity {
   pub payment_id: i32,
@@ -79,7 +83,7 @@ pub struct CreatedPaymentEntity {
 
 // Business //
 
-#[derive(Queryable, Selectable, Debug, Serialize)]
+#[derive(Queryable, Selectable, Debug)]
 #[diesel(table_name = business)]
 pub struct BusinessEntity {
   business_id: i32,
@@ -89,7 +93,7 @@ pub struct BusinessEntity {
   name: String,
   description: Option<String>,
 }
-#[derive(Insertable, Debug, Deserialize)]
+#[derive(Insertable, Debug)]
 #[diesel(table_name = business)]
 pub struct NewBusinessEntity {
   pub payment_id: Option<i32>,
@@ -98,18 +102,25 @@ pub struct NewBusinessEntity {
   pub name: String,
   pub description: Option<String>,
 }
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Queryable, Selectable)]
 #[diesel(table_name = business)]
 pub struct CreatedBusinessEntity {
   pub business_id: i32,
   pub name: String,
 }
 
-#[derive(Debug, Serialize, Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable, Serialize)]
 #[diesel(table_name = business)]
 pub struct BusinessEntityListItem {
   pub business_id: i32,
   pub name: String,
+}
+
+#[derive(Debug, Queryable, Selectable)]
+#[diesel(table_name = business)]
+pub struct BusinessPayment {
+  pub business_id: i32,
+  pub payment_id: Option<i32>,
 }
 
 // Client //
@@ -123,7 +134,7 @@ pub struct ClientEntity {
   description: Option<String>,
 }
 
-#[derive(Insertable, Deserialize)]
+#[derive(Insertable, Serialize)]
 #[diesel(table_name = client)]
 pub struct NewClientEntity {
   pub contact_id: i32,
@@ -138,9 +149,58 @@ pub struct CreatedClientEntity {
   pub name: String,
 }
 
-#[derive(Debug, Serialize, Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable, Serialize)]
 #[diesel(table_name = client)]
 pub struct ClientEntityListItem {
   pub client_id: i32,
   pub name: String,
+}
+
+// Invoice //
+
+#[derive(Queryable, Selectable)]
+#[diesel(table_name = invoice)]
+pub struct InvoiceEntity {
+  invoice_id: i32,
+  name: String,
+  description: Option<String>,
+  due_date: Date,
+  payment_id: Option<i32>,
+  payment_data: Jsonb,
+  business_id: Option<i32>,
+  client_id: Option<i32>,
+  client_data: Jsonb,
+  location_id: Option<i32>,
+  location_data: Jsonb,
+}
+
+#[derive(Insertable, Debug)]
+#[diesel(table_name = invoice)]
+pub struct NewInvoiceEntity {
+  pub name: String,
+  pub description: Option<String>,
+  pub due_date: DateTime<Utc>,
+  pub payment_id: i32,
+  pub payment_data: serde_json::Value,
+  pub business_id: i32,
+  pub client_id: i32,
+  pub client_data: serde_json::Value,
+  pub location_id: i32,
+  pub location_data: serde_json::Value,
+}
+
+#[derive(Queryable, Selectable, Serialize)]
+#[diesel(table_name = invoice)]
+pub struct CreatedInvoiceEntity {
+  pub invoice_id: i32,
+  pub name: String,
+}
+
+#[derive(Debug, Serialize, Queryable, Selectable)]
+#[diesel(table_name = invoice)]
+pub struct InvoiceEntityListItem {
+  pub invoice_id: i32,
+  pub name: String,
+  pub description: Option<String>,
+  pub due_date: DateTime<Utc>,
 }
