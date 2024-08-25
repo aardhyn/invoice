@@ -8,11 +8,13 @@
   "settings": {
     "makefile.configureOnOpen": false,
     "cSpell.words": [
+      "chrono",
       "dotenv",
       "dotenvy",
       "Insertable",
       "libpq",
       "tanstack",
+      "timestampz",
       "tsbuildinfo",
       "tseslint"
     ]
