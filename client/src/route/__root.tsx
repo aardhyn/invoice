@@ -24,6 +24,9 @@ export const Route: RootRoute = createRootRoute({
           <li>
             <Link to="/invoice">Invoices</Link>
           </li>
+          <li>
+            <Link to="/admin">Admin</Link>
+          </li>
         </ul>
         <Outlet />
         <TanStackRouterDevtools />

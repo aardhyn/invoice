@@ -1,4 +1,5 @@
 mod connection;
+mod data;
 mod model;
 mod schema;
 
