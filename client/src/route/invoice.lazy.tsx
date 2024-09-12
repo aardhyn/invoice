@@ -4,11 +4,31 @@ import {
   useClientListQuery,
   useBusinessListQuery,
   useCreateInvoiceMutation,
+  LineItem,
+  useAddLineItemMutation,
 } from "api";
+import { MouseEvent } from "react";
+import { FormEvent, useCallback, useState } from "react";
 
 export const Route = createLazyFileRoute("/invoice")({
   component: Page,
 });
+
+function useLineItems() {
+  const [items, setItems] = useState<LineItem[]>([]);
+  const add = (item: LineItem) => {
+    setItems([...items, item]);
+  };
+  const remove = (index: number) => {
+    setItems(items.filter((_, i) => i !== index));
+  };
+  const mutate = (index: number, mutation: Partial<LineItem>) => {
+    items.map((item, i) => {
+      return i === index ? { ...item, ...mutation } : item;
+    });
+  };
+  return { items, add, mutate, remove };
+}
 
 function Page() {
   const invoiceList = useInvoiceListQuery();
@@ -21,6 +41,30 @@ function Page() {
     error,
     isPending,
   } = useCreateInvoiceMutation();
+
+  const { items, mutate, add, remove } = useLineItems();
+
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event?.preventDefault();
+      const formData = new FormData(event.currentTarget);
+
+      createInvoice({
+        name: formData.get("name") as string,
+        description: formData.get("description") as string,
+        business_id: Number(formData.get("business-id")),
+        location: {
+          address: formData.get("contact-address") as string,
+          suburb: formData.get("contact-suburb") as string,
+          city: formData.get("contact-city") as string,
+        },
+        line_items: items,
+        due_date: new Date(formData.get("due_date") as string).toISOString(),
+        client_id: Number(formData.get("client_id")),
+      });
+    },
+    [items],
+  );
 
   return (
     <>
@@ -39,28 +83,7 @@ function Page() {
       </section>
       <section>
         <h2>Create Invoice</h2>
-        <form
-          method="POST"
-          onSubmit={async (event) => {
-            event?.preventDefault();
-            const formData = new FormData(event.currentTarget);
-
-            createInvoice({
-              name: formData.get("name") as string,
-              description: formData.get("description") as string,
-              business_id: Number(formData.get("business-id")),
-              location: {
-                address: formData.get("contact-address") as string,
-                suburb: formData.get("contact-suburb") as string,
-                city: formData.get("contact-city") as string,
-              },
-              due_date: new Date(
-                formData.get("due_date") as string,
-              ).toISOString(),
-              client_id: Number(formData.get("client_id")),
-            });
-          }}
-        >
+        <form method="POST" onSubmit={handleSubmit}>
           <label>
             Name
             <input type="text" name="name" required />
@@ -101,14 +124,19 @@ function Page() {
               <input type="text" name="contact-city" required />
             </label>
           </fieldset>
-
           <label>
             Due Date
             <input type="date" name="due_date" required />
           </label>
-
           <br />
-
+          <label>
+            <h3>line items</h3>
+            <LineItems items={items} onChange={mutate} onRemove={remove} />
+            <h4>Add</h4>
+            <NewLineItem onCreateLineItem={add} />
+            <br />
+          </label>
+          <br />
           <label>
             Client
             <select name="client_id" required>
@@ -121,16 +149,104 @@ function Page() {
                 ))}
             </select>
           </label>
-
           {isError && <p>{JSON.stringify(error)}</p>}
-
           <br />
-
           <button disabled={isPending} type="submit">
             Create
           </button>
         </form>
       </section>
+    </>
+  );
+}
+
+function LineItems({
+  items,
+  onChange: handleChange,
+  onRemove: handleRemove,
+}: {
+  onChange: (index: number, item: LineItem) => void;
+  onRemove: (index: number) => void;
+  items: LineItem[];
+}) {
+  return (
+    <ul>
+      {items.map((item, index) => {
+        return (
+          <li key={index}>
+            <LineItemForm
+              name={item.name}
+              description={item.description}
+              onNameChange={(name) => handleChange(index, { ...item, name })}
+              onDescriptionChange={(description) =>
+                handleChange(index, { ...item, description })
+              }
+            />
+            <button onClick={() => handleRemove(index)}>Remove</button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function LineItemForm({
+  name = "",
+  description = "",
+  onNameChange,
+  onDescriptionChange,
+}: {
+  name: string;
+  description: string;
+  onNameChange: (name: string) => void;
+  onDescriptionChange: (description: string) => void;
+}) {
+  const handleNameChange = (e: FormEvent<HTMLInputElement>) => {
+    onNameChange(e.currentTarget.value);
+  };
+  const handleDescriptionChange = (e: FormEvent<HTMLInputElement>) => {
+    onDescriptionChange(e.currentTarget.value);
+  };
+
+  return (
+    <>
+      <input type="text" value={name} onChange={handleNameChange} />
+      <input
+        type="text"
+        value={description}
+        onChange={handleDescriptionChange}
+      />
+    </>
+  );
+}
+
+function NewLineItem({
+  onCreateLineItem,
+}: {
+  onCreateLineItem: (item: LineItem) => void;
+}) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const clear = () => {
+    setName("");
+    setDescription("");
+  };
+
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    onCreateLineItem({ name, description });
+    clear();
+  };
+
+  return (
+    <>
+      <LineItemForm
+        name={name}
+        description={description}
+        onNameChange={setName}
+        onDescriptionChange={setDescription}
+      />
+      <button onClick={handleClick}>Add</button>
     </>
   );
 }
