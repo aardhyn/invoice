@@ -5,6 +5,7 @@ use diesel::{
   sql_types::{Date, Jsonb},
 };
 use serde::{Deserialize, Serialize};
+use uuid;
 
 //
 // Repository Model
@@ -29,7 +30,7 @@ pub struct NewLocationEntity {
   pub suburb: Option<String>,
   pub city: String,
 }
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Serialize)]
 #[diesel(table_name = location)]
 pub struct CreatedLocationEntity {
   pub location_id: i32,
@@ -54,7 +55,7 @@ pub struct NewContactEntity {
   pub email: String,
   pub cell: String,
 }
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Serialize)]
 #[diesel(table_name = contact)]
 pub struct CreatedContactEntity {
   pub contact_id: i32,
@@ -62,7 +63,7 @@ pub struct CreatedContactEntity {
 
 // Payment //
 
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Serialize, Deserialize)]
 #[diesel(table_name = payment)]
 pub struct PaymentEntity {
   payment_id: i32,
@@ -75,7 +76,7 @@ pub struct NewPaymentEntity {
   pub account_number: String,
   pub account_name: String,
 }
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Serialize)]
 #[diesel(table_name = payment)]
 pub struct CreatedPaymentEntity {
   pub payment_id: i32,
@@ -102,7 +103,7 @@ pub struct NewBusinessEntity {
   pub name: String,
   pub description: Option<String>,
 }
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Serialize)]
 #[diesel(table_name = business)]
 pub struct CreatedBusinessEntity {
   pub business_id: i32,
@@ -156,22 +157,49 @@ pub struct ClientEntityListItem {
   pub name: String,
 }
 
+// Line Item //
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ProductLineItem {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ServiceLineItem {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum LineItemType {
+  Product(ProductLineItem),
+  Service(ServiceLineItem),
+  Custom(serde_json::Value),
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LineItemEntity {
+  pub key: uuid::Uuid,
+  pub name: String,
+  pub description: String,
+  pub item: LineItemType,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CreatedLineItemEntity {
+  pub name: String,
+}
+
 // Invoice //
 
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = invoice)]
 pub struct InvoiceEntity {
-  invoice_id: i32,
-  name: String,
-  description: Option<String>,
-  due_date: Date,
-  payment_id: Option<i32>,
-  payment_data: Jsonb,
-  business_id: Option<i32>,
-  client_id: Option<i32>,
-  client_data: Jsonb,
-  location_id: Option<i32>,
-  location_data: Jsonb,
+  pub invoice_id: i32,
+  pub name: String,
+  pub description: Option<String>,
+  pub due_date: Date,
+  pub payment_data: Jsonb,
+  pub business_id: Option<i32>,
+  pub client_id: Option<i32>,
+  pub client_data: Jsonb,
+  pub location_id: Option<i32>,
+  pub location_data: Jsonb,
 }
 
 #[derive(Insertable, Debug)]
@@ -179,14 +207,14 @@ pub struct InvoiceEntity {
 pub struct NewInvoiceEntity {
   pub name: String,
   pub description: Option<String>,
-  pub due_date: DateTime<Utc>,
-  pub payment_id: i32,
-  pub payment_data: serde_json::Value,
   pub business_id: i32,
+  pub payment_data: serde_json::Value, // todo: can we map this directly to a struct?
   pub client_id: i32,
-  pub client_data: serde_json::Value,
+  pub client_data: serde_json::Value, // todo: can we map this directly to a struct?
   pub location_id: i32,
-  pub location_data: serde_json::Value,
+  pub location_data: serde_json::Value, // todo: can we map this directly to a struct?
+  pub due_date: DateTime<Utc>,
+  pub line_items: serde_json::Value, // todo: can we map this directly to a struct?
 }
 
 #[derive(Queryable, Selectable, Serialize)]
@@ -203,4 +231,11 @@ pub struct InvoiceEntityListItem {
   pub name: String,
   pub description: Option<String>,
   pub due_date: DateTime<Utc>,
+}
+
+#[derive(Debug, Queryable, Selectable)]
+#[diesel(table_name = invoice)]
+pub struct InvoiceLineItems {
+  pub invoice_id: i32,
+  pub line_items: serde_json::Value,
 }

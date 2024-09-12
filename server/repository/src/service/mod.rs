@@ -1,3 +1,4 @@
+pub mod add_line_item;
 mod common;
 pub mod create_business;
 pub mod create_client;
@@ -7,6 +8,7 @@ pub mod list_clients;
 pub mod list_invoices;
 pub mod sys_seed;
 
+pub use add_line_item::*;
 pub use create_business::*;
 pub use create_client::*;
 pub use create_invoice::*;

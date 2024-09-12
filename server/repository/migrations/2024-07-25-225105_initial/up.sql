@@ -42,12 +42,12 @@ create table invoice (
   name varchar not null,
   description varchar null,
   due_date timestamp with time zone not null,
-  created_timestamp timestamp with time zone not null default now(),
-  payment_id int not null references payment(payment_id) on delete set null,
+  line_items jsonb not null default '[]'::jsonb,
   payment_data jsonb not null,
   business_id int not null references business(business_id) on delete cascade,
   client_id int not null references client(client_id) on delete set null,
   client_data jsonb not null,
   location_id int not null references location(location_id) on delete cascade,
-  location_data jsonb not null
+  location_data jsonb not null,
+  created_timestamp timestamp with time zone not null default now()
 );

@@ -36,6 +36,7 @@ pub struct CreateInvoice {
   pub name: String,
   pub description: Option<String>,
   pub due_date: DateTime<Utc>,
+
   pub location: CreateLocation,
   pub business_id: i32,
   pub client_id: i32,
@@ -51,17 +52,11 @@ pub struct CreatedInvoice {
 }
 
 pub fn create_invoice(new_invoice: CreateInvoice) -> Result<CreatedInvoice, CreateInvoiceError> {
-  use crate::schema::{business, invoice, location};
+  use crate::schema::{invoice, location};
 
   let connection = &mut establish_connection().map_err(CreateInvoiceError::ConnectionError)?;
 
   connection.transaction::<_, CreateInvoiceError, _>(|connection| {
-    let business = business::table
-      .filter(business::business_id.eq(new_invoice.business_id))
-      .select(BusinessPayment::as_select())
-      .first(connection)
-      .map_err(|_| CreateInvoiceError::InvalidBusiness)?;
-
     let created_location = diesel::insert_into(location::table)
       .values(&NewLocationEntity {
         address: new_invoice.location.address.clone(),
@@ -74,15 +69,18 @@ pub fn create_invoice(new_invoice: CreateInvoice) -> Result<CreatedInvoice, Crea
     let created_invoice = diesel::insert_into(invoice::table)
       .values(&NewInvoiceEntity {
         name: new_invoice.name.clone(),
-        due_date: new_invoice.due_date,
         description: new_invoice.description,
-        payment_id: business.payment_id.expect("Invalid business payment id"),
-        payment_data: serde_json::Value::Null,
+        due_date: new_invoice.due_date,
+
         business_id: new_invoice.business_id.clone(),
         client_id: new_invoice.client_id.clone(),
-        client_data: serde_json::Value::Null,
         location_id: created_location.location_id,
+
+        payment_data: serde_json::Value::Null,
+        client_data: serde_json::Value::Null,
         location_data: serde_json::Value::Null,
+
+        line_items: serde_json::Value::Null,
       })
       .returning(CreatedInvoiceEntity::as_returning())
       .get_result(connection)

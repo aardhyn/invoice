@@ -4,13 +4,23 @@ import { CreateLocation } from "api/utility";
 
 type Timestamp = string;
 
+export type ServiceLineItem = object;
+
+export type ProductLineItem = object;
+
+export type LineItem = {
+  name: string;
+  description: string;
+} & (ServiceLineItem | ProductLineItem);
+
 export type CreateInvoice = {
   name: string;
   description: string;
-  due_date: Timestamp;
-  location: CreateLocation;
   business_id: number; // todo: replace with uuid (we don't expose primary keys)
   client_id: number; //         ''
+  due_date: Timestamp;
+  location: CreateLocation;
+  line_items: LineItem[];
 };
 
 export function useCreateInvoiceMutation() {
