@@ -68,7 +68,7 @@ pub fn add_line_item(
         key: line_item.key,
         name: line_item.name,
         description: line_item.description,
-        item: line_item.item,
+        // detail: line_item.detail,
       }))
       .collect::<Vec<LineItemEntity>>();
 

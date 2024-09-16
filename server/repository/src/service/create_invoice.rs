@@ -37,6 +37,8 @@ pub struct CreateInvoice {
   pub description: Option<String>,
   pub due_date: DateTime<Utc>,
 
+  pub line_items: Vec<LineItemEntity>,
+
   pub location: CreateLocation,
   pub business_id: i32,
   pub client_id: i32,
@@ -66,6 +68,11 @@ pub fn create_invoice(new_invoice: CreateInvoice) -> Result<CreatedInvoice, Crea
       .returning(CreatedLocationEntity::as_returning())
       .get_result(connection)?;
 
+    let parsed_items = serde_json::to_value(new_invoice.line_items).map_err(|e| {
+      eprint!("Error parsing line items: {:?}", e);
+      CreateInvoiceError::UnknownError(Error::SerializationError(Box::new(e)))
+    })?;
+
     let created_invoice = diesel::insert_into(invoice::table)
       .values(&NewInvoiceEntity {
         name: new_invoice.name.clone(),
@@ -80,7 +87,7 @@ pub fn create_invoice(new_invoice: CreateInvoice) -> Result<CreatedInvoice, Crea
         client_data: serde_json::Value::Null,
         location_data: serde_json::Value::Null,
 
-        line_items: serde_json::Value::Null,
+        line_items: parsed_items,
       })
       .returning(CreatedInvoiceEntity::as_returning())
       .get_result(connection)

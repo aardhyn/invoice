@@ -5,10 +5,10 @@ import {
   useBusinessListQuery,
   useCreateInvoiceMutation,
   LineItem,
-  useAddLineItemMutation,
 } from "api";
 import { MouseEvent } from "react";
 import { FormEvent, useCallback, useState } from "react";
+import { uuid } from "common";
 
 export const Route = createLazyFileRoute("/invoice")({
   component: Page,
@@ -22,10 +22,11 @@ function useLineItems() {
   const remove = (index: number) => {
     setItems(items.filter((_, i) => i !== index));
   };
-  const mutate = (index: number, mutation: Partial<LineItem>) => {
-    items.map((item, i) => {
+  const mutate = (index: number, mutation: Partial<Omit<LineItem, "key">>) => {
+    const next = items.map((item, i) => {
       return i === index ? { ...item, ...mutation } : item;
     });
+    setItems(next);
   };
   return { items, add, mutate, remove };
 }
@@ -169,11 +170,15 @@ function LineItems({
   onRemove: (index: number) => void;
   items: LineItem[];
 }) {
+  const handleClick = (index: number) => () => {
+    handleRemove(index);
+  };
+
   return (
     <ul>
       {items.map((item, index) => {
         return (
-          <li key={index}>
+          <li key={item.key}>
             <LineItemForm
               name={item.name}
               description={item.description}
@@ -182,7 +187,9 @@ function LineItems({
                 handleChange(index, { ...item, description })
               }
             />
-            <button onClick={() => handleRemove(index)}>Remove</button>
+            <button type="button" onClick={handleClick(index)}>
+              Remove
+            </button>
           </li>
         );
       })}
@@ -221,7 +228,7 @@ function LineItemForm({
 }
 
 function NewLineItem({
-  onCreateLineItem,
+  onCreateLineItem: handleCreateLineItem,
 }: {
   onCreateLineItem: (item: LineItem) => void;
 }) {
@@ -234,7 +241,7 @@ function NewLineItem({
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    onCreateLineItem({ name, description });
+    handleCreateLineItem({ key: uuid(), name, description, detail: {} });
     clear();
   };
 
@@ -246,7 +253,9 @@ function NewLineItem({
         onNameChange={setName}
         onDescriptionChange={setDescription}
       />
-      <button onClick={handleClick}>Add</button>
+      <button type="button" onClick={handleClick}>
+        Add
+      </button>
     </>
   );
 }

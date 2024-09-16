@@ -177,7 +177,7 @@ pub struct LineItemEntity {
   pub key: uuid::Uuid,
   pub name: String,
   pub description: String,
-  pub item: LineItemType,
+  // pub detail: LineItemType,
 }
 
 #[derive(Debug, Serialize)]

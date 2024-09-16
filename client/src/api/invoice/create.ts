@@ -9,9 +9,11 @@ export type ServiceLineItem = object;
 export type ProductLineItem = object;
 
 export type LineItem = {
+  key: string;
   name: string;
   description: string;
-} & (ServiceLineItem | ProductLineItem);
+  detail: ServiceLineItem | ProductLineItem;
+};
 
 export type CreateInvoice = {
   name: string;

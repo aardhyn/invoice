@@ -16,7 +16,8 @@
       "tanstack",
       "timestampz",
       "tsbuildinfo",
-      "tseslint"
+      "tseslint",
+      "uuidv"
     ]
   }
 }
