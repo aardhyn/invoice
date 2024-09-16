@@ -93,13 +93,59 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({
-  IndexRoute,
-  AdminLazyRoute,
-  BusinessLazyRoute,
-  ClientLazyRoute,
-  InvoiceLazyRoute,
-})
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/admin': typeof AdminLazyRoute
+  '/business': typeof BusinessLazyRoute
+  '/client': typeof ClientLazyRoute
+  '/invoice': typeof InvoiceLazyRoute
+}
+
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/admin': typeof AdminLazyRoute
+  '/business': typeof BusinessLazyRoute
+  '/client': typeof ClientLazyRoute
+  '/invoice': typeof InvoiceLazyRoute
+}
+
+export interface FileRoutesById {
+  __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/admin': typeof AdminLazyRoute
+  '/business': typeof BusinessLazyRoute
+  '/client': typeof ClientLazyRoute
+  '/invoice': typeof InvoiceLazyRoute
+}
+
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/admin' | '/business' | '/client' | '/invoice'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/admin' | '/business' | '/client' | '/invoice'
+  id: '__root__' | '/' | '/admin' | '/business' | '/client' | '/invoice'
+  fileRoutesById: FileRoutesById
+}
+
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  AdminLazyRoute: typeof AdminLazyRoute
+  BusinessLazyRoute: typeof BusinessLazyRoute
+  ClientLazyRoute: typeof ClientLazyRoute
+  InvoiceLazyRoute: typeof InvoiceLazyRoute
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AdminLazyRoute: AdminLazyRoute,
+  BusinessLazyRoute: BusinessLazyRoute,
+  ClientLazyRoute: ClientLazyRoute,
+  InvoiceLazyRoute: InvoiceLazyRoute,
+}
+
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
 
