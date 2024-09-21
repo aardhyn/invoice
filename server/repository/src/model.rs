@@ -1,9 +1,6 @@
 use crate::schema::*;
 use chrono::{DateTime, Utc};
-use diesel::{
-  prelude::*,
-  sql_types::{Date, Jsonb},
-};
+use diesel::{pg::Pg, prelude::*};
 use serde::{Deserialize, Serialize};
 use uuid;
 
@@ -16,14 +13,16 @@ use uuid;
 // Location //
 
 #[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = location)]
 pub struct LocationEntity {
   location_id: i32,
   address: String,
-  suburb: String,
+  suburb: Option<String>,
   city: String,
 }
 #[derive(Insertable, Deserialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = location)]
 pub struct NewLocationEntity {
   pub address: String,
@@ -31,6 +30,7 @@ pub struct NewLocationEntity {
   pub city: String,
 }
 #[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = location)]
 pub struct CreatedLocationEntity {
   pub location_id: i32,
@@ -39,6 +39,7 @@ pub struct CreatedLocationEntity {
 // Contact //
 
 #[derive(Queryable, Selectable)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = contact)]
 pub struct ContactEntity {
   contact_id: i32,
@@ -48,6 +49,7 @@ pub struct ContactEntity {
   cell: String,
 }
 #[derive(Insertable)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = contact)]
 pub struct NewContactEntity {
   pub location_id: i32,
@@ -56,6 +58,7 @@ pub struct NewContactEntity {
   pub cell: String,
 }
 #[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = contact)]
 pub struct CreatedContactEntity {
   pub contact_id: i32,
@@ -64,6 +67,7 @@ pub struct CreatedContactEntity {
 // Payment //
 
 #[derive(Queryable, Selectable, Serialize, Deserialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = payment)]
 pub struct PaymentEntity {
   payment_id: i32,
@@ -71,12 +75,14 @@ pub struct PaymentEntity {
   account_name: String,
 }
 #[derive(Insertable)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = payment)]
 pub struct NewPaymentEntity {
   pub account_number: String,
   pub account_name: String,
 }
 #[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = payment)]
 pub struct CreatedPaymentEntity {
   pub payment_id: i32,
@@ -85,6 +91,7 @@ pub struct CreatedPaymentEntity {
 // Business //
 
 #[derive(Queryable, Selectable, Debug)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = business)]
 pub struct BusinessEntity {
   business_id: i32,
@@ -95,6 +102,7 @@ pub struct BusinessEntity {
   description: Option<String>,
 }
 #[derive(Insertable, Debug)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = business)]
 pub struct NewBusinessEntity {
   pub payment_id: Option<i32>,
@@ -104,6 +112,7 @@ pub struct NewBusinessEntity {
   pub description: Option<String>,
 }
 #[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = business)]
 pub struct CreatedBusinessEntity {
   pub business_id: i32,
@@ -111,6 +120,7 @@ pub struct CreatedBusinessEntity {
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = business)]
 pub struct BusinessEntityListItem {
   pub business_id: i32,
@@ -118,6 +128,7 @@ pub struct BusinessEntityListItem {
 }
 
 #[derive(Debug, Queryable, Selectable)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = business)]
 pub struct BusinessPayment {
   pub business_id: i32,
@@ -127,6 +138,7 @@ pub struct BusinessPayment {
 // Client //
 
 #[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = client)]
 pub struct ClientEntity {
   client_id: i32,
@@ -136,6 +148,7 @@ pub struct ClientEntity {
 }
 
 #[derive(Insertable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = client)]
 pub struct NewClientEntity {
   pub contact_id: i32,
@@ -144,6 +157,7 @@ pub struct NewClientEntity {
 }
 
 #[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = client)]
 pub struct CreatedClientEntity {
   pub client_id: i32,
@@ -151,6 +165,7 @@ pub struct CreatedClientEntity {
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = client)]
 pub struct ClientEntityListItem {
   pub client_id: i32,
@@ -187,22 +202,24 @@ pub struct CreatedLineItemEntity {
 
 // Invoice //
 
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, QueryableByName, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct InvoiceEntity {
   pub invoice_id: i32,
   pub name: String,
   pub description: Option<String>,
-  pub due_date: Date,
-  pub payment_data: Jsonb,
-  pub business_id: Option<i32>,
-  pub client_id: Option<i32>,
-  pub client_data: Jsonb,
-  pub location_id: Option<i32>,
-  pub location_data: Jsonb,
+  pub due_date: DateTime<Utc>,
+  pub payment_data: serde_json::Value,
+  pub business_id: i32,
+  pub client_id: i32,
+  pub client_data: serde_json::Value,
+  pub location_id: i32,
+  pub location_data: serde_json::Value,
 }
 
 #[derive(Insertable, Debug)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct NewInvoiceEntity {
   pub name: String,
@@ -218,6 +235,7 @@ pub struct NewInvoiceEntity {
 }
 
 #[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct CreatedInvoiceEntity {
   pub invoice_id: i32,
@@ -225,6 +243,7 @@ pub struct CreatedInvoiceEntity {
 }
 
 #[derive(Debug, Serialize, Queryable, Selectable)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct InvoiceEntityListItem {
   pub invoice_id: i32,
@@ -234,6 +253,7 @@ pub struct InvoiceEntityListItem {
 }
 
 #[derive(Debug, Queryable, Selectable)]
+#[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct InvoiceLineItems {
   pub invoice_id: i32,
