@@ -23,9 +23,9 @@ create table contact (
 
 create table business (
   business_id serial primary key,
-  payment_id int references payment(payment_id) on delete cascade,
-  contact_id int references contact(contact_id) on delete cascade,
-  location_id int references location(location_id) on delete cascade,
+  payment_id int null references payment(payment_id) on delete cascade,
+  contact_id int null references contact(contact_id) on delete cascade,
+  location_id int null references location(location_id) on delete cascade,
   name varchar not null,
   description varchar null
 );
