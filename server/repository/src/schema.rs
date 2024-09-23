@@ -14,7 +14,7 @@ diesel::table! {
 diesel::table! {
     client (client_id) {
         client_id -> Int4,
-        contact_id -> Nullable<Int4>,
+        contact_id -> Int4,
         name -> Varchar,
         description -> Nullable<Varchar>,
     }

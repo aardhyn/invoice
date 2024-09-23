@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::{
   connection::establish_connection,
-  model::{CreatedLineItemEntity, InvoiceLineItems, LineItemEntity},
+  model::{InvoiceLineItems, LineItemEntity},
 };
 
 use diesel::prelude::*;

@@ -1,4 +1,5 @@
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::Utc;
+use uuid::Uuid;
 
 use crate::model::*;
 
@@ -117,11 +118,18 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
       location_data: serde_json::json!("{}"),
       due_date: Utc::now(),
       line_items: serde_json::json!([{
+        "key": Uuid::new_v4(),
         "name": "Line Item 1",
         "description": "First Line Item",
-        "quantity": 1,
-        "unit_price": 100.0,
-      }]),
+      }, {
+        "key": Uuid::new_v4(),
+        "name": "Product Item 2",
+        "description": "Second Line Item",
+      }, {
+        "key": Uuid::new_v4(),
+        "name": "Service Item 3",
+        "description": "Third Line Item",
+      } ]),
     },
     NewInvoiceEntity {
       name: String::from("Invoice 2"),
@@ -134,10 +142,17 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
       location_data: serde_json::json!("{}"),
       due_date: Utc::now(),
       line_items: serde_json::json!([{
-        "name": "Line Item 2",
-        "description": "Second Line Item",
-        "quantity": 2,
-        "unit_price": 200.0,
+        "key": Uuid::new_v4(),
+        "name": "Line Item 1",
+        "description": "Service Line Item",
+      }, {
+        "key": Uuid::new_v4(),
+        "name": "Service Item 2",
+        "description": "Second Service Line Item",
+      }, {
+        "key": Uuid::new_v4(),
+        "name": "Product Item 3",
+        "description": "Third Service Line Item",
       }]),
     },
     NewInvoiceEntity {
@@ -151,10 +166,18 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
       location_data: serde_json::json!("{}"),
       due_date: Utc::now(),
       line_items: serde_json::json!([{
-        "name": "Line Item 3",
-        "description": "Third Line Item",
-        "quantity": 3,
-        "unit_price": 300.0,
+        "key": Uuid::new_v4(),
+        "name": "Custom Item 1",
+        "description": "Custom Line Item",
+      }, {
+        "key": Uuid::new_v4(),
+        "name": "Service Item 2",
+        "description": "Second Custom Line Item",
+      }, {
+        "key": Uuid::new_v4(),
+        "name": "Custom Item 3",
+        "description": "Third Custom Line Item",
+
       }]),
     },
   ]

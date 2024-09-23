@@ -32,7 +32,7 @@ create table business (
 
 create table client (
   client_id serial primary key,
-  contact_id int references contact(contact_id) on delete cascade,
+  contact_id int not null references contact(contact_id) on delete cascade,
   name varchar not null,
   description varchar null
 );
