@@ -214,6 +214,7 @@ pub struct InvoiceEntity {
   pub business_id: i32,
   pub client_id: i32,
   pub client_data: serde_json::Value,
+  pub line_items: serde_json::Value, // todo: can we map this directly to a struct?
   pub location_id: i32,
   pub location_data: serde_json::Value,
 }

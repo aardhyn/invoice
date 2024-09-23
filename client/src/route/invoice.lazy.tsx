@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import {
   useInvoiceListQuery,
   useClientListQuery,
@@ -73,7 +73,9 @@ function Page() {
         <h2>Invoices</h2>
         <ul>
           {invoiceList?.data?.data?.map((invoice) => (
-            <li key={invoice.invoice_id}>{invoice.name}</li>
+            <li key={invoice.invoice_id}>
+              <Link to={invoice.invoice_id.toString()}>{invoice.name}</Link>
+            </li>
           ))}
         </ul>
         {invoiceList.isSuccess && !invoiceList?.data?.data?.length && (

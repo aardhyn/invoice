@@ -22,6 +22,7 @@ async fn main() -> Result<(), rocket::Error> {
     client_list,
     invoice_create,
     invoice_list,
+    invoice_get,
     invoice_line_item_add,
     system_seed,
   ];
