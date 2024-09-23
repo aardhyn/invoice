@@ -6,3 +6,11 @@ export type CreateContact = {
   email: string;
   location: CreateLocation;
 };
+
+export type Contact = {
+  contact_id: number;
+  name: string;
+  cell: string;
+  email: string;
+  location: CreateLocation;
+};

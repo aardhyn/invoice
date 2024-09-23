@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { endpoint, queryClient } from "api/config";
-import { CreateContact } from "api/utility";
+import { CreateContact, endpoint, queryClient } from "api";
 
 export type CreateClient = {
   name: string;

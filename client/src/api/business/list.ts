@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { endpoint } from "api/config";
-import { APIResponse } from "../type";
+import { APIResponse, endpoint } from "api";
 
 export type BusinessListItem = {
   business_id: number;

@@ -1,26 +1,18 @@
 import { useMutation } from "@tanstack/react-query";
-import { endpoint, queryClient } from "api/config";
-import { CreateLocation } from "api/utility";
-
-type Timestamp = string;
-
-export type ServiceLineItem = object;
-
-export type ProductLineItem = object;
-
-export type LineItem = {
-  key: string;
-  name: string;
-  description: string;
-  detail: ServiceLineItem | ProductLineItem;
-};
+import {
+  CreateLocation,
+  LineItem,
+  Timestampz,
+  endpoint,
+  queryClient,
+} from "api";
 
 export type CreateInvoice = {
   name: string;
   description: string;
   business_id: number; // todo: replace with uuid (we don't expose primary keys)
   client_id: number; //         ''
-  due_date: Timestamp;
+  due_date: Timestampz;
   location: CreateLocation;
   line_items: LineItem[];
 };

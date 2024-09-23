@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { endpoint, queryClient } from "api/config";
-import { CreateContact, CreateLocation } from "api/utility";
+import { endpoint, queryClient, CreateContact, CreateLocation } from "api";
 
 export type CreateBusiness = {
   name: string;
