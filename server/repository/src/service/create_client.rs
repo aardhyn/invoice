@@ -8,7 +8,7 @@ use crate::connection::establish_connection;
 use crate::model::*;
 use diesel::prelude::*;
 
-use super::common::CreateContact;
+use super::common::CreateLocatedContact;
 
 // Create Client //
 
@@ -35,7 +35,7 @@ impl From<Error> for CreateClientError {
 pub struct CreateClient {
   pub name: String,
   pub description: Option<String>,
-  pub contact: CreateContact,
+  pub contact: CreateLocatedContact,
 }
 
 #[derive(Debug, Deserialize)]
@@ -64,7 +64,7 @@ pub fn create_client(new_client: CreateClient) -> Result<CreatedClient, CreateCl
 
     let created_contact = diesel::insert_into(contact::table)
       .values(&NewContactEntity {
-        location_id: created_contact_location.location_id,
+        location_id: Some(created_contact_location.location_id),
         name: new_client.contact.name.clone(),
         email: new_client.contact.email.clone(),
         cell: new_client.contact.cell.clone(),

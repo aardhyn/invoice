@@ -15,7 +15,7 @@ create table payment (
 
 create table contact (
   contact_id serial primary key,
-  location_id int not null references location(location_id) on delete cascade,
+  location_id int null references location(location_id) on delete cascade,
   name varchar not null unique,
   email varchar not null,
   cell varchar not null

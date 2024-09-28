@@ -66,18 +66,9 @@ pub fn create_business(
       .returning(CreatedLocationEntity::as_returning())
       .get_result(connection)?;
 
-    let created_contact_location = diesel::insert_into(location::table)
-      .values(&NewLocationEntity {
-        address: new_business.contact.location.address.clone(),
-        suburb: new_business.contact.location.suburb.clone(),
-        city: new_business.contact.location.city.clone(),
-      })
-      .returning(CreatedLocationEntity::as_returning())
-      .get_result(connection)?;
-
     let created_contact = diesel::insert_into(contact::table)
       .values(&NewContactEntity {
-        location_id: created_contact_location.location_id,
+        location_id: None,
         name: new_business.contact.name.clone(),
         email: new_business.contact.email.clone(),
         cell: new_business.contact.cell.clone(),

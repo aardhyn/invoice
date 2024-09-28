@@ -43,7 +43,7 @@ pub struct CreatedLocationEntity {
 #[diesel(table_name = contact)]
 pub struct ContactEntity {
   pub contact_id: i32,
-  pub location_id: i32,
+  pub location_id: Option<i32>,
   pub name: String,
   pub email: String,
   pub cell: String,
@@ -52,7 +52,7 @@ pub struct ContactEntity {
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = contact)]
 pub struct NewContactEntity {
-  pub location_id: i32,
+  pub location_id: Option<i32>,
   pub name: String,
   pub email: String,
   pub cell: String,

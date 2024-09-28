@@ -5,18 +5,36 @@ use diesel::{prelude::*, result::Error};
 use serde::Serialize;
 
 #[derive(Serialize)]
-pub struct InvoiceClient {
+pub struct ClientContact {
+  contact_id: i32,
   name: String,
-  description: Option<String>,
-  contact: ContactEntity,
+  email: String,
+  cell: String,
   location: LocationEntity,
 }
 
 #[derive(Serialize)]
-pub struct InvoiceBusiness {
+pub struct BusinessContact {
+  contact_id: i32,
+  name: String,
+  email: String,
+  cell: String,
+}
+
+#[derive(Serialize)]
+pub struct InvoiceClient {
+  client_id: i32,
   name: String,
   description: Option<String>,
-  contact: ContactEntity,
+  contact: ClientContact,
+}
+
+#[derive(Serialize)]
+pub struct InvoiceBusiness {
+  business_id: i32,
+  name: String,
+  description: Option<String>,
+  contact: BusinessContact,
   location: LocationEntity,
 }
 
@@ -47,6 +65,8 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
   // todo: when the invoice moved out of draft state we hardcode the payment, client,
   // and location data and skip these joins bar business
 
+  // todo: join these tables in one query and then serialize into this hierarchy
+
   let invoice_entity = invoice::table
     .find(invoice_id)
     .select(InvoiceEntity::as_select())
@@ -59,11 +79,15 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
       }
     })?;
 
+  // todo: cause any errors after this point relate to business logic not user input, we just panic when stuff breaks...
+  //       instead, lets return an "internal error" for these cases. api will log this error and return a "something went
+  //       wrong" message to the user.
+
   let business_entity = business::table
     .find(invoice_entity.business_id)
     .select(BusinessEntity::as_select())
     .first(connection)
-    .expect("Error loading business"); // todo: introduce "internal error" for these cases where the error is not user facing
+    .expect("Error loading business");
 
   let business_contact_id = business_entity.contact_id.expect("Business has no contact");
   let business_contact = contact::table
@@ -71,7 +95,6 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
     .select(ContactEntity::as_select())
     .first(connection)
     .expect("Error loading business contact");
-
   let business_location_id = business_entity
     .location_id
     .expect("Business contact has no location");
@@ -80,6 +103,12 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
     .select(LocationEntity::as_select())
     .first(connection)
     .expect("Error loading business location");
+  let business_contact = BusinessContact {
+    contact_id: business_contact.contact_id,
+    name: business_contact.name,
+    email: business_contact.email,
+    cell: business_contact.cell,
+  };
 
   let business_payment_id = business_entity
     .payment_id
@@ -91,6 +120,7 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
     .expect("Error loading payment");
 
   let business = InvoiceBusiness {
+    business_id: business_entity.business_id,
     name: business_entity.name,
     description: business_entity.description,
     contact: business_contact,
@@ -108,24 +138,33 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
     .select(ClientEntity::as_select())
     .first(connection)
     .expect("Error loading client");
-
   let client_contact_entity = contact::table
     .find(client_entity.contact_id)
     .select(ContactEntity::as_select())
     .first(connection)
     .expect("Error loading client location");
-
-  let client_location_entity = location::table
-    .find(client_contact_entity.location_id)
+  let client_contact_location_id = client_contact_entity
+    .location_id
+    .expect("Client contact has no location");
+  let client_contact_location = location::table
+    .find(client_contact_location_id)
     .select(LocationEntity::as_select())
     .first(connection)
     .expect("Error loading client location");
 
+  let client_contact = ClientContact {
+    contact_id: client_contact_entity.contact_id,
+    name: client_contact_entity.name,
+    email: client_contact_entity.email,
+    cell: client_contact_entity.cell,
+    location: client_contact_location,
+  };
+
   let client = InvoiceClient {
+    client_id: client_entity.client_id,
     name: client_entity.name,
     description: client_entity.description,
-    contact: client_contact_entity,
-    location: client_location_entity,
+    contact: client_contact,
   };
 
   // seems silly to deserialize and then serialize again in the service layer

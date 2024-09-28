@@ -10,6 +10,13 @@ pub struct CreateLocation {
 #[derive(Debug, Deserialize)]
 pub struct CreateContact {
   pub name: String,
+  pub cell: String,
+  pub email: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateLocatedContact {
+  pub name: String,
   pub location: CreateLocation,
   pub cell: String,
   pub email: String,

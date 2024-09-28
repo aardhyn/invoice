@@ -23,7 +23,7 @@ diesel::table! {
 diesel::table! {
     contact (contact_id) {
         contact_id -> Int4,
-        location_id -> Int4,
+        location_id -> Nullable<Int4>,
         name -> Varchar,
         email -> Varchar,
         cell -> Varchar,
