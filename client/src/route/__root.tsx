@@ -5,6 +5,7 @@ import {
   RootRoute,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { NoPrint } from "component/utility/NoPrint";
 
 export const Route: RootRoute = createRootRoute({
   component() {
@@ -29,7 +30,9 @@ export const Route: RootRoute = createRootRoute({
           </li>
         </ul>
         <Outlet />
-        <TanStackRouterDevtools />
+        <NoPrint>
+          <TanStackRouterDevtools />
+        </NoPrint>
       </main>
     );
   },
