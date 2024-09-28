@@ -7,6 +7,7 @@ import {
   endpoint,
   isAPIResponse,
   LineItem,
+  Business,
 } from "api";
 import { invariant } from "common";
 
@@ -16,6 +17,7 @@ export type InvoiceGet = {
   description: string | null;
   due_date: Timestampz;
   line_items: LineItem[];
+  business: Business;
   payment: Payment;
   client: Client;
   location: Location;
