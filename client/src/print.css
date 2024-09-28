@@ -1,0 +1,15 @@
+@media print {
+  @page {
+    size: auto;
+    margin: 0; /* hide browser injected header/footer */
+  }
+
+  body {
+    margin: 0;
+  }
+
+  header,
+  footer {
+    display: none !important;
+  }
+}
