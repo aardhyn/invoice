@@ -15,7 +15,7 @@ export type CreatedService = {
   name: string;
 };
 
-export function useCreateServiceMutation() {
+export function useServiceCreateMutation() {
   return useMutation({
     async mutationFn(service: CreateService) {
       const response = await fetch(endpoint("service.create"), {

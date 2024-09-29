@@ -1,5 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useClientListQuery, useCreateClientMutation } from "api/client";
+import { useClientListQuery, useClientCreateMutation } from "api/client";
 
 export const Route = createLazyFileRoute("/client")({
   component: Page,
@@ -12,7 +12,7 @@ function Page() {
     isError,
     error,
     isPending,
-  } = useCreateClientMutation();
+  } = useClientCreateMutation();
 
   return (
     <>

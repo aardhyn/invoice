@@ -17,7 +17,7 @@ export type CreateInvoice = {
   line_items: LineItem[];
 };
 
-export function useCreateInvoiceMutation() {
+export function useInvoiceCreateMutation() {
   return useMutation({
     mutationFn(invoice: CreateInvoice) {
       return fetch(endpoint("invoice.create"), {

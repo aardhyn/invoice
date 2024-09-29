@@ -1,5 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useCreateServiceMutation, useServiceListQuery } from "api";
+import { useServiceCreateMutation, useServiceListQuery } from "api";
 import { useState } from "react";
 
 export const Route = createLazyFileRoute("/service")({
@@ -43,7 +43,7 @@ function CreateServiceForm() {
     mutate: createService,
     error,
     isPending,
-  } = useCreateServiceMutation();
+  } = useServiceCreateMutation();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -7,7 +7,7 @@ export type CreateClient = {
   contact: CreateContact;
 };
 
-export function useCreateClientMutation() {
+export function useClientCreateMutation() {
   return useMutation({
     mutationFn(client: CreateClient) {
       return fetch(endpoint("client.create"), {

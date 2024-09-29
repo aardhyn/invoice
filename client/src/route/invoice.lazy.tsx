@@ -3,7 +3,7 @@ import {
   useInvoiceListQuery,
   useClientListQuery,
   useBusinessListQuery,
-  useCreateInvoiceMutation,
+  useInvoiceCreateMutation,
   LineItem,
 } from "api";
 import { MouseEvent } from "react";
@@ -41,7 +41,7 @@ function Page() {
     isError,
     error,
     isPending,
-  } = useCreateInvoiceMutation();
+  } = useInvoiceCreateMutation();
 
   const { items, mutate, add, remove } = useLineItems();
 

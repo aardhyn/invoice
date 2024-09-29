@@ -10,7 +10,7 @@ export type CreateBusiness = {
   account_name: string;
 };
 
-export function useCreateBusinessMutation() {
+export function useBusinessCreateMutation() {
   return useMutation({
     mutationFn(business: CreateBusiness) {
       return fetch(endpoint("business.create"), {
