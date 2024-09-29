@@ -27,7 +27,6 @@ function Page() {
   return (
     <div>
       <h2>{invoice.data?.name}</h2>
-      <h3>raw data</h3>
 
       <details>
         <summary>Raw data</summary>

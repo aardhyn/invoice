@@ -17,9 +17,7 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
         <div className="card">
           <h2>From</h2>
           <article>
-            <p>
-              <b>{invoice.business.name}</b>
-            </p>
+            <h3>{invoice.business.name}</h3>
           </article>
           <article>
             <LocationPreview location={invoice.business.location} />
@@ -86,7 +84,7 @@ function LineItemsPreview({ line_items }: { line_items: LineItem[] }) {
 function ContactPreview({ contact }: { contact: Contact }) {
   return (
     <>
-      <p>{contact.name}</p>
+      <h3>{contact.name}</h3>
       <p>{contact.email}</p>
       <p>{contact.cell}</p>
       {contact.location && <LocationPreview location={contact.location} />}
