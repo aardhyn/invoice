@@ -127,14 +127,6 @@ pub struct BusinessEntityListItem {
   pub name: String,
 }
 
-#[derive(Debug, Queryable, Selectable)]
-#[diesel(check_for_backend(Pg))]
-#[diesel(table_name = business)]
-pub struct BusinessPayment {
-  pub business_id: i32,
-  pub payment_id: Option<i32>,
-}
-
 // Client //
 
 #[derive(Queryable, Selectable, Serialize)]
