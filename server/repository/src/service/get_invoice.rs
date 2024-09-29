@@ -43,6 +43,7 @@ pub struct InvoiceGet {
   invoice_id: i32,
   name: String,
   description: Option<String>,
+  reference: Option<String>,
   due_date: DateTime<Utc>,
   line_items: Vec<LineItemEntity>,
   payment: PaymentEntity,
@@ -172,6 +173,7 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
   let invoice = InvoiceGet {
     invoice_id: invoice_entity.invoice_id,
     name: invoice_entity.name,
+    reference: invoice_entity.reference,
     description: invoice_entity.description,
     due_date: invoice_entity.due_date,
     payment: payment_entity,

@@ -15,6 +15,7 @@ export type InvoiceGet = {
   invoice_id: number;
   name: string;
   description: string | null;
+  reference: string | null;
   due_date: Timestampz;
   line_items: LineItem[];
   business: Business;

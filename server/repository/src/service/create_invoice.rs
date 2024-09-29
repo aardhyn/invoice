@@ -35,6 +35,7 @@ impl From<Error> for CreateInvoiceError {
 pub struct CreateInvoice {
   pub name: String,
   pub description: Option<String>,
+  pub reference: Option<String>,
   pub due_date: DateTime<Utc>,
 
   pub line_items: Vec<LineItemEntity>,
@@ -77,6 +78,7 @@ pub fn create_invoice(new_invoice: CreateInvoice) -> Result<CreatedInvoice, Crea
       .values(&NewInvoiceEntity {
         name: new_invoice.name.clone(),
         description: new_invoice.description,
+        reference: new_invoice.reference,
         due_date: new_invoice.due_date,
 
         business_id: new_invoice.business_id.clone(),

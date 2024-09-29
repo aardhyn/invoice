@@ -16,15 +16,15 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
       <div className="row">
         <div className="card">
           <h2>From</h2>
-          <article>
-            <h3>{invoice.business.name}</h3>
-          </article>
-          <article>
-            <LocationPreview location={invoice.business.location} />
-          </article>
-          <article>
-            <ContactPreview contact={invoice.business.contact} />
-          </article>
+          <div className="row">
+            <article>
+              <h3>{invoice.business.name}</h3>
+              <LocationPreview location={invoice.business.location} />
+            </article>
+            <article>
+              <ContactPreview contact={invoice.business.contact} />
+            </article>
+          </div>
         </div>
         <div className="card">
           <h2>Tax</h2>
@@ -39,7 +39,7 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
               <b>Due</b> {dateFromTimestamp(invoice.due_date)}
             </p>
             <p>
-              <b>Reference</b> null
+              <b>Reference</b> {invoice.reference}
             </p>
           </article>
         </div>

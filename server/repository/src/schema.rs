@@ -35,6 +35,7 @@ diesel::table! {
         invoice_id -> Int4,
         name -> Varchar,
         description -> Nullable<Varchar>,
+        reference -> Nullable<Varchar>,
         due_date -> Timestamptz,
         line_items -> Jsonb,
         payment_data -> Jsonb,

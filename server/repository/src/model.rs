@@ -209,6 +209,7 @@ pub struct InvoiceEntity {
   pub invoice_id: i32,
   pub name: String,
   pub description: Option<String>,
+  pub reference: Option<String>,
   pub due_date: DateTime<Utc>,
   pub payment_data: serde_json::Value,
   pub business_id: i32,
@@ -225,6 +226,7 @@ pub struct InvoiceEntity {
 pub struct NewInvoiceEntity {
   pub name: String,
   pub description: Option<String>,
+  pub reference: Option<String>,
   pub business_id: i32,
   pub payment_data: serde_json::Value, // todo: can we map this directly to a struct?
   pub client_id: i32,

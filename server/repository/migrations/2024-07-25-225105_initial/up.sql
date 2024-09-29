@@ -41,6 +41,7 @@ create table invoice (
   invoice_id serial primary key,
   name varchar not null,
   description varchar null,
+  reference varchar null,
   due_date timestamp with time zone not null,
   line_items jsonb not null default '[]'::jsonb,
   payment_data jsonb not null,
