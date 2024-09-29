@@ -15,6 +15,7 @@
       "libpq",
       "tanstack",
       "timestampz",
+      "timestamptz",
       "tsbuildinfo",
       "tseslint",
       "uuidv"
