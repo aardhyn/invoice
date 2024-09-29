@@ -1,6 +1,7 @@
 export * from "./business";
 export * from "./client";
 export * from "./invoice";
+export * from "./service";
 export * from "./sys";
 
 export * from "./type";

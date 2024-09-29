@@ -172,6 +172,47 @@ pub struct ClientEntityListItem {
   pub name: String,
 }
 
+// Service //
+
+#[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = service)]
+pub struct ServiceEntity {
+  pub service_id: i32,
+  pub name: String,
+  pub description: Option<String>,
+  pub initial_rate: i32,
+  pub initial_rate_threshold: i32,
+  pub rate: i32,
+}
+
+#[derive(Insertable, Deserialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = service)]
+pub struct NewServiceEntity {
+  pub name: String,
+  pub description: Option<String>,
+  pub initial_rate: Option<i32>,
+  pub initial_rate_threshold: Option<i32>,
+  pub rate: i32,
+}
+
+#[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = service)]
+pub struct CreatedServiceEntity {
+  pub service_id: i32,
+  pub name: String,
+}
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = service)]
+pub struct ServiceEntityListItem {
+  pub service_id: i32,
+  pub name: String,
+}
+
 // Line Item //
 
 #[derive(Debug, Serialize, Deserialize)]

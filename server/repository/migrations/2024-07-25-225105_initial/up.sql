@@ -1,5 +1,7 @@
 set timezone to 'utc';
 
+create domain size as int check (value >= 0);
+
 create table location (
   location_id serial primary key,
   address varchar not null,
@@ -19,6 +21,15 @@ create table contact (
   name varchar not null unique,
   email varchar not null,
   cell varchar not null
+);
+
+create table service (
+  service_id serial primary key,
+  name varchar not null unique,
+  description varchar null,
+  initial_rate size not null default 0,
+  initial_rate_threshold size not null default 0,
+  rate size not null
 );
 
 create table business (

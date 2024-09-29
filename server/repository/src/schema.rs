@@ -65,6 +65,17 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    service (service_id) {
+        service_id -> Int4,
+        name -> Varchar,
+        description -> Nullable<Varchar>,
+        initial_rate -> Int4,
+        initial_rate_threshold -> Int4,
+        rate -> Int4,
+    }
+}
+
 diesel::joinable!(business -> contact (contact_id));
 diesel::joinable!(business -> location (location_id));
 diesel::joinable!(business -> payment (payment_id));
@@ -81,4 +92,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     invoice,
     location,
     payment,
+    service,
 );

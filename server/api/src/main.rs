@@ -16,14 +16,21 @@ async fn main() -> Result<(), rocket::Error> {
 
   let routes = routes![
     cors::all_options,
+    // Business //
     business_create,
     business_list,
+    // Client //
     client_create,
     client_list,
+    // Service //
+    service_create,
+    service_list,
+    // Invoice //
     invoice_create,
     invoice_list,
     invoice_get,
     invoice_line_item_add,
+    // Sys //
     system_seed,
   ];
 
