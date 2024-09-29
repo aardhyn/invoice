@@ -66,6 +66,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    product (product_id) {
+        product_id -> Int4,
+        name -> Varchar,
+        description -> Nullable<Varchar>,
+        price -> Int4,
+    }
+}
+
+diesel::table! {
     service (service_id) {
         service_id -> Int4,
         name -> Varchar,
@@ -92,5 +101,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     invoice,
     location,
     payment,
+    product,
     service,
 );

@@ -1,23 +1,23 @@
-use repository::service::{self, CreateService, CreateServiceError, CreatedService};
+use repository::service::{self, CreateProduct, CreatedProduct};
 use rocket::{http::Status, serde::json::Json};
 
 use crate::util::response::APIResponse;
 
-#[post("/service.create", data = "<data>")]
-pub fn service_create(data: Json<CreateService>) -> APIResponse<CreatedService, String> {
+#[post("/product.create", data = "<data>")]
+pub fn product_create(data: Json<CreateProduct>) -> APIResponse<CreatedProduct, String> {
   let data = data.into_inner();
-  service::create_service(data).map_or_else(
+  service::create_product(data).map_or_else(
     |error| {
       let (status, error) = match error {
-        CreateServiceError::ConnectionError(_) => (
+        service::CreateProductError::ConnectionError(_) => (
           Status::InternalServerError,
           String::from("An error occurred while connecting to the database"),
         ),
-        CreateServiceError::DuplicateNameError => (
+        service::CreateProductError::DuplicateNameError => (
           Status::Conflict,
-          String::from("A service with that name already exists"),
+          String::from("A product with that name already exists"),
         ),
-        CreateServiceError::UnknownError(e) => (
+        service::CreateProductError::UnknownError(e) => (
           Status::InternalServerError,
           format!("An unknown error occurred: {:?}", e.to_string()),
         ),

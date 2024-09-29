@@ -18,6 +18,7 @@ import { Route as IndexImport } from './route/index'
 // Create Virtual Routes
 
 const ServiceLazyImport = createFileRoute('/service')()
+const ProductLazyImport = createFileRoute('/product')()
 const InvoiceLazyImport = createFileRoute('/invoice')()
 const ClientLazyImport = createFileRoute('/client')()
 const BusinessLazyImport = createFileRoute('/business')()
@@ -30,6 +31,11 @@ const ServiceLazyRoute = ServiceLazyImport.update({
   path: '/service',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./route/service.lazy').then((d) => d.Route))
+
+const ProductLazyRoute = ProductLazyImport.update({
+  path: '/product',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./route/product.lazy').then((d) => d.Route))
 
 const InvoiceLazyRoute = InvoiceLazyImport.update({
   path: '/invoice',
@@ -102,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvoiceLazyImport
       parentRoute: typeof rootRoute
     }
+    '/product': {
+      id: '/product'
+      path: '/product'
+      fullPath: '/product'
+      preLoaderRoute: typeof ProductLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/service': {
       id: '/service'
       path: '/service'
@@ -127,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/business': typeof BusinessLazyRoute
   '/client': typeof ClientLazyRoute
   '/invoice': typeof InvoiceLazyRoute
+  '/product': typeof ProductLazyRoute
   '/service': typeof ServiceLazyRoute
   '/invoice/$invoiceKey': typeof InvoiceInvoiceKeyLazyRoute
 }
@@ -137,6 +151,7 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessLazyRoute
   '/client': typeof ClientLazyRoute
   '/invoice': typeof InvoiceLazyRoute
+  '/product': typeof ProductLazyRoute
   '/service': typeof ServiceLazyRoute
   '/invoice/$invoiceKey': typeof InvoiceInvoiceKeyLazyRoute
 }
@@ -148,6 +163,7 @@ export interface FileRoutesById {
   '/business': typeof BusinessLazyRoute
   '/client': typeof ClientLazyRoute
   '/invoice': typeof InvoiceLazyRoute
+  '/product': typeof ProductLazyRoute
   '/service': typeof ServiceLazyRoute
   '/invoice/$invoiceKey': typeof InvoiceInvoiceKeyLazyRoute
 }
@@ -160,6 +176,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/client'
     | '/invoice'
+    | '/product'
     | '/service'
     | '/invoice/$invoiceKey'
   fileRoutesByTo: FileRoutesByTo
@@ -169,6 +186,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/client'
     | '/invoice'
+    | '/product'
     | '/service'
     | '/invoice/$invoiceKey'
   id:
@@ -178,6 +196,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/client'
     | '/invoice'
+    | '/product'
     | '/service'
     | '/invoice/$invoiceKey'
   fileRoutesById: FileRoutesById
@@ -189,6 +208,7 @@ export interface RootRouteChildren {
   BusinessLazyRoute: typeof BusinessLazyRoute
   ClientLazyRoute: typeof ClientLazyRoute
   InvoiceLazyRoute: typeof InvoiceLazyRoute
+  ProductLazyRoute: typeof ProductLazyRoute
   ServiceLazyRoute: typeof ServiceLazyRoute
   InvoiceInvoiceKeyLazyRoute: typeof InvoiceInvoiceKeyLazyRoute
 }
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessLazyRoute: BusinessLazyRoute,
   ClientLazyRoute: ClientLazyRoute,
   InvoiceLazyRoute: InvoiceLazyRoute,
+  ProductLazyRoute: ProductLazyRoute,
   ServiceLazyRoute: ServiceLazyRoute,
   InvoiceInvoiceKeyLazyRoute: InvoiceInvoiceKeyLazyRoute,
 }
@@ -220,6 +241,7 @@ export const routeTree = rootRoute
         "/business",
         "/client",
         "/invoice",
+        "/product",
         "/service",
         "/invoice/$invoiceKey"
       ]
@@ -238,6 +260,9 @@ export const routeTree = rootRoute
     },
     "/invoice": {
       "filePath": "invoice.lazy.tsx"
+    },
+    "/product": {
+      "filePath": "product.lazy.tsx"
     },
     "/service": {
       "filePath": "service.lazy.tsx"

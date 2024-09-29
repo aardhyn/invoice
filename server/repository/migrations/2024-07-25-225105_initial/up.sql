@@ -32,6 +32,13 @@ create table service (
   rate size not null
 );
 
+create table product (
+  product_id serial primary key,
+  name varchar not null unique,
+  description varchar null,
+  price size not null
+);
+
 create table business (
   business_id serial primary key,
   payment_id int null references payment(payment_id) on delete cascade,

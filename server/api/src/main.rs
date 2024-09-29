@@ -25,6 +25,9 @@ async fn main() -> Result<(), rocket::Error> {
     // Service //
     service_create,
     service_list,
+    // Product //
+    product_create,
+    product_list,
     // Invoice //
     invoice_create,
     invoice_list,

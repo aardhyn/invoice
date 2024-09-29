@@ -26,6 +26,9 @@ export const Route: RootRoute = createRootRoute({
             <Link to="/service">Services</Link>
           </li>
           <li>
+            <Link to="/product">Products</Link>
+          </li>
+          <li>
             <Link to="/invoice">Invoices</Link>
           </li>
           <li>

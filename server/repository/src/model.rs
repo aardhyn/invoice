@@ -213,6 +213,43 @@ pub struct ServiceEntityListItem {
   pub name: String,
 }
 
+// Product //
+
+#[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = product)]
+pub struct ProductEntity {
+  pub product_id: i32,
+  pub name: String,
+  pub description: Option<String>,
+  pub price: i32,
+}
+
+#[derive(Insertable, Deserialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = product)]
+pub struct NewProductEntity {
+  pub name: String,
+  pub description: Option<String>,
+  pub price: i32,
+}
+
+#[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = product)]
+pub struct CreatedProductEntity {
+  pub product_id: i32,
+  pub name: String,
+}
+
+#[derive(Debug, Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = product)]
+pub struct ProductEntityListItem {
+  pub product_id: i32,
+  pub name: String,
+}
+
 // Line Item //
 
 #[derive(Debug, Serialize, Deserialize)]
