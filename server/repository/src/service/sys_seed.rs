@@ -5,7 +5,7 @@ use crate::{
   data::*,
   model::{
     CreatedBusinessEntity, CreatedClientEntity, CreatedContactEntity, CreatedInvoiceEntity,
-    CreatedLocationEntity, CreatedPaymentEntity,
+    CreatedLocationEntity, CreatedPaymentEntity, CreatedProductEntity, CreatedServiceEntity,
   },
 };
 
@@ -25,6 +25,8 @@ pub struct SeedResult {
   locations: Vec<CreatedLocationEntity>,
   payments: Vec<CreatedPaymentEntity>,
   clients: Vec<CreatedClientEntity>,
+  products: Vec<CreatedProductEntity>,
+  services: Vec<CreatedServiceEntity>,
   invoices: Vec<CreatedInvoiceEntity>,
 }
 
@@ -76,6 +78,18 @@ pub fn sys_seed() -> Result<SeedResult, SeedError> {
     .get_results(connection)
     .map_err(SeedError::from)?;
 
+  let products = diesel::insert_into(product::table)
+    .values(seed_product())
+    .returning(CreatedProductEntity::as_returning())
+    .get_results(connection)
+    .map_err(SeedError::from)?;
+
+  let services = diesel::insert_into(service::table)
+    .values(seed_service())
+    .returning(CreatedServiceEntity::as_returning())
+    .get_results(connection)
+    .map_err(SeedError::from)?;
+
   let invoices = diesel::insert_into(invoice::table)
     .values(seed_invoice())
     .returning(CreatedInvoiceEntity::as_returning())
@@ -88,6 +102,8 @@ pub fn sys_seed() -> Result<SeedResult, SeedError> {
     locations,
     payments,
     clients,
+    products,
+    services,
     invoices,
   })
 }

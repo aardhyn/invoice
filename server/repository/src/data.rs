@@ -1,3 +1,5 @@
+use std::vec;
+
 use chrono::Utc;
 use uuid::Uuid;
 
@@ -153,6 +155,52 @@ pub fn seed_client() -> Vec<NewClientEntity> {
       name: String::from("Winter Cooperation"),
       description: Some(String::from("Time Entwined")),
       contact_id: 6,
+    },
+  ]
+}
+
+pub fn seed_product() -> Vec<NewProductEntity> {
+  vec![
+    NewProductEntity {
+      name: String::from("Product 1"),
+      description: Some(String::from("First Product")),
+      price: 1000,
+    },
+    NewProductEntity {
+      name: String::from("Product 2"),
+      description: Some(String::from("Second Product")),
+      price: 2400,
+    },
+    NewProductEntity {
+      name: String::from("Product 3"),
+      description: Some(String::from("Third Product")),
+      price: 3600,
+    },
+  ]
+}
+
+pub fn seed_service() -> Vec<NewServiceEntity> {
+  vec![
+    NewServiceEntity {
+      name: String::from("Service 1"),
+      description: Some(String::from("First Service")),
+      initial_rate: Some(1200),
+      initial_rate_threshold: Some(1),
+      rate: 1000,
+    },
+    NewServiceEntity {
+      name: String::from("Service 2"),
+      description: Some(String::from("Second Service")),
+      initial_rate: Some(4400),
+      initial_rate_threshold: Some(1),
+      rate: 4100,
+    },
+    NewServiceEntity {
+      name: String::from("Service 3"),
+      description: Some(String::from("Third Service")),
+      initial_rate: None,
+      initial_rate_threshold: None,
+      rate: 2300,
     },
   ]
 }
