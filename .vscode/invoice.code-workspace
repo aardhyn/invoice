@@ -7,19 +7,6 @@
   ],
   "settings": {
     "makefile.configureOnOpen": false,
-    "cSpell.words": [
-      "chrono",
-      "dotenv",
-      "dotenvy",
-      "Insertable",
-      "libpq",
-      "tanstack",
-      "timestampz",
-      "timestamptz",
-      "tsbuildinfo",
-      "tseslint",
-      "uuidv"
-    ],
     "typescript.tsdk": "client/node_modules/typescript/lib"
   }
 }
