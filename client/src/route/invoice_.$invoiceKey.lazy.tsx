@@ -2,7 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { useInvoiceGetQuery } from "api";
 import { InvoicePreview, Print } from "component";
 
-import templateStyles from "component/template/style.css?inline";
+import templateStyles from "component/template/invoice/style.css?inline";
 
 export const Route = createLazyFileRoute("/invoice/$invoiceKey")({
   component: Page,
