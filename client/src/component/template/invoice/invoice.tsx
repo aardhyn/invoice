@@ -1,10 +1,18 @@
-import { InvoiceGet, LineItem, Location } from "api";
-import { Contact } from "api";
+import {
+  InvoiceGet,
+  isProductLineItem,
+  isServiceLineItem,
+  LineItem,
+  Location,
+  Contact,
+} from "api";
 
 export type ExportableInvoice = InvoiceGet;
 
 import "./style.css";
-import { dateFromTimestamp } from "../../common/temporal";
+import { dateFromTimestamp, capitalize, stringifyBoolean } from "common";
+import { useMemo } from "react";
+import { getLineItemColumns } from "./util";
 
 export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
   return (
@@ -63,24 +71,6 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
   );
 }
 
-function LineItemsPreview({ line_items }: { line_items: LineItem[] }) {
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {line_items.map((line_item) => (
-          <LineItemPreview key={line_item.key} line_item={line_item} />
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
 function ContactPreview({ contact }: { contact: Contact }) {
   return (
     <>
@@ -103,11 +93,57 @@ function LocationPreview({ location }: { location: Location }) {
   );
 }
 
+function LineItemsPreview({ line_items }: { line_items: LineItem[] }) {
+  const columns = useMemo(() => getLineItemColumns(line_items), [line_items]);
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          {columns.map(capitalize).map((column) => (
+            <th key={column}>{column}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {line_items.map((line_item) => (
+          <LineItemPreview key={line_item.key} line_item={line_item} />
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 function LineItemPreview({ line_item }: { line_item: LineItem }) {
   return (
     <tr>
       <td>{line_item.name}</td>
       <td>{line_item.description}</td>
+      <td>{line_item.quantity}</td>
+
+      {isProductLineItem(line_item) && (
+        <>
+          <td>{line_item.detail.unit_cost}</td>
+          <td>{line_item.detail.cost}</td>
+        </>
+      )}
+
+      {isServiceLineItem(line_item) && (
+        <>
+          <td>{line_item.detail.initial_rate}</td>
+          <td>{line_item.detail.rate_threshold}</td>
+          <td>{line_item.detail.rate}</td>
+        </>
+      )}
+
+      {line_item.custom_fields.map(({ data, key }) => {
+        // prettier-ignore
+        const value = typeof data === "boolean" 
+          ? stringifyBoolean(data) 
+          : data.toString();
+
+        return <td key={key}>{value}</td>;
+      })}
     </tr>
   );
 }

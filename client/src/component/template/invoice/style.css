@@ -51,9 +51,4 @@ table {
     font-weight: 800;
     border-bottom: 1px solid #ddd;
   }
-
-  & tr:nth-child(even) {
-    background-color: #f5f5f5;
-    border-radius: 8px;
-  }
 }
