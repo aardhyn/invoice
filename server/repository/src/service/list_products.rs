@@ -11,12 +11,12 @@ pub fn list_products() -> Result<ProductList, String> {
 
   let connection = &mut establish_connection().expect("Error connecting to database");
 
-  let services = product::table
+  let products = product::table
     .select(ProductEntityListItem::as_select())
     .load(connection)
     .expect("Error loading businesses");
 
-  let list = services.into_iter().collect();
+  let list = products.into_iter().collect();
 
   Ok(list)
 }

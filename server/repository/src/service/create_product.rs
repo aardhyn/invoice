@@ -42,7 +42,7 @@ pub fn create_product(new_product: CreateProduct) -> Result<CreatedProduct, Crea
   let connection = &mut establish_connection().map_err(CreateProductError::ConnectionError)?;
 
   connection.transaction::<_, CreateProductError, _>(|connection| {
-    let created_service = diesel::insert_into(product::table)
+    let created_product = diesel::insert_into(product::table)
       .values(new_product)
       .returning(CreatedProductEntity::as_returning())
       .get_result(connection)
@@ -54,8 +54,8 @@ pub fn create_product(new_product: CreateProduct) -> Result<CreatedProduct, Crea
       })?;
 
     Ok(CreatedProduct {
-      product_id: created_service.product_id,
-      name: created_service.name,
+      product_id: created_product.product_id,
+      name: created_product.name,
     })
   })
 }
