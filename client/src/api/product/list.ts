@@ -7,9 +7,10 @@ export type ProductListItem = {
   name: string;
 };
 
-export function useProductListQuery() {
+export function useProductListQuery(enabled: boolean = true) {
   return useQuery<APIResponse<ProductListItem[]>>({
     queryKey: ["product"],
+    enabled,
     async queryFn() {
       const response = await fetch(endpoint("product.list"));
       const data = await response.json();

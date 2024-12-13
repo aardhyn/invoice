@@ -64,12 +64,7 @@ pub fn add_line_item(
 
     let new_line_items = line_items
       .into_iter()
-      .chain(std::iter::once(LineItemEntity {
-        key: line_item.key,
-        name: line_item.name,
-        description: line_item.description,
-        // detail: line_item.detail,
-      }))
+      .chain(std::iter::once(line_item))
       .collect::<Vec<LineItemEntity>>();
 
     let new_line_items_json = serde_json::to_value(&new_line_items).map_err(|error| {

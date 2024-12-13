@@ -45,11 +45,28 @@ pub struct InvoiceGet {
   description: Option<String>,
   reference: Option<String>,
   due_date: DateTime<Utc>,
-  line_items: Vec<LineItemEntity>,
+  line_items: Vec<InvoiceLineItem>,
   payment: PaymentEntity,
   business: InvoiceBusiness,
   client: InvoiceClient,
   location: LocationEntity,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum InvoiceLineItemDetail {
+  Product(ProductEntity),
+  Service(ServiceEntity),
+}
+
+#[derive(Serialize)]
+pub struct InvoiceLineItem {
+  key: String,
+  name: String,
+  description: String,
+  custom_fields: Vec<LineItemCustomField>,
+  detail: Option<InvoiceLineItemDetail>,
+  quantity: i32,
 }
 
 pub enum GetInvoiceError {
@@ -59,7 +76,7 @@ pub enum GetInvoiceError {
 }
 
 pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
-  use crate::schema::{business, client, contact, invoice, location, payment};
+  use crate::schema::{business, client, contact, invoice, location, payment, product, service};
 
   let connection = &mut establish_connection().expect("Error connecting to database");
 
@@ -168,8 +185,40 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
     contact: client_contact,
   };
 
-  // seems silly to deserialize and then serialize again in the service layer
-  let line_items = serde_json::from_value(invoice_entity.line_items).unwrap();
+  let line_items = serde_json::from_value::<Vec<LineItemEntity>>(invoice_entity.line_items)
+    .expect("Failed to deserialize invoice_entity::line_items");
+
+  let detailed_items = line_items
+    .into_iter()
+    .map(|line_item| InvoiceLineItem {
+      key: line_item.key.to_string(),
+      name: line_item.name,
+      description: line_item.description,
+      custom_fields: line_item.custom_fields,
+      detail: match line_item.detail {
+        // FIXME: lines items may share products or services. perhaps we should deduplicate them somehow.
+        Some(LineItemDetail::Product(reference)) => {
+          let product = product::table
+            .find(reference.product_id)
+            .select(ProductEntity::as_select())
+            .first(connection)
+            .expect("Failed to load product");
+          Some(InvoiceLineItemDetail::Product(product))
+        }
+        Some(LineItemDetail::Service(service)) => {
+          let service = service::table
+            .find(service.service_id)
+            .select(ServiceEntity::as_select())
+            .first(connection)
+            .expect("Failed to load service");
+          Some(InvoiceLineItemDetail::Service(service))
+        }
+        None => None,
+      },
+      quantity: line_item.quantity,
+    })
+    .collect();
+
   let invoice = InvoiceGet {
     invoice_id: invoice_entity.invoice_id,
     name: invoice_entity.name,
@@ -177,7 +226,7 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
     description: invoice_entity.description,
     due_date: invoice_entity.due_date,
     payment: payment_entity,
-    line_items,
+    line_items: detailed_items,
     business,
     client,
     location: location_entity,

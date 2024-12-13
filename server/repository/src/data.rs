@@ -222,14 +222,26 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
         "key": Uuid::new_v4(),
         "name": "Line Item 1",
         "description": "First Line Item",
+        "quantity": 1,
+        "custom_fields": [{
+          "key": Uuid::new_v4(),
+          "name": "waived",
+          "data": false,
+        }],
       }, {
         "key": Uuid::new_v4(),
         "name": "Product Item 2",
         "description": "Second Line Item",
+        "detail": { "product_id": 1, },
+        "quantity": 2,
+        "custom_fields": [],
       }, {
         "key": Uuid::new_v4(),
         "name": "Service Item 3",
         "description": "Third Line Item",
+        "detail": { "service_id": 1, },
+        "quantity": 2,
+        "custom_fields": [],
       } ]),
     },
     NewInvoiceEntity {
@@ -247,14 +259,27 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
         "key": Uuid::new_v4(),
         "name": "Line Item 1",
         "description": "Service Line Item",
+        "detail": { "service_id": 2, },
+        "quantity": 2,
+        "custom_fields": [],
       }, {
         "key": Uuid::new_v4(),
         "name": "Service Item 2",
+        "detail": { "service_id": 3, },
         "description": "Second Service Line Item",
+        "quantity": 5,
+        "custom_fields": [],
       }, {
         "key": Uuid::new_v4(),
         "name": "Product Item 3",
         "description": "Third Service Line Item",
+        "detail": { "product_id": 2, },
+        "quantity": 3,
+        "custom_fields": [{
+          "key": Uuid::new_v4(),
+          "name": "waived",
+          "data": false,
+        }],
       }]),
     },
     NewInvoiceEntity {
@@ -272,14 +297,33 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
         "key": Uuid::new_v4(),
         "name": "Custom Item 1",
         "description": "Custom Line Item",
+        "detail": { "product_id": 3, },
+        "quantity": 1,
+        "custom_fields": [{
+          "key": Uuid::new_v4(),
+          "name": "waived",
+          "data": false,
+        }, {
+          "key": Uuid::new_v4(),
+          "name": "discount",
+          "data": 0.3,
+        }],
       }, {
         "key": Uuid::new_v4(),
         "name": "Service Item 2",
         "description": "Second Custom Line Item",
+        "quantity": 3,
+        "custom_fields": [{
+          "key": Uuid::new_v4(),
+          "name": "waived",
+          "data": false,
+        }],
       }, {
         "key": Uuid::new_v4(),
         "name": "Custom Item 3",
         "description": "Third Custom Line Item",
+        "quantity": 1,
+        "custom_fields": [],
       }]),
     },
   ]

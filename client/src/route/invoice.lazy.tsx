@@ -4,32 +4,70 @@ import {
   useClientListQuery,
   useBusinessListQuery,
   useInvoiceCreateMutation,
-  LineItem,
+  CreateInvoice,
+  CreateLineItem,
+  useProductListQuery,
+  useServiceListQuery,
 } from "api";
-import { MouseEvent } from "react";
-import { FormEvent, useCallback, useState } from "react";
-import { uuid } from "common";
+import { MouseEvent, FormEvent, useCallback, useState } from "react";
+import { invariant, uuid } from "common";
+import { useLineItemsState as useCreateLineItemsState } from "component/invoice/line_item/useLineItems";
+import {
+  LineItemForm,
+  ProductLineItemForm,
+  ServiceLineItemForm,
+} from "component/invoice";
+import {
+  CreateProductLineItem,
+  CreateServiceLineItem,
+  LineItemCustomField,
+} from "../api/utility/line_item";
 
 export const Route = createLazyFileRoute("/invoice")({
   component: Page,
 });
 
-function useLineItems() {
-  const [items, setItems] = useState<LineItem[]>([]);
-  const add = (item: LineItem) => {
-    setItems([...items, item]);
-  };
-  const remove = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
-  };
-  const mutate = (index: number, mutation: Partial<Omit<LineItem, "key">>) => {
-    const next = items.map((item, i) => {
-      return i === index ? { ...item, ...mutation } : item;
-    });
-    setItems(next);
-  };
-  return { items, add, mutate, remove };
-}
+const DEFAULT_VALUES: CreateInvoice = {
+  name: "Test INvoice",
+  description: "Testing the invoice creation flow",
+  business_id: 0,
+  client_id: 0,
+  due_date: "",
+  location: {
+    address: "817",
+    suburb: "",
+    city: "",
+  },
+  line_items: [
+    {
+      key: uuid(),
+      name: "Interesting Product",
+      description: "Testing the line item creation flow",
+      detail: {
+        product_id: 0,
+      },
+      custom_fields: [
+        {
+          key: uuid(),
+          name: "Has interesting data",
+          type: "boolean",
+          data: true,
+        },
+      ],
+      quantity: 1,
+    },
+    {
+      key: uuid(),
+      name: "Test Service Line Item",
+      description: "Testing the line item creation flow",
+      detail: {
+        service_id: 0,
+      },
+      custom_fields: [],
+      quantity: 1,
+    },
+  ],
+};
 
 function Page() {
   const invoiceList = useInvoiceListQuery();
@@ -43,7 +81,7 @@ function Page() {
     isPending,
   } = useInvoiceCreateMutation();
 
-  const { items, mutate, add, remove } = useLineItems();
+  const { items, mutate, add, remove } = useCreateLineItemsState();
 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -136,7 +174,7 @@ function Page() {
             <h3>line items</h3>
             <LineItems items={items} onChange={mutate} onRemove={remove} />
             <h4>Add</h4>
-            <NewLineItem onCreateLineItem={add} />
+            <CreateLineItemForm onCreateLineItem={add} />
             <br />
           </label>
           <br />
@@ -168,9 +206,9 @@ function LineItems({
   onChange: handleChange,
   onRemove: handleRemove,
 }: {
-  onChange: (index: number, item: LineItem) => void;
+  onChange: (index: number, item: CreateLineItem) => void;
   onRemove: (index: number) => void;
-  items: LineItem[];
+  items: CreateLineItem[];
 }) {
   const handleClick = (index: number) => () => {
     handleRemove(index);
@@ -184,7 +222,15 @@ function LineItems({
             <LineItemForm
               name={item.name}
               description={item.description}
+              quantity={item.quantity}
+              customFields={item.custom_fields}
               onNameChange={(name) => handleChange(index, { ...item, name })}
+              onQuantityChange={(quantity) =>
+                handleChange(index, { ...item, quantity })
+              }
+              onCustomFieldsChange={(custom_fields) =>
+                handleChange(index, { ...item, custom_fields })
+              }
               onDescriptionChange={(description) =>
                 handleChange(index, { ...item, description })
               }
@@ -198,52 +244,40 @@ function LineItems({
     </ul>
   );
 }
-
-function LineItemForm({
-  name = "",
-  description = "",
-  onNameChange,
-  onDescriptionChange,
-}: {
-  name: string;
-  description: string;
-  onNameChange: (name: string) => void;
-  onDescriptionChange: (description: string) => void;
-}) {
-  const handleNameChange = (e: FormEvent<HTMLInputElement>) => {
-    onNameChange(e.currentTarget.value);
-  };
-  const handleDescriptionChange = (e: FormEvent<HTMLInputElement>) => {
-    onDescriptionChange(e.currentTarget.value);
-  };
-
-  return (
-    <>
-      <input type="text" value={name} onChange={handleNameChange} />
-      <input
-        type="text"
-        value={description}
-        onChange={handleDescriptionChange}
-      />
-    </>
-  );
-}
-
-function NewLineItem({
+export function CreateLineItemForm({
   onCreateLineItem: handleCreateLineItem,
 }: {
-  onCreateLineItem: (item: LineItem) => void;
+  onCreateLineItem: (item: CreateLineItem) => void;
 }) {
+  // FIXME: products and services should be in a combined dropdown, and selection determines the type.
+  const [type, setType] = useState<"product" | "service">("product");
+  const productListQuery = useProductListQuery(type === "product");
+  const serviceListQuery = useServiceListQuery(type === "service");
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState(0);
+  const [customFields, setCustomFields] = useState<LineItemCustomField[]>([]);
+  const [detail, setDetail] = useState<
+    CreateProductLineItem | CreateServiceLineItem
+  >();
+
   const clear = () => {
     setName("");
     setDescription("");
   };
-
-  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    handleCreateLineItem({ key: uuid(), name, description, detail: {} });
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    invariant(name, "Detail must be set");
+    invariant(detail, "Detail must be set");
+    handleCreateLineItem({
+      key: uuid(),
+      name,
+      description,
+      detail,
+      custom_fields: customFields,
+      quantity,
+    });
     clear();
   };
 
@@ -254,7 +288,23 @@ function NewLineItem({
         description={description}
         onNameChange={setName}
         onDescriptionChange={setDescription}
+        quantity={quantity}
+        customFields={customFields}
+        onQuantityChange={setQuantity}
+        onCustomFieldsChange={setCustomFields}
       />
+      {type === "product" && (
+        <ProductLineItemForm
+          products={productListQuery.data?.data || []}
+          onProductIdChange={(product_id) => setDetail({ product_id })}
+        />
+      )}
+      {type === "service" && (
+        <ServiceLineItemForm
+          services={serviceListQuery.data?.data || []}
+          onServiceIdChange={(service_id) => setDetail({ service_id })}
+        />
+      )}
       <button type="button" onClick={handleClick}>
         Add
       </button>

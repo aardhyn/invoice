@@ -166,7 +166,7 @@ pub struct ClientEntityListItem {
 
 // Service //
 
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Debug, Deserialize, Queryable, Selectable, Serialize)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = service)]
 pub struct ServiceEntity {
@@ -207,7 +207,7 @@ pub struct ServiceEntityListItem {
 
 // Product //
 
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Debug, Deserialize, Queryable, Selectable, Serialize)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = product)]
 pub struct ProductEntity {
@@ -245,16 +245,35 @@ pub struct ProductEntityListItem {
 // Line Item //
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ProductLineItem {}
+#[serde(untagged)]
+pub enum LineItemCustomFieldType {
+  String(String),
+  Number(i32),
+  Boolean(bool),
+}
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ServiceLineItem {}
+pub struct ServiceLineItemEntity {
+  pub service_id: i32,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum LineItemType {
-  Product(ProductLineItem),
-  Service(ServiceLineItem),
-  Custom(serde_json::Value),
+pub struct ProductLineItemEntity {
+  pub product_id: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(untagged)]
+pub enum LineItemDetail {
+  Service(ServiceLineItemEntity),
+  Product(ProductLineItemEntity),
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LineItemCustomField {
+  pub key: String,
+  pub name: String,
+  pub data: LineItemCustomFieldType,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -262,11 +281,24 @@ pub struct LineItemEntity {
   pub key: uuid::Uuid,
   pub name: String,
   pub description: String,
-  // pub detail: LineItemType,
+  pub custom_fields: Vec<LineItemCustomField>,
+  pub detail: Option<LineItemDetail>,
+  pub quantity: i32,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct NewLineItemEntity {
+  pub key: uuid::Uuid,
+  pub name: String,
+  pub description: String,
+  pub custom_fields: Vec<LineItemCustomField>,
+  pub detail: Option<LineItemDetail>,
+  pub quantity: i32,
 }
 
 #[derive(Debug, Serialize)]
 pub struct CreatedLineItemEntity {
+  pub key: uuid::Uuid,
   pub name: String,
 }
 

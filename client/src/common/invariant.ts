@@ -1,5 +1,5 @@
 export function invariant(
-  condition: boolean,
+  condition: unknown,
   message: string,
 ): asserts condition {
   if (!condition) {

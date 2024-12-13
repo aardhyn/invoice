@@ -6,9 +6,10 @@ export type ServiceListItem = {
   name: string;
 };
 
-export function useServiceListQuery() {
+export function useServiceListQuery(enabled: boolean = true) {
   return useQuery<APIResponse<ServiceListItem[], string>>({
     queryKey: ["service"],
+    enabled,
     async queryFn() {
       const response = await fetch(endpoint("service.list"));
       const data = await response.json();

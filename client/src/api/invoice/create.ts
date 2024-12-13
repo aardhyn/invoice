@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import {
+  CreateLineItem,
   CreateLocation,
-  LineItem,
   Timestampz,
   endpoint,
   queryClient,
@@ -14,7 +14,7 @@ export type CreateInvoice = {
   client_id: number; //         ''
   due_date: Timestampz;
   location: CreateLocation;
-  line_items: LineItem[];
+  line_items: CreateLineItem[];
 };
 
 export function useInvoiceCreateMutation() {
