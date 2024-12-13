@@ -1,11 +1,13 @@
 {
   "words": [
+    "argless",
     "chrono",
     "clientside",
     "dotenv",
     "dotenvy",
     "Insertable",
     "libpq",
+    "psql",
     "tanstack",
     "timestamptz",
     "timestampz",
