@@ -286,16 +286,6 @@ pub struct LineItemEntity {
   pub quantity: i32,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct NewLineItemEntity {
-  pub key: uuid::Uuid,
-  pub name: String,
-  pub description: String,
-  pub custom_fields: Vec<LineItemCustomField>,
-  pub detail: Option<LineItemDetail>,
-  pub quantity: i32,
-}
-
 #[derive(Debug, Serialize)]
 pub struct CreatedLineItemEntity {
   pub key: uuid::Uuid,
