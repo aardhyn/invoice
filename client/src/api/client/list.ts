@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { APIResponse, endpoint } from "api";
+import { CLIENT_LIST_QUERY_KEY } from ".";
 
 export type ClientListItem = {
   client_id: number;
@@ -9,7 +10,7 @@ export type ClientListItem = {
 
 export function useClientListQuery() {
   return useQuery<APIResponse<ClientListItem[], string>>({
-    queryKey: ["client", "list"],
+    queryKey: CLIENT_LIST_QUERY_KEY,
     async queryFn() {
       const response = await fetch(endpoint("client.list"));
       const data = await response.json();

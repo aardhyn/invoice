@@ -1,4 +1,4 @@
-import { LineItem, ProductLineItem, ServiceLineItem } from "api";
+import type { LineItem, ProductLineItem, ServiceLineItem } from "api";
 
 export const DEFAULT_DISPLAY_COLUMNS = [
   "name",

@@ -1,4 +1,4 @@
-import { Contact, Location } from ".";
+import type { Contact, Location } from ".";
 
 export type Business = {
   business_id: number;

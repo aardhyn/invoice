@@ -196,7 +196,7 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
       description: line_item.description,
       custom_fields: line_item.custom_fields,
       detail: match line_item.detail {
-        // FIXME: lines items may share products or services. perhaps we should deduplicate them somehow.
+        // fixme: lines items may share products or services. perhaps we should deduplicate them somehow.
         Some(LineItemDetail::Product(reference)) => {
           let product = product::table
             .find(reference.product_id)

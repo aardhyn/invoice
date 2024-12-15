@@ -1,5 +1,5 @@
-import { CreateLocation, Location } from ".";
-import { Override } from "../../common/type";
+import type { CreateLocation, Location } from ".";
+import type { Override } from "common";
 
 export type CreateContact = {
   name: string;

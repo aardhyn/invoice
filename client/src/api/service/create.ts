@@ -1,5 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { endpoint, isAPIResponse, queryClient } from "api";
+import {
+  endpoint,
+  isAPIResponse,
+  queryClient,
+  SERVICE_LIST_QUERY_KEY,
+} from "api";
 import { invariant } from "common";
 
 export type CreateService = {
@@ -37,7 +42,7 @@ export function useServiceCreateMutation() {
       return data;
     },
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["service"] });
+      queryClient.invalidateQueries({ queryKey: SERVICE_LIST_QUERY_KEY });
     },
   });
 }

@@ -1,18 +1,18 @@
+import { useMemo } from "react";
 import {
-  InvoiceGet,
+  type InvoiceGet,
   isProductLineItem,
   isServiceLineItem,
-  LineItem,
-  Location,
-  Contact,
+  type LineItem,
+  type Location,
+  type Contact,
 } from "api";
-
-export type ExportableInvoice = InvoiceGet;
+import { dateFromTimestamp, capitalize, stringifyBoolean } from "common";
+import { getLineItemColumns } from "./util";
 
 import "./style.css";
-import { dateFromTimestamp, capitalize, stringifyBoolean } from "common";
-import { useMemo } from "react";
-import { getLineItemColumns } from "./util";
+
+export type ExportableInvoice = InvoiceGet;
 
 export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
   return (

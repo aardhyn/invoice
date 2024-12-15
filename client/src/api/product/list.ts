@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { APIResponse, endpoint, isAPIResponse } from "api";
+import {
+  type APIResponse,
+  endpoint,
+  isAPIResponse,
+  PRODUCT_LIST_QUERY_KEY,
+} from "api";
 import { invariant } from "common";
 
 export type ProductListItem = {
@@ -9,7 +14,7 @@ export type ProductListItem = {
 
 export function useProductListQuery(enabled: boolean = true) {
   return useQuery<APIResponse<ProductListItem[]>>({
-    queryKey: ["product"],
+    queryKey: PRODUCT_LIST_QUERY_KEY,
     enabled,
     async queryFn() {
       const response = await fetch(endpoint("product.list"));

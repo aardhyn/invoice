@@ -1,73 +1,30 @@
+import { MouseEvent, FormEvent, useCallback, useState } from "react";
 import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import {
+  type CreateLineItem,
+  type CreateProductLineItem,
+  type CreateServiceLineItem,
   useInvoiceListQuery,
   useClientListQuery,
   useBusinessListQuery,
   useInvoiceCreateMutation,
-  CreateInvoice,
-  CreateLineItem,
   useProductListQuery,
   useServiceListQuery,
+  type LineItemType,
+  type LineItemCustomField,
+  LINE_ITEM_TYPE,
 } from "api";
-import { MouseEvent, FormEvent, useCallback, useState } from "react";
-import { invariant, uuid } from "common";
-import { useLineItemsState as useCreateLineItemsState } from "component/invoice/line_item/useLineItems";
 import {
+  useLineItemsState as useCreateLineItemsState,
   LineItemForm,
   ProductLineItemForm,
   ServiceLineItemForm,
-} from "component/invoice";
-import {
-  CreateProductLineItem,
-  CreateServiceLineItem,
-  LineItemCustomField,
-} from "../api/utility/line_item";
+} from "component";
+import { capitalize, invariant, uuid } from "common";
 
 export const Route = createLazyFileRoute("/invoice")({
   component: Page,
 });
-
-const DEFAULT_VALUES: CreateInvoice = {
-  name: "Test INvoice",
-  description: "Testing the invoice creation flow",
-  business_id: 0,
-  client_id: 0,
-  due_date: "",
-  location: {
-    address: "817",
-    suburb: "",
-    city: "",
-  },
-  line_items: [
-    {
-      key: uuid(),
-      name: "Interesting Product",
-      description: "Testing the line item creation flow",
-      detail: {
-        product_id: 0,
-      },
-      custom_fields: [
-        {
-          key: uuid(),
-          name: "Has interesting data",
-          type: "boolean",
-          data: true,
-        },
-      ],
-      quantity: 1,
-    },
-    {
-      key: uuid(),
-      name: "Test Service Line Item",
-      description: "Testing the line item creation flow",
-      detail: {
-        service_id: 0,
-      },
-      custom_fields: [],
-      quantity: 1,
-    },
-  ],
-};
 
 function Page() {
   const invoiceList = useInvoiceListQuery();
@@ -249,7 +206,6 @@ export function CreateLineItemForm({
 }: {
   onCreateLineItem: (item: CreateLineItem) => void;
 }) {
-  // FIXME: products and services should be in a combined dropdown, and selection determines the type.
   const [type, setType] = useState<"product" | "service">("product");
   const productListQuery = useProductListQuery(type === "product");
   const serviceListQuery = useServiceListQuery(type === "service");
@@ -293,6 +249,7 @@ export function CreateLineItemForm({
         onQuantityChange={setQuantity}
         onCustomFieldsChange={setCustomFields}
       />
+      <TypeDropdown type={type} onTypeChange={setType} />
       {type === "product" && (
         <ProductLineItemForm
           products={productListQuery.data?.data || []}
@@ -309,5 +266,28 @@ export function CreateLineItemForm({
         Add
       </button>
     </>
+  );
+}
+
+function TypeDropdown({
+  type,
+  onTypeChange: handleTypeChange,
+}: {
+  type: LineItemType;
+  onTypeChange(type: LineItemType): void;
+}) {
+  return (
+    <select
+      value={type}
+      onChange={(e) => {
+        handleTypeChange(e.target.value as LineItemType);
+      }}
+    >
+      {LINE_ITEM_TYPE.map((type) => (
+        <option key={type} value={type}>
+          {capitalize(type)}
+        </option>
+      ))}
+    </select>
   );
 }

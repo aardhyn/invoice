@@ -32,7 +32,7 @@ export function isAPIResponse<T extends object, E = object>(
 
 export type StatusCode = (typeof StatusCode)[keyof typeof StatusCode];
 
-export type Timestampz = string;
+export type Timestampz = string; // fixme: brand type?
 
 export function isTimestampz(value: unknown): value is Timestampz {
   return typeof value === "string" && TIMESTAMPZ_REGEX.test(value);

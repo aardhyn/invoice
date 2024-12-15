@@ -1,6 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useBusinessListQuery } from "api/business";
-import { useBusinessCreateMutation } from "api/business/create";
+import { useBusinessListQuery, useBusinessCreateMutation } from "api";
 
 export const Route = createLazyFileRoute("/business")({
   component: Page,

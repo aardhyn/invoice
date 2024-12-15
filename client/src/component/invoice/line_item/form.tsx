@@ -1,6 +1,9 @@
 import { FormEvent } from "react";
-import { LineItemCustomField, ServiceListItem } from "api";
-import { ProductListItem } from "../../../api/product/list";
+import type {
+  LineItemCustomField,
+  ServiceListItem,
+  ProductListItem,
+} from "api";
 
 /**
  * Generic line item form for creating or editing a line item
@@ -33,16 +36,24 @@ export function LineItemForm({
 
   return (
     <>
-      <input name="name" type="text" value={name} onChange={handleNameChange} />
+      <input
+        name="name"
+        placeholder="Name"
+        type="text"
+        value={name}
+        onChange={handleNameChange}
+      />
       <input
         name="description"
         type="text"
+        placeholder="Description"
         value={description}
         onChange={handleDescriptionChange}
       />
       <input
         name="quantity"
         type="number"
+        placeholder="Quantity"
         value={quantity}
         onChange={(e) => onQuantityChange(Number(e.currentTarget.value))}
       />
@@ -99,7 +110,7 @@ export function LineItemCustomFieldForm({
 
   const handleTypeChange = (e: FormEvent<HTMLSelectElement>) => {
     const nextType = e.currentTarget.value as "string" | "number" | "boolean";
-    // FIXME: attempt to coerce data to the new type...
+    // fixme: attempt to coerce data to the new type...
     const nextData =
       nextType === "boolean" ? false : nextType === "number" ? 0 : "";
     onCustomFieldChange({

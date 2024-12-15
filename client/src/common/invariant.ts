@@ -1,8 +1,11 @@
+/**
+ * Evaluate an expected truthy `expression` and assert `message` if falsy
+ */
 export function invariant(
-  condition: unknown,
+  expression: unknown,
   message: string,
-): asserts condition {
-  if (!condition) {
+): asserts expression {
+  if (!expression) {
     console.error("Invariant not met:", message);
     throw new Error(message);
   }

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { endpoint, queryClient } from "api";
+import { endpoint, INVOICE_QUERY_KEY, queryClient } from "api";
 
 export type AddLineItem = {
   invoice_id: number;
@@ -15,8 +15,10 @@ export function useAddLineItemMutation() {
         body: JSON.stringify(lineItem),
       });
     },
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["invoice"] });
+    onSuccess(_, { invoice_id }) {
+      queryClient.invalidateQueries({
+        queryKey: [...INVOICE_QUERY_KEY, invoice_id],
+      });
     },
   });
 }

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { APIResponse, endpoint } from "api";
+import { type APIResponse, endpoint, INVOICE_LIST_QUERY_KEY } from "api";
 
 export type InvoiceListItem = {
   invoice_id: number;
@@ -10,7 +10,7 @@ export type InvoiceListItem = {
 
 export function useInvoiceListQuery() {
   return useQuery<APIResponse<InvoiceListItem[], string>>({
-    queryKey: ["invoice", "list"],
+    queryKey: INVOICE_LIST_QUERY_KEY,
     async queryFn() {
       const response = await fetch(endpoint("invoice.list"));
       const data = await response.json();

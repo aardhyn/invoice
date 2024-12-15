@@ -1,5 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { CreateContact, endpoint, queryClient } from "api";
+import {
+  CLIENT_LIST_QUERY_KEY,
+  type CreateContact,
+  endpoint,
+  queryClient,
+} from "api";
 
 export type CreateClient = {
   name: string;
@@ -17,7 +22,7 @@ export function useClientCreateMutation() {
       });
     },
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["client"] });
+      queryClient.invalidateQueries({ queryKey: CLIENT_LIST_QUERY_KEY });
     },
   });
 }

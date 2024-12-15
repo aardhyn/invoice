@@ -1,5 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { endpoint, queryClient, CreateContact, CreateLocation } from "api";
+import {
+  BUSINESS_LIST_QUERY_KEY,
+  endpoint,
+  type CreateContact,
+  type CreateLocation,
+  queryClient,
+} from "api";
 
 export type CreateBusiness = {
   name: string;
@@ -20,7 +26,7 @@ export function useBusinessCreateMutation() {
       });
     },
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["business"] });
+      queryClient.invalidateQueries({ queryKey: BUSINESS_LIST_QUERY_KEY });
     },
   });
 }

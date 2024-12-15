@@ -8,11 +8,13 @@
     "Insertable",
     "libpq",
     "psql",
+    "serde",
     "tanstack",
     "timestamptz",
     "timestampz",
     "tsbuildinfo",
     "tseslint",
-    "uuidv"
+    "uuidv",
+    "VITE"
   ]
 }

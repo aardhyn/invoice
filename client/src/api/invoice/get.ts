@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  Client,
-  Location,
-  Payment,
-  Timestampz,
+  type Client,
+  type Location,
+  type Payment,
+  type Timestampz,
   endpoint,
   isAPIResponse,
-  LineItem,
-  Business,
+  type LineItem,
+  type Business,
+  INVOICE_QUERY_KEY,
 } from "api";
 import { invariant } from "common";
 
@@ -26,7 +27,7 @@ export type InvoiceGet = {
 
 export function useInvoiceGetQuery(invoiceId: number) {
   return useQuery({
-    queryKey: ["invoice", invoiceId],
+    queryKey: [...INVOICE_QUERY_KEY, invoiceId],
     async queryFn() {
       const res = await fetch(endpoint("invoice.get"), {
         method: "POST",

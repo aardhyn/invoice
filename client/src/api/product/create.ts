@@ -1,5 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { endpoint, isAPIResponse, queryClient } from "api";
+import {
+  endpoint,
+  isAPIResponse,
+  PRODUCT_LIST_QUERY_KEY,
+  queryClient,
+} from "api";
 import { invariant } from "common";
 
 export type CreateProduct = {
@@ -35,7 +40,7 @@ export function useProductCreateMutation() {
       return data;
     },
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: PRODUCT_LIST_QUERY_KEY });
     },
   });
 }

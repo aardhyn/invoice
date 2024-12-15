@@ -1,14 +1,14 @@
-import { Override } from "common/type";
+import type { Override } from "common";
 
 export type ServiceLineItem = {
-  service_id: number; // FIXME: This will be a string uuid eventually
+  service_id: number; // fixme: This will be a string uuid eventually
   initial_rate: number;
   rate_threshold: number;
   rate: number;
 };
 
 export type ProductLineItem = {
-  product_id: number; // FIXME: This will be a string uuid eventually
+  product_id: number; // fixme: This will be a string uuid eventually
   unit_cost: number;
   cost: number;
 };
@@ -19,7 +19,7 @@ export type LineItemCustomField = {
   type: "boolean" | "number" | "string";
   data: boolean | number | string;
 };
-// FIXME: probably this is a better way to do this:
+// fixme: probably this is a better way to do this:
 // & (
 //   | { type: "boolean"; data: boolean }
 //   | { type: "number"; data: number }
@@ -53,7 +53,7 @@ export type LineItem = {
   total: number;
 };
 
-// FIXME: We let line items and custom fields be keyed clientside.
+// fixme: We let line items and custom fields be keyed clientside.
 
 export type CreateServiceLineItem = Pick<ServiceLineItem, "service_id">;
 export type CreateProductLineItem = Pick<ProductLineItem, "product_id">;
@@ -64,3 +64,6 @@ export type CreateLineItem = Override<
     custom_fields: LineItemCustomField[];
   }
 >;
+
+export const LINE_ITEM_TYPE = ["product", "service"] as const;
+export type LineItemType = (typeof LINE_ITEM_TYPE)[number];

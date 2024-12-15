@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import {
   CreateLineItem,
   CreateLocation,
+  INVOICE_LIST_QUERY_KEY,
   Timestampz,
   endpoint,
   queryClient,
@@ -27,7 +28,7 @@ export function useInvoiceCreateMutation() {
       });
     },
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["invoice"] });
+      queryClient.invalidateQueries({ queryKey: INVOICE_LIST_QUERY_KEY });
     },
   });
 }
