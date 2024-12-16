@@ -44,7 +44,11 @@ a {
 }
 
 fieldset {
-  border: none;
+  padding: 8px;
+}
+legend {
+  padding-inline: 4px;
+  margin-inline: -4px;
 }
 
 input,
