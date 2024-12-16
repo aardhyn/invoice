@@ -1,9 +1,11 @@
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
+import { produce } from "immer";
 import type {
   LineItemCustomField,
   ServiceListItem,
   ProductListItem,
 } from "api";
+import { uuid } from "common";
 
 /**
  * Generic line item form for creating or editing a line item
@@ -35,7 +37,8 @@ export function LineItemForm({
   };
 
   return (
-    <>
+    <div>
+      <label htmlFor="name">Name</label>
       <input
         name="name"
         placeholder="Name"
@@ -43,6 +46,8 @@ export function LineItemForm({
         value={name}
         onChange={handleNameChange}
       />
+      <br />
+      <label htmlFor="description">Description</label>
       <input
         name="description"
         type="text"
@@ -50,6 +55,8 @@ export function LineItemForm({
         value={description}
         onChange={handleDescriptionChange}
       />
+      <br />
+      <label htmlFor="quantity">Quantity</label>
       <input
         name="quantity"
         type="number"
@@ -57,11 +64,17 @@ export function LineItemForm({
         value={quantity}
         onChange={(e) => onQuantityChange(Number(e.currentTarget.value))}
       />
-      <LineItemCustomFieldsForm
-        customFields={customFields}
-        onCustomFieldsChange={onCustomFieldsChange}
-      />
-    </>
+      <br />
+      <fieldset>
+        <legend>Custom Fields</legend>
+        {!customFields.length && <p>No custom fields</p>}
+        <br />
+        <LineItemCustomFieldsForm
+          customFields={customFields}
+          onCustomFieldsChange={onCustomFieldsChange}
+        />
+      </fieldset>
+    </div>
   );
 }
 
@@ -78,22 +91,58 @@ export function LineItemCustomFieldsForm({
   const handleCustomFieldChange = (index: number) => {
     return (mutation: LineItemCustomField) => {
       onCustomFieldsChange(
-        customFields.map((field, i) => (i === index ? mutation : field)),
+        produce(customFields, (draft) => {
+          draft[index] = mutation;
+        }),
       );
     };
+  };
+
+  const handleAddCustomField = (field: LineItemCustomField) => {
+    onCustomFieldsChange(
+      produce(customFields, (draft) => {
+        draft.push(field);
+      }),
+    );
+  };
+
+  const handleRemoveCustomField = (index: number) => {
+    onCustomFieldsChange(
+      produce(customFields, (draft) => {
+        draft.splice(index, 1);
+      }),
+    );
   };
 
   return (
     <>
       {customFields.map((field, index) => (
-        <LineItemCustomFieldForm
-          key={index}
-          customField={field}
-          onCustomFieldChange={handleCustomFieldChange(index)}
-        />
+        <div key={field.key}>
+          <LineItemCustomFieldForm
+            customField={field}
+            onCustomFieldChange={handleCustomFieldChange(index)}
+          />
+          <button type="button" onClick={() => handleRemoveCustomField(index)}>
+            Remove
+          </button>
+        </div>
       ))}
+      <fieldset>
+        <legend>Add Custom Field</legend>
+        <LineItemNewCustomFieldForm
+          onCreateNewCustomField={handleAddCustomField}
+        />
+      </fieldset>
     </>
   );
+}
+
+function getTypeDefaultValue(type: LineItemCustomField["type"]) {
+  return {
+    boolean: false,
+    number: 0,
+    string: "",
+  }[type];
 }
 
 export function LineItemCustomFieldForm({
@@ -110,9 +159,7 @@ export function LineItemCustomFieldForm({
 
   const handleTypeChange = (e: FormEvent<HTMLSelectElement>) => {
     const nextType = e.currentTarget.value as "string" | "number" | "boolean";
-    // fixme: attempt to coerce data to the new type...
-    const nextData =
-      nextType === "boolean" ? false : nextType === "number" ? 0 : "";
+    const nextData = getTypeDefaultValue(nextType);
     onCustomFieldChange({
       ...customField,
       type: nextType,
@@ -169,6 +216,44 @@ export function LineItemCustomFieldForm({
           }
         />
       )}
+    </>
+  );
+}
+
+const DEFAULT_CUSTOM_FIELD_TYPE = "string";
+function createDefaultCustomField(): LineItemCustomField {
+  return {
+    key: uuid(),
+    name: "",
+    type: DEFAULT_CUSTOM_FIELD_TYPE,
+    data: getTypeDefaultValue(DEFAULT_CUSTOM_FIELD_TYPE),
+  };
+}
+
+function LineItemNewCustomFieldForm({
+  onCreateNewCustomField: handleCreateNewCustomField,
+}: {
+  onCreateNewCustomField: (field: LineItemCustomField) => void;
+}) {
+  const [customField, setCustomField] = useState<LineItemCustomField>(
+    createDefaultCustomField(),
+  );
+
+  const handelCreate = () => {
+    handleCreateNewCustomField(customField);
+    const blankCustomField = createDefaultCustomField();
+    setCustomField(blankCustomField);
+  };
+
+  return (
+    <>
+      <LineItemCustomFieldForm
+        customField={customField}
+        onCustomFieldChange={setCustomField}
+      />
+      <button type="button" onClick={handelCreate}>
+        Add
+      </button>
     </>
   );
 }

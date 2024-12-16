@@ -13,6 +13,6 @@ export const PRODUCT_DISPLAY_COLUMNS = [
 
 export const SERVICE_DISPLAY_COLUMNS = [
   "initial_rate",
-  "rate_threshold",
+  "initial_rate_threshold",
   "rate",
 ] satisfies (keyof ServiceLineItem)[];

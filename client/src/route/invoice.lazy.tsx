@@ -122,18 +122,23 @@ function Page() {
               <input type="text" name="contact-city" required />
             </label>
           </fieldset>
+          <br />
           <label>
             Due Date
             <input type="date" name="due_date" required />
           </label>
           <br />
-          <label>
-            <h3>line items</h3>
+          <fieldset>
+            <legend>Line Items</legend>
             <LineItems items={items} onChange={mutate} onRemove={remove} />
-            <h4>Add</h4>
-            <CreateLineItemForm onCreateLineItem={add} />
+            {!items.length && <p>No Items</p>}
             <br />
-          </label>
+            <fieldset>
+              <legend>Add Line Item</legend>
+              <CreateLineItemForm onCreateLineItem={add} />
+            </fieldset>
+          </fieldset>
+          <br />
           <br />
           <label>
             Client
@@ -221,6 +226,9 @@ export function CreateLineItemForm({
   const clear = () => {
     setName("");
     setDescription("");
+    setQuantity(0);
+    setCustomFields([]);
+    setDetail(undefined);
   };
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -249,19 +257,26 @@ export function CreateLineItemForm({
         onQuantityChange={setQuantity}
         onCustomFieldsChange={setCustomFields}
       />
-      <TypeDropdown type={type} onTypeChange={setType} />
-      {type === "product" && (
-        <ProductLineItemForm
-          products={productListQuery.data?.data || []}
-          onProductIdChange={(product_id) => setDetail({ product_id })}
-        />
-      )}
-      {type === "service" && (
-        <ServiceLineItemForm
-          services={serviceListQuery.data?.data || []}
-          onServiceIdChange={(service_id) => setDetail({ service_id })}
-        />
-      )}
+      <br />
+      <fieldset>
+        <legend>Service/Product</legend>
+        <TypeDropdown type={type} onTypeChange={setType} />
+        {type === "product" && (
+          <ProductLineItemForm
+            products={productListQuery.data?.data || []}
+            selectedProductId={(detail as CreateProductLineItem)?.product_id}
+            onProductIdChange={(product_id) => setDetail({ product_id })}
+          />
+        )}
+        {type === "service" && (
+          <ServiceLineItemForm
+            services={serviceListQuery.data?.data || []}
+            selectedServiceId={(detail as CreateServiceLineItem)?.service_id}
+            onServiceIdChange={(service_id) => setDetail({ service_id })}
+          />
+        )}
+      </fieldset>
+      <br />
       <button type="button" onClick={handleClick}>
         Add
       </button>

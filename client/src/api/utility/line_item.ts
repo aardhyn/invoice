@@ -3,7 +3,7 @@ import type { Override } from "common";
 export type ServiceLineItem = {
   service_id: number; // fixme: This will be a string uuid eventually
   initial_rate: number;
-  rate_threshold: number;
+  initial_rate_threshold: number;
   rate: number;
 };
 

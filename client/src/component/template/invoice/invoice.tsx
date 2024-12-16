@@ -1,16 +1,23 @@
 import { useMemo } from "react";
 import {
   type InvoiceGet,
-  isProductLineItem,
-  isServiceLineItem,
   type LineItem,
   type Location,
   type Contact,
+  ProductLineItem,
+  ServiceLineItem,
 } from "api";
-import { dateFromTimestamp, capitalize, stringifyBoolean } from "common";
-import { getLineItemColumns } from "./util";
+import {
+  dateFromTimestamp,
+  stringifyBoolean,
+  Override,
+  fromSnakeCase,
+  toSentenceCase,
+} from "common";
+import { getLineItemColumns, useLineItemColumns } from "./util";
 
 import "./style.css";
+import { capitalize } from "../../../common/string";
 
 export type ExportableInvoice = InvoiceGet;
 
@@ -94,56 +101,76 @@ function LocationPreview({ location }: { location: Location }) {
 }
 
 function LineItemsPreview({ line_items }: { line_items: LineItem[] }) {
-  const columns = useMemo(() => getLineItemColumns(line_items), [line_items]);
+  const { customColumns, formattedColumns } = useLineItemColumns(line_items);
 
   return (
     <table>
       <thead>
         <tr>
-          {columns.map(capitalize).map((column) => (
+          {formattedColumns.map((column) => (
             <th key={column}>{column}</th>
           ))}
         </tr>
       </thead>
       <tbody>
         {line_items.map((line_item) => (
-          <LineItemPreview key={line_item.key} line_item={line_item} />
+          <LineItemPreview
+            key={line_item.key}
+            line_item={line_item as LineItemView}
+            customFieldColumns={customColumns}
+          />
         ))}
       </tbody>
     </table>
   );
 }
 
-function LineItemPreview({ line_item }: { line_item: LineItem }) {
+// union the keys of possible detail properties so we can type safely render them in the table
+type LineItemView = Override<
+  LineItem,
+  { detail: ServiceLineItem & ProductLineItem }
+>;
+
+function LineItemPreview({
+  line_item: lineItem,
+  customFieldColumns,
+}: {
+  line_item: LineItemView;
+  customFieldColumns: string[];
+}) {
+  const customColumnsData = useMemo(
+    () =>
+      customFieldColumns.map((name) => {
+        const data = lineItem.custom_fields.find(({ name: thisName }) => {
+          return thisName === name;
+        })?.data;
+        if (data === undefined) {
+          return undefined;
+        }
+
+        const value =
+          typeof data === "boolean" ? stringifyBoolean(data) : data.toString();
+        return value;
+      }),
+    [customFieldColumns, lineItem.custom_fields],
+  );
+
   return (
     <tr>
-      <td>{line_item.name}</td>
-      <td>{line_item.description}</td>
-      <td>{line_item.quantity}</td>
+      <td>{lineItem.name}</td>
+      <td>{lineItem.description}</td>
+      <td>{lineItem.quantity}</td>
 
-      {isProductLineItem(line_item) && (
-        <>
-          <td>{line_item.detail.unit_cost}</td>
-          <td>{line_item.detail.cost}</td>
-        </>
-      )}
+      <td>{lineItem.detail?.unit_cost}</td>
+      <td>{lineItem.detail?.cost}</td>
 
-      {isServiceLineItem(line_item) && (
-        <>
-          <td>{line_item.detail.initial_rate}</td>
-          <td>{line_item.detail.rate_threshold}</td>
-          <td>{line_item.detail.rate}</td>
-        </>
-      )}
+      <td>{lineItem.detail?.initial_rate}</td>
+      <td>{lineItem.detail?.initial_rate_threshold}</td>
+      <td>{lineItem.detail?.rate}</td>
 
-      {line_item.custom_fields.map(({ data, key }) => {
-        // prettier-ignore
-        const value = typeof data === "boolean" 
-          ? stringifyBoolean(data) 
-          : data.toString();
-
-        return <td key={key}>{value}</td>;
-      })}
+      {customColumnsData.map((data, index) => (
+        <td key={index}>{data}</td> // index is fine here as it's a static list
+      ))}
     </tr>
   );
 }

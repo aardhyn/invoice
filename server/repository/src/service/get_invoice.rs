@@ -53,7 +53,7 @@ pub struct InvoiceGet {
 }
 
 #[derive(Serialize)]
-#[serde(rename_all = "snake_case")]
+#[serde(untagged, rename_all = "snake_case")]
 pub enum InvoiceLineItemDetail {
   Product(ProductEntity),
   Service(ServiceEntity),
