@@ -1,3 +1,4 @@
+export * from "./array";
 export * from "./invariant";
 export * from "./logic";
 export * from "./string";
