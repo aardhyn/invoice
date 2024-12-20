@@ -6,6 +6,7 @@ import Frame from "react-frame-component";
 import preflight from "preflight.css?inline";
 import print from "print.css?inline";
 import "./style.css";
+import { invariant } from "common";
 
 export type StyleString = string;
 
@@ -50,7 +51,7 @@ function getInitialContent(styles: StyleString = "") {
         </style>
       </head>
       <body>
-        <div></div> <!-- providing initial content requires we have a child of body -->
+        <div></div> <!-- providing 'initialContent' requires we have a child of body -->
       </body>
     </html>
   `;
@@ -72,10 +73,12 @@ function Content({
     onPrintChange(false);
   };
   const handlePrint = () => {
-    if (!printRootRef.current?.contentWindow) {
-      throw new Error("printRootRef.current?.contentWindow is null");
-    }
-    // @ts-expect-error __container__ does not exist on Window
+    invariant(
+      printRootRef.current?.contentWindow,
+      "<Frame /> has no 'contentWindow'",
+    );
+
+    // @ts-expect-error '__container__' does not exist on type 'Window'
     printRootRef.current.contentWindow.__container__ = printRootRef.current;
     printRootRef.current.contentWindow.onbeforeunload = handlePrintFinish;
     printRootRef.current.contentWindow.onafterprint = handlePrintFinish;
