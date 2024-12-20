@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   type InvoiceGet,
   type LineItem,
@@ -7,8 +6,8 @@ import {
   ProductLineItem,
   ServiceLineItem,
 } from "api";
-import { dateFromTimestamp, stringifyBoolean, Override } from "common";
-import { useLineItemColumns } from "./util";
+import { dateFromTimestamp, Override } from "common";
+import { useLineItemColumnNames, useCustomFieldCells } from ".";
 
 import "./style.css";
 
@@ -94,7 +93,8 @@ function LocationPreview({ location }: { location: Location }) {
 }
 
 function LineItemsPreview({ line_items }: { line_items: LineItem[] }) {
-  const { customColumns, formattedColumns } = useLineItemColumns(line_items);
+  const { customColumns, formattedColumns } =
+    useLineItemColumnNames(line_items);
 
   return (
     <table>
@@ -131,22 +131,7 @@ function LineItemPreview({
   line_item: LineItemView;
   customFieldColumns: string[];
 }) {
-  const customColumnsData = useMemo(
-    () =>
-      customFieldColumns.map((name) => {
-        const data = lineItem.custom_fields.find(({ name: thisName }) => {
-          return thisName === name;
-        })?.data;
-        if (data === undefined) {
-          return undefined;
-        }
-
-        const value =
-          typeof data === "boolean" ? stringifyBoolean(data) : data.toString();
-        return value;
-      }),
-    [customFieldColumns, lineItem.custom_fields],
-  );
+  const customColumnCells = useCustomFieldCells(lineItem, customFieldColumns);
 
   return (
     <tr>
@@ -154,14 +139,12 @@ function LineItemPreview({
       <td>{lineItem.description}</td>
       <td>{lineItem.quantity}</td>
 
-      <td>{lineItem.detail?.unit_cost}</td>
       <td>{lineItem.detail?.cost}</td>
 
       <td>{lineItem.detail?.initial_rate}</td>
-      <td>{lineItem.detail?.initial_rate_threshold}</td>
       <td>{lineItem.detail?.rate}</td>
 
-      {customColumnsData.map((data, index) => (
+      {customColumnCells.map((data, index) => (
         <td key={index}>{data}</td> // index is fine here as it's a static list
       ))}
     </tr>

@@ -7,7 +7,7 @@ import {
 import { LineItem, isProductLineItem, isServiceLineItem } from "api";
 import { fromSnakeCase, toSentenceCase, dedupe } from "common";
 
-export function useLineItemColumns(line_items: LineItem[]) {
+export function useLineItemColumnNames(line_items: LineItem[]) {
   return useMemo(() => {
     const hasProduct = line_items.some(isProductLineItem);
     const hasService = line_items.some(isServiceLineItem);
@@ -30,4 +30,38 @@ export function useLineItemColumns(line_items: LineItem[]) {
 
     return { standardColumns, customColumns, formattedColumns };
   }, [line_items]);
+}
+
+/**  Format custom fields for display
+ * @example
+ * [a][b][ ][ ]
+ * [ ][b][c][ ]
+ * [a][ ][c][d]
+ */
+export function useCustomFieldCells(
+  lineItem: LineItem,
+  customFieldColumns: string[],
+) {
+  return useMemo(
+    () =>
+      customFieldColumns.map((name) => {
+        const data = lineItem.custom_fields.find(({ name: thisName }) => {
+          return thisName === name;
+        })?.data;
+        const value = formatCellData(data);
+        return value;
+      }),
+    [customFieldColumns, lineItem.custom_fields],
+  );
+}
+
+// Format cell data for display
+export function formatCellData(data: string | number | boolean | undefined) {
+  if (data === undefined) {
+    return "";
+  } else if (typeof data === "boolean") {
+    return data.toString();
+  } else {
+    return data;
+  }
 }
