@@ -15,7 +15,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "api/config.ts";
 
 import "./preflight.css";
-import "./index.css";
 
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {

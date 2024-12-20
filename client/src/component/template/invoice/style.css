@@ -40,15 +40,15 @@ table {
   width: 100%;
   border-collapse: collapse;
 
-  & th,
-  td {
-    padding: 16px 8px;
-    text-align: left;
+  & tr td {
+    padding-top: 16px;
   }
 
   & th {
     background-color: #f9f9f9;
     font-weight: 800;
+    text-align: left;
+    padding-bottom: 16px;
     border-bottom: 1px solid #ddd;
   }
 }
