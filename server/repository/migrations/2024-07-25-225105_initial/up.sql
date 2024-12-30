@@ -57,6 +57,7 @@ create table client (
 
 create table invoice (
   invoice_id serial primary key,
+  invoice_key varchar unique not null,
   name varchar not null,
   description varchar null,
   reference varchar null,

@@ -14,6 +14,7 @@ import { invariant } from "common";
 
 export type InvoiceGet = {
   invoice_id: number;
+  invoice_key: string;
   name: string;
   description: string | null;
   reference: string | null;

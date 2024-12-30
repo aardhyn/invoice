@@ -36,16 +36,16 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
         <div className="card">
           <h2>Tax</h2>
           <article>
-            <p>
-              <b>Nō</b> {invoice.invoice_id}
+            <p className="row">
+              <b>Nō</b> {invoice.invoice_key}
             </p>
-            <p>
-              <b>Sent</b> null
+            <p className="row">
+              <b>Date</b>
             </p>
-            <p>
+            <p className="row">
               <b>Due</b> {dateFromTimestamp(invoice.due_date)}
             </p>
-            <p>
+            <p className="row">
               <b>Reference</b> {invoice.reference}
             </p>
           </article>

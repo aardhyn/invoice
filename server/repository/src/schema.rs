@@ -33,6 +33,7 @@ diesel::table! {
 diesel::table! {
     invoice (invoice_id) {
         invoice_id -> Int4,
+        invoice_key -> Varchar,
         name -> Varchar,
         description -> Nullable<Varchar>,
         reference -> Nullable<Varchar>,

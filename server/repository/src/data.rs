@@ -208,6 +208,7 @@ pub fn seed_service() -> Vec<NewServiceEntity> {
 pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
   vec![
     NewInvoiceEntity {
+      invoice_key: String::from("INVC-2500001"),
       name: String::from("Invoice 1"),
       description: Some(String::from("First Invoice")),
       reference: Some(String::from("John")),
@@ -245,6 +246,7 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
       } ]),
     },
     NewInvoiceEntity {
+      invoice_key: String::from("INVC-2500002"),
       name: String::from("Invoice 2"),
       description: Some(String::from("Second Invoice")),
       reference: Some(String::from("Andreas")),
@@ -283,6 +285,7 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
       }]),
     },
     NewInvoiceEntity {
+      invoice_key: String::from("INVC-2500003"),
       name: String::from("Invoice 3"),
       description: Some(String::from("Third Invoice")),
       reference: Some(String::from("Tarn")),

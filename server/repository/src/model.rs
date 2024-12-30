@@ -299,6 +299,7 @@ pub struct CreatedLineItemEntity {
 #[diesel(table_name = invoice)]
 pub struct InvoiceEntity {
   pub invoice_id: i32,
+  pub invoice_key: String,
   pub name: String,
   pub description: Option<String>,
   pub reference: Option<String>,
@@ -317,6 +318,7 @@ pub struct InvoiceEntity {
 #[diesel(table_name = invoice)]
 pub struct NewInvoiceEntity {
   pub name: String,
+  pub invoice_key: String,
   pub description: Option<String>,
   pub reference: Option<String>,
   pub business_id: i32,

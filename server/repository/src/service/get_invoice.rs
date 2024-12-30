@@ -41,6 +41,7 @@ pub struct InvoiceBusiness {
 #[derive(Serialize)]
 pub struct InvoiceGet {
   invoice_id: i32,
+  invoice_key: String,
   name: String,
   description: Option<String>,
   reference: Option<String>,
@@ -221,6 +222,7 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
 
   let invoice = InvoiceGet {
     invoice_id: invoice_entity.invoice_id,
+    invoice_key: invoice_entity.invoice_key,
     name: invoice_entity.name,
     reference: invoice_entity.reference,
     description: invoice_entity.description,
