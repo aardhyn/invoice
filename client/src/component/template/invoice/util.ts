@@ -10,15 +10,15 @@ import {
 
 export function useLineItemColumnNames(line_items: LineItem[]) {
   return useMemo(() => {
-    const hasProduct = line_items.some(isProductLineItem);
-    const hasService = line_items.some(isServiceLineItem);
+    const hasProductColumns = line_items.some(isProductLineItem);
+    const hasServiceColumns = line_items.some(isServiceLineItem);
 
     const standardColumns = [
       "name",
       "description",
       "quantity",
-      ...(hasProduct ? PRODUCT_DISPLAY_COLUMNS : []),
-      ...(hasService ? SERVICE_DISPLAY_COLUMNS : []),
+      ...(hasProductColumns ? PRODUCT_DISPLAY_COLUMNS : []),
+      ...(hasServiceColumns ? SERVICE_DISPLAY_COLUMNS : []),
     ] as string[];
 
     const customColumns = dedupe(
@@ -34,6 +34,8 @@ export function useLineItemColumnNames(line_items: LineItem[]) {
     return {
       formattedColumns,
       customColumns,
+      hasProductColumns,
+      hasServiceColumns,
     };
   }, [line_items]);
 }

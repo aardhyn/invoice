@@ -102,8 +102,12 @@ function LineItemsPreview({
   line_items: LineItem[];
   total: number;
 }) {
-  const { customColumns, formattedColumns } =
-    useLineItemColumnNames(line_items);
+  const {
+    customColumns,
+    formattedColumns,
+    hasProductColumns,
+    hasServiceColumns,
+  } = useLineItemColumnNames(line_items);
 
   return (
     <table>
@@ -120,6 +124,8 @@ function LineItemsPreview({
             key={line_item.key}
             line_item={line_item as LineItemView}
             customFieldColumns={customColumns}
+            showProductColumns={hasProductColumns}
+            showServiceColumns={hasServiceColumns}
           />
         ))}
       </tbody>
