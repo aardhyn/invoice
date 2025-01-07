@@ -1,4 +1,4 @@
-import type { Override } from "common";
+import type { Override, Simplify } from "common";
 
 export type ServiceLineItem = {
   service_id: number; // fixme: This will be a string uuid eventually
@@ -56,12 +56,14 @@ export type LineItem = {
 
 export type CreateServiceLineItem = Pick<ServiceLineItem, "service_id">;
 export type CreateProductLineItem = Pick<ProductLineItem, "product_id">;
-export type CreateLineItem = Override<
-  Omit<LineItem, "total">,
-  {
-    detail: CreateServiceLineItem | CreateProductLineItem;
-    custom_fields: LineItemCustomField[];
-  }
+export type CreateLineItem = Simplify<
+  Override<
+    Omit<LineItem, "total">,
+    {
+      detail?: CreateServiceLineItem | CreateProductLineItem;
+      custom_fields: LineItemCustomField[];
+    }
+  >
 >;
 
 export const LINE_ITEM_TYPE = ["product", "service"] as const;

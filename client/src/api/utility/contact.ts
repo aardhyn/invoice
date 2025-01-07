@@ -1,5 +1,5 @@
 import type { CreateLocation, Location } from ".";
-import type { Override } from "common";
+import type { Override, Simplify } from "common";
 
 export type CreateContact = {
   name: string;
@@ -16,7 +16,6 @@ export type Contact = {
   location: Location;
 };
 
-export type ContactWithOptionalLocation = Override<
-  Contact,
-  { location?: Location }
+export type ContactWithOptionalLocation = Simplify<
+  Override<Contact, { location?: Location }>
 >;

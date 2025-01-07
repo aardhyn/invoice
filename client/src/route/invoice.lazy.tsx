@@ -233,7 +233,6 @@ export function CreateLineItemForm({
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     invariant(name, "Detail must be set");
-    invariant(detail, "Detail must be set");
     handleCreateLineItem({
       key: uuid(),
       name,

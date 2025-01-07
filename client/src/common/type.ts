@@ -16,3 +16,15 @@ export type PartialRecord<T> = Partial<Record<keyof T, unknown>>;
  * type Derived = Override<A, { a: number }>; // defines { a: number; b: number }
  */
 export type Override<T, U extends PartialRecord<T>> = Omit<T, keyof U> & U;
+
+/**
+ * Expand to its full unnested human-readable form to simplify intellisense tooltips on complex types.
+ * ### Example
+ * ```ts
+ * type A = { a: string; b: number };
+ * type B = Override<A, { a: number | string }> & { c: boolean }; // intellisense will not expand this expression into its simplified form
+ * type C = Simplify<B>; // forces intellisense to expand C to { a: number; b: number; c: boolean }
+ */
+export type Simplify<T> = {
+  [K in keyof T]: T[K];
+};
