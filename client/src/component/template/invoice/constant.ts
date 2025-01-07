@@ -7,7 +7,7 @@ export const DEFAULT_DISPLAY_COLUMNS = [
 ] satisfies (keyof LineItem)[];
 
 export const PRODUCT_DISPLAY_COLUMNS = [
-  "cost",
+  "unit_cost",
 ] satisfies (keyof ProductLineItem)[];
 
 export const SERVICE_DISPLAY_COLUMNS = [

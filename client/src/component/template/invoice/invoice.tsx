@@ -64,7 +64,10 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
         </div>
       </div>
       <div className="card">
-        <LineItemsPreview line_items={invoice.line_items} />
+        <LineItemsPreview
+          line_items={invoice.line_items}
+          total={invoice.total}
+        />
       </div>
     </div>
   );
@@ -92,7 +95,13 @@ function LocationPreview({ location }: { location: Location }) {
   );
 }
 
-function LineItemsPreview({ line_items }: { line_items: LineItem[] }) {
+function LineItemsPreview({
+  line_items,
+  total,
+}: {
+  line_items: LineItem[];
+  total: number;
+}) {
   const { customColumns, formattedColumns } =
     useLineItemColumnNames(line_items);
 
@@ -114,6 +123,17 @@ function LineItemsPreview({ line_items }: { line_items: LineItem[] }) {
           />
         ))}
       </tbody>
+      <tfoot>
+        <tr>
+          <td
+            colSpan={formattedColumns.length - 1}
+            style={{ textAlign: "right", paddingRight: 16, fontWeight: "bold" }}
+          >
+            Total
+          </td>
+          <td>{total}</td>
+        </tr>
+      </tfoot>
     </table>
   );
 }
@@ -139,14 +159,15 @@ function LineItemPreview({
       <td>{lineItem.description}</td>
       <td>{lineItem.quantity}</td>
 
-      <td>{lineItem.detail?.cost}</td>
-
+      <td>{lineItem.detail?.unit_cost}</td>
       <td>{lineItem.detail?.initial_rate}</td>
       <td>{lineItem.detail?.rate}</td>
 
       {customColumnCells.map((data, index) => (
         <td key={index}>{data}</td> // index is fine here as it's a static list
       ))}
+
+      <td>{lineItem.total}</td>
     </tr>
   );
 }

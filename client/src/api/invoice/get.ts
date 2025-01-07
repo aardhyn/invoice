@@ -24,6 +24,7 @@ export type InvoiceGet = {
   payment: Payment;
   client: Client;
   location: Location;
+  total: number;
 };
 
 export function useInvoiceGetQuery(invoiceId: number) {

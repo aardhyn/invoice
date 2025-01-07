@@ -71,7 +71,7 @@ diesel::table! {
         product_id -> Int4,
         name -> Varchar,
         description -> Nullable<Varchar>,
-        price -> Int4,
+        unit_cost -> Int4,
     }
 }
 

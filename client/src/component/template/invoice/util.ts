@@ -1,11 +1,12 @@
 import { useMemo } from "react";
-import {
-  DEFAULT_DISPLAY_COLUMNS,
-  PRODUCT_DISPLAY_COLUMNS,
-  SERVICE_DISPLAY_COLUMNS,
-} from "./constant";
+import { PRODUCT_DISPLAY_COLUMNS, SERVICE_DISPLAY_COLUMNS } from "./constant";
 import { LineItem, isProductLineItem, isServiceLineItem } from "api";
-import { fromSnakeCase, toSentenceCase, dedupe } from "common";
+import {
+  fromSnakeCase,
+  toSentenceCase,
+  dedupe,
+  stringifyBoolean,
+} from "common";
 
 export function useLineItemColumnNames(line_items: LineItem[]) {
   return useMemo(() => {
@@ -13,7 +14,9 @@ export function useLineItemColumnNames(line_items: LineItem[]) {
     const hasService = line_items.some(isServiceLineItem);
 
     const standardColumns = [
-      ...DEFAULT_DISPLAY_COLUMNS,
+      "name",
+      "description",
+      "quantity",
       ...(hasProduct ? PRODUCT_DISPLAY_COLUMNS : []),
       ...(hasService ? SERVICE_DISPLAY_COLUMNS : []),
     ] as string[];
@@ -24,11 +27,14 @@ export function useLineItemColumnNames(line_items: LineItem[]) {
         .map(({ name }) => name),
     );
 
-    const formattedColumns = [...standardColumns, ...customColumns]
+    const formattedColumns = [...standardColumns, ...customColumns, "total"]
       .map(fromSnakeCase)
       .map(toSentenceCase);
 
-    return { standardColumns, customColumns, formattedColumns };
+    return {
+      formattedColumns,
+      customColumns,
+    };
   }, [line_items]);
 }
 
@@ -60,7 +66,7 @@ export function formatCellData(data: string | number | boolean | undefined) {
   if (data === undefined) {
     return "";
   } else if (typeof data === "boolean") {
-    return data.toString();
+    return stringifyBoolean(data);
   } else {
     return data;
   }

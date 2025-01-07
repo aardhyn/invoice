@@ -1,5 +1,6 @@
 use crate::connection::establish_connection;
 use crate::model::*;
+use crate::utility::line_item::{compute_product_total, compute_service_total};
 use chrono::{DateTime, Utc};
 use diesel::{prelude::*, result::Error};
 use serde::Serialize;
@@ -51,6 +52,7 @@ pub struct InvoiceGet {
   business: InvoiceBusiness,
   client: InvoiceClient,
   location: LocationEntity,
+  total: i32,
 }
 
 #[derive(Serialize)]
@@ -68,6 +70,7 @@ pub struct InvoiceLineItem {
   custom_fields: Vec<LineItemCustomField>,
   detail: Option<InvoiceLineItemDetail>,
   quantity: i32,
+  total: i32,
 }
 
 pub enum GetInvoiceError {
@@ -189,22 +192,20 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
   let line_items = serde_json::from_value::<Vec<LineItemEntity>>(invoice_entity.line_items)
     .expect("Failed to deserialize invoice_entity::line_items");
 
+  let mut grand_total = 0;
   let detailed_items = line_items
     .into_iter()
-    .map(|line_item| InvoiceLineItem {
-      key: line_item.key.to_string(),
-      name: line_item.name,
-      description: line_item.description,
-      custom_fields: line_item.custom_fields,
-      detail: match line_item.detail {
-        // fixme: lines items may share products or services. perhaps we should deduplicate them somehow.
+    .map(|line_item| {
+      let (detail, total) = match line_item.detail {
+        // fixme: lines items may share products or services. We should only fetch them once.
         Some(LineItemDetail::Product(reference)) => {
           let product = product::table
             .find(reference.product_id)
             .select(ProductEntity::as_select())
             .first(connection)
             .expect("Failed to load product");
-          Some(InvoiceLineItemDetail::Product(product))
+          let total = compute_product_total(&product, line_item.quantity);
+          (Some(InvoiceLineItemDetail::Product(product)), total)
         }
         Some(LineItemDetail::Service(service)) => {
           let service = service::table
@@ -212,11 +213,24 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
             .select(ServiceEntity::as_select())
             .first(connection)
             .expect("Failed to load service");
-          Some(InvoiceLineItemDetail::Service(service))
+
+          let total = compute_service_total(&service, line_item.quantity);
+          (Some(InvoiceLineItemDetail::Service(service)), total)
         }
-        None => None,
-      },
-      quantity: line_item.quantity,
+        None => (None, 0),
+      };
+
+      grand_total += total;
+
+      InvoiceLineItem {
+        key: line_item.key.to_string(),
+        name: line_item.name,
+        description: line_item.description,
+        custom_fields: line_item.custom_fields,
+        detail,
+        quantity: line_item.quantity,
+        total,
+      }
     })
     .collect();
 
@@ -232,6 +246,7 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
     business,
     client,
     location: location_entity,
+    total: grand_total,
   };
 
   Ok(invoice)

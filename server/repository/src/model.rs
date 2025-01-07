@@ -214,7 +214,7 @@ pub struct ProductEntity {
   pub product_id: i32,
   pub name: String,
   pub description: Option<String>,
-  pub price: i32,
+  pub unit_cost: i32,
 }
 
 #[derive(Insertable, Deserialize)]
@@ -223,7 +223,7 @@ pub struct ProductEntity {
 pub struct NewProductEntity {
   pub name: String,
   pub description: Option<String>,
-  pub price: i32,
+  pub unit_cost: i32,
 }
 
 #[derive(Queryable, Selectable, Serialize)]
@@ -249,6 +249,7 @@ pub struct ProductEntityListItem {
 pub enum LineItemCustomFieldType {
   String(String),
   Number(i32),
+  Float(f32),
   Boolean(bool),
 }
 

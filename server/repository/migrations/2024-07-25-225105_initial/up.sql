@@ -36,7 +36,7 @@ create table product (
   product_id serial primary key,
   name varchar not null unique,
   description varchar null,
-  price size not null
+  unit_cost size not null
 );
 
 create table business (

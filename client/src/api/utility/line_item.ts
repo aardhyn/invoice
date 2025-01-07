@@ -10,7 +10,6 @@ export type ServiceLineItem = {
 export type ProductLineItem = {
   product_id: number; // fixme: This will be a string uuid eventually
   unit_cost: number;
-  cost: number;
 };
 
 export type LineItemCustomField = {

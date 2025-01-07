@@ -164,17 +164,17 @@ pub fn seed_product() -> Vec<NewProductEntity> {
     NewProductEntity {
       name: String::from("Product 1"),
       description: Some(String::from("First Product")),
-      price: 1000,
+      unit_cost: 1000,
     },
     NewProductEntity {
       name: String::from("Product 2"),
       description: Some(String::from("Second Product")),
-      price: 2400,
+      unit_cost: 2400,
     },
     NewProductEntity {
       name: String::from("Product 3"),
       description: Some(String::from("Third Product")),
-      price: 3600,
+      unit_cost: 3600,
     },
   ]
 }
