@@ -147,9 +147,13 @@ type LineItemView = Override<
 function LineItemPreview({
   line_item: lineItem,
   customFieldColumns,
+  showProductColumns,
+  showServiceColumns,
 }: {
   line_item: LineItemView;
   customFieldColumns: string[];
+  showProductColumns?: boolean;
+  showServiceColumns?: boolean;
 }) {
   const customColumnCells = useCustomFieldCells(lineItem, customFieldColumns);
 
@@ -159,9 +163,13 @@ function LineItemPreview({
       <td>{lineItem.description}</td>
       <td>{lineItem.quantity}</td>
 
-      <td>{lineItem.detail?.unit_cost}</td>
-      <td>{lineItem.detail?.initial_rate}</td>
-      <td>{lineItem.detail?.rate}</td>
+      {showProductColumns && <td>{lineItem.detail?.unit_cost}</td>}
+      {showServiceColumns && (
+        <>
+          <td>{lineItem.detail?.initial_rate}</td>
+          <td>{lineItem.detail?.rate}</td>
+        </>
+      )}
 
       {customColumnCells.map((data, index) => (
         <td key={index}>{data}</td> // index is fine here as it's a static list
