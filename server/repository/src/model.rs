@@ -356,3 +356,22 @@ pub struct InvoiceEntityListItem {
 pub struct InvoiceLineItems {
   pub line_items: serde_json::Value,
 }
+
+// Invoice Template //
+
+#[derive(Queryable, Selectable, Serialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(belongs_to(InvoiceEntity))]
+#[diesel(table_name = invoice_template)]
+pub struct InvoiceTemplateEntity {
+  pub invoice_id: i32,
+}
+
+#[derive(Insertable, Deserialize)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = invoice_template)]
+pub struct NewInvoiceTemplateEntity {
+  pub invoice_id: i32,
+}
+
+pub type CreatedInvoiceTemplateEntity = InvoiceTemplateEntity;

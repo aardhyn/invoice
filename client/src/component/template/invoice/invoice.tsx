@@ -1,5 +1,5 @@
 import {
-  type InvoiceGet,
+  type Invoice,
   type LineItem,
   type Location,
   type Contact,
@@ -11,7 +11,7 @@ import { useLineItemColumnNames, useCustomFieldCells } from ".";
 
 import "./style.css";
 
-export type ExportableInvoice = InvoiceGet;
+export type ExportableInvoice = Invoice;
 
 export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
   return (

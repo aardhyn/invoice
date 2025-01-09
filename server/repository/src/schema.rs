@@ -50,6 +50,12 @@ diesel::table! {
 }
 
 diesel::table! {
+    invoice_template (invoice_id) {
+        invoice_id -> Int4,
+    }
+}
+
+diesel::table! {
     location (location_id) {
         location_id -> Int4,
         address -> Varchar,
@@ -94,12 +100,14 @@ diesel::joinable!(contact -> location (location_id));
 diesel::joinable!(invoice -> business (business_id));
 diesel::joinable!(invoice -> client (client_id));
 diesel::joinable!(invoice -> location (location_id));
+diesel::joinable!(invoice_template -> invoice (invoice_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     business,
     client,
     contact,
     invoice,
+    invoice_template,
     location,
     payment,
     product,

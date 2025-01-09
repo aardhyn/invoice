@@ -71,3 +71,7 @@ create table invoice (
   location_data jsonb not null,
   created_timestamp timestamp with time zone not null default now()
 );
+
+create table invoice_template (
+  invoice_id int primary key references invoice(invoice_id) on delete cascade
+);

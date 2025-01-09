@@ -12,7 +12,7 @@ import {
 } from "api";
 import { invariant } from "common";
 
-export type InvoiceGet = {
+export type Invoice = {
   invoice_id: number;
   invoice_key: string;
   name: string;
@@ -39,7 +39,7 @@ export function useInvoiceGetQuery(invoiceId: number) {
       const data = await res.json();
 
       invariant(
-        isAPIResponse<InvoiceGet>(data),
+        isAPIResponse<Invoice>(data),
         "API response is not in the correct shape",
       );
 

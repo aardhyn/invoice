@@ -13,6 +13,7 @@ import {
   type LineItemType,
   type LineItemCustomField,
   LINE_ITEM_TYPE,
+  useInvoiceTemplateListQuery,
 } from "api";
 import {
   useLineItemsState as useCreateLineItemsState,
@@ -62,6 +63,9 @@ function Page() {
     [items],
   );
 
+  const { data: invoiceTemplates } = useInvoiceTemplateListQuery();
+  const handleInvoiceTemplateChange = () => {};
+
   return (
     <>
       <section>
@@ -82,6 +86,16 @@ function Page() {
       <section>
         <h2>Create Invoice</h2>
         <form method="POST" onSubmit={handleSubmit}>
+          <fieldset>
+            <legend>From Template</legend>
+            <select onChange={handleInvoiceTemplateChange}>
+              {invoiceTemplates?.data?.map((invoiceTemplate) => (
+                <option key={invoiceTemplate.name} value={invoiceTemplate.name}>
+                  {invoiceTemplate.name}
+                </option>
+              ))}
+            </select>
+          </fieldset>
           <label>
             Name
             <input type="text" name="name" required />
