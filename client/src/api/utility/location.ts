@@ -1,3 +1,5 @@
+import { Simplify } from "common";
+
 export type CreateLocation = {
   address: string;
   suburb: string;
@@ -10,3 +12,14 @@ export type Location = {
   suburb: string;
   city: string;
 };
+
+export type AnonymousLocation = Simplify<CreateLocation>;
+
+export function locationStringify(
+  location: Location | CreateLocation,
+  delimiter: string = ", ",
+) {
+  return [location.address, location.suburb, location.city]
+    .filter(Boolean)
+    .join(delimiter);
+}

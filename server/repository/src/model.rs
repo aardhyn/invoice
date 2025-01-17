@@ -374,4 +374,16 @@ pub struct NewInvoiceTemplateEntity {
   pub invoice_id: i32,
 }
 
+#[derive(Queryable, Serialize)]
+#[diesel(check_for_backend(Pg))]
+pub struct InvoiceTemplateListEntity {
+  pub invoice_id: i32,
+  pub name: String,
+  pub description: Option<String>,
+  pub address: String,
+  pub suburb: Option<String>,
+  pub city: String,
+  pub client_name: String,
+}
+
 pub type CreatedInvoiceTemplateEntity = InvoiceTemplateEntity;

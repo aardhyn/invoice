@@ -14,6 +14,7 @@ import {
   type LineItemCustomField,
   LINE_ITEM_TYPE,
   useInvoiceTemplateListQuery,
+  locationStringify,
 } from "api";
 import {
   useLineItemsState as useCreateLineItemsState,
@@ -43,7 +44,7 @@ function Page() {
 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
-      event?.preventDefault();
+      event.preventDefault();
       const formData = new FormData(event.currentTarget);
 
       createInvoice({
@@ -64,7 +65,11 @@ function Page() {
   );
 
   const { data: invoiceTemplates } = useInvoiceTemplateListQuery();
-  const handleInvoiceTemplateChange = () => {};
+  const handleCreateFromTemplate =
+    (invoice_id: number) => (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      console.log("Create from template", invoice_id);
+    };
 
   return (
     <>
@@ -84,94 +89,106 @@ function Page() {
         )}
       </section>
       <section>
-        <h2>Create Invoice</h2>
-        <form method="POST" onSubmit={handleSubmit}>
-          <fieldset>
-            <legend>From Template</legend>
-            <select onChange={handleInvoiceTemplateChange}>
-              {invoiceTemplates?.data?.map((invoiceTemplate) => (
-                <option key={invoiceTemplate.name} value={invoiceTemplate.name}>
-                  {invoiceTemplate.name}
-                </option>
-              ))}
-            </select>
-          </fieldset>
-          <label>
-            Name
-            <input type="text" name="name" required />
-          </label>
-          <br />
-          <label>
-            Description
-            <textarea name="description" />
-          </label>
-          <br />
-          <label>
-            Business
-            <select name="business-id" required>
-              <option value="">Select Business</option>
-              {businessList.isSuccess &&
-                businessList?.data?.data?.map(({ business_id, name }) => (
-                  <option key={business_id} value={business_id}>
-                    {name}
-                  </option>
-                ))}
-            </select>
-          </label>
-          <br />
-          <fieldset>
-            <legend>Location</legend>
+        <h3>Create Invoice</h3>
+        <fieldset>
+          <legend>From Template</legend>
+          <ul>
+            {invoiceTemplates?.data?.map(
+              ({ invoice_id, name, description, location, client_name }) => (
+                <li key={invoice_id}>
+                  <form onSubmit={handleCreateFromTemplate(invoice_id)}>
+                    <button style={{ textAlign: "left" }}>
+                      <h4>{name}</h4>
+                      <p>{description}</p>
+                      <p>Client: {client_name}</p>
+                      <p>Address: {locationStringify(location)}</p>
+                    </button>
+                  </form>
+                </li>
+              ),
+            )}
+          </ul>
+        </fieldset>
+        <fieldset>
+          <legend>From Scratch</legend>
+          <form method="POST" onSubmit={handleSubmit}>
             <label>
-              Street
-              <input type="text" name="contact-address" required />
+              Name
+              <input type="text" name="name" required />
             </label>
             <br />
             <label>
-              Suburb
-              <input type="text" name="contact-suburb" />
+              Description
+              <textarea name="description" />
             </label>
             <br />
             <label>
-              City
-              <input type="text" name="contact-city" required />
+              Business
+              <select name="business-id" required>
+                <option value="">Select Business</option>
+                {businessList.isSuccess &&
+                  businessList?.data?.data?.map(({ business_id, name }) => (
+                    <option key={business_id} value={business_id}>
+                      {name}
+                    </option>
+                  ))}
+              </select>
             </label>
-          </fieldset>
-          <br />
-          <label>
-            Due Date
-            <input type="date" name="due_date" required />
-          </label>
-          <br />
-          <fieldset>
-            <legend>Line Items</legend>
-            <LineItems items={items} onChange={mutate} onRemove={remove} />
-            {!items.length && <p>No Items</p>}
             <br />
             <fieldset>
-              <legend>Add Line Item</legend>
-              <CreateLineItemForm onCreateLineItem={add} />
+              <legend>Location</legend>
+              <label>
+                Street
+                <input type="text" name="contact-address" required />
+              </label>
+              <br />
+              <label>
+                Suburb
+                <input type="text" name="contact-suburb" />
+              </label>
+              <br />
+              <label>
+                City
+                <input type="text" name="contact-city" required />
+              </label>
             </fieldset>
-          </fieldset>
-          <br />
-          <br />
-          <label>
-            Client
-            <select name="client_id" required>
-              <option value="">Select Client</option>
-              {clientList.isSuccess &&
-                clientList?.data?.data?.map(({ client_id, name }) => (
-                  <option key={client_id} value={client_id}>
-                    {name}
-                  </option>
-                ))}
-            </select>
-          </label>
-          {isError && <p>{JSON.stringify(error)}</p>}
-          <br />
-          <button disabled={isPending} type="submit">
-            Create
-          </button>
-        </form>
+            <br />
+            <label>
+              Due Date
+              <input type="date" name="due_date" required />
+            </label>
+            <br />
+            <fieldset>
+              <legend>Line Items</legend>
+              <LineItems items={items} onChange={mutate} onRemove={remove} />
+              {!items.length && <p>No Items</p>}
+              <br />
+              <fieldset>
+                <legend>Add Line Item</legend>
+                <CreateLineItemForm onCreateLineItem={add} />
+              </fieldset>
+            </fieldset>
+            <br />
+            <br />
+            <label>
+              Client
+              <select name="client_id" required>
+                <option value="">Select Client</option>
+                {clientList.isSuccess &&
+                  clientList?.data?.data?.map(({ client_id, name }) => (
+                    <option key={client_id} value={client_id}>
+                      {name}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            {isError && <p>{JSON.stringify(error)}</p>}
+            <br />
+            <button disabled={isPending} type="submit">
+              Create
+            </button>
+          </form>
+        </fieldset>
       </section>
     </>
   );
