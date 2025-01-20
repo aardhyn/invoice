@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::connection::establish_connection;
 use crate::model::*;
-use crate::utility::temporal::get_tax_year;
+use crate::utility::invoice::invoice_key;
 
 use diesel::prelude::*;
 
@@ -76,14 +76,9 @@ pub fn create_invoice(new_invoice: CreateInvoice) -> Result<CreatedInvoice, Crea
     })?;
 
     // fixme: call to user defined invoice number convention function...
-    let business_invoice_count = invoice::table
-      .filter(invoice::business_id.eq(new_invoice.business_id))
-      .count()
-      .get_result::<i64>(connection)
-      .map_err(CreateInvoiceError::UnknownError)?;
-
-    let tax_year = get_tax_year();
-    let invoice_key = format!("INVC-{business_invoice_count}{tax_year:0>5}");
+    // fixme: map the error to a CreateInvoiceError somehow
+    let invoice_key =
+      invoice_key(connection, new_invoice.business_id).expect("failed to generate invoice key");
 
     let created_invoice = diesel::insert_into(invoice::table)
       .values(&NewInvoiceEntity {
