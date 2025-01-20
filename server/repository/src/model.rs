@@ -314,22 +314,39 @@ pub struct InvoiceEntity {
   pub location_data: serde_json::Value,
 }
 
-#[derive(Insertable, Debug)]
+#[derive(Insertable, Queryable, Selectable, Debug)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct NewInvoiceEntity {
-  pub name: String,
   pub invoice_key: String,
+  pub name: String,
   pub description: Option<String>,
   pub reference: Option<String>,
   pub business_id: i32,
-  pub payment_data: serde_json::Value, // todo: can we map this directly to a struct?
+  pub payment_data: serde_json::Value,
   pub client_id: i32,
-  pub client_data: serde_json::Value, // todo: can we map this directly to a struct?
+  pub client_data: serde_json::Value,
   pub location_id: i32,
-  pub location_data: serde_json::Value, // todo: can we map this directly to a struct?
+  pub location_data: serde_json::Value,
   pub due_date: DateTime<Utc>,
-  pub line_items: serde_json::Value, // todo: can we map this directly to a struct?
+  pub line_items: serde_json::Value,
+}
+
+#[derive(Insertable, Queryable, Selectable, Debug)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = invoice)]
+pub struct DuplicatingInvoiceEntity {
+  pub name: String,
+  pub description: Option<String>,
+  pub reference: Option<String>,
+  pub business_id: i32,
+  pub payment_data: serde_json::Value,
+  pub client_id: i32,
+  pub client_data: serde_json::Value,
+  pub location_id: i32,
+  pub location_data: serde_json::Value,
+  pub due_date: DateTime<Utc>,
+  pub line_items: serde_json::Value,
 }
 
 #[derive(Queryable, Selectable, Serialize)]
@@ -339,6 +356,8 @@ pub struct CreatedInvoiceEntity {
   pub invoice_id: i32,
   pub name: String,
 }
+
+pub type DuplicatedInvoiceEntity = CreatedInvoiceEntity;
 
 #[derive(Debug, Serialize, Queryable, Selectable)]
 #[diesel(check_for_backend(Pg))]

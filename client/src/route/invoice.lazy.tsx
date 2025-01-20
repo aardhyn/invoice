@@ -15,6 +15,7 @@ import {
   LINE_ITEM_TYPE,
   useInvoiceTemplateListQuery,
   locationStringify,
+  useInvoiceDuplicateMutation,
 } from "api";
 import {
   useLineItemsState as useCreateLineItemsState,
@@ -65,10 +66,11 @@ function Page() {
   );
 
   const { data: invoiceTemplates } = useInvoiceTemplateListQuery();
+  const { mutate: duplicateInvoice } = useInvoiceDuplicateMutation();
   const handleCreateFromTemplate =
-    (invoice_id: number) => (event: FormEvent<HTMLFormElement>) => {
+    (invoiceId: number) => (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      console.log("Create from template", invoice_id);
+      duplicateInvoice({ invoice_id: invoiceId });
     };
 
   return (

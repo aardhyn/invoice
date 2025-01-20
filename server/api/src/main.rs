@@ -27,6 +27,7 @@ async fn main() -> Result<(), rocket::Error> {
     invoice_create,
     invoice_list,
     invoice_get,
+    invoice_duplicate,
     invoice_line_item_add,
     invoice_template_create,
     invoice_template_delete,
