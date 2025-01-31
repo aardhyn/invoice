@@ -25,13 +25,16 @@ import {
 } from "component";
 import { capitalize, invariant, uuid } from "common";
 
-export const Route = createLazyFileRoute("/invoice")({
+export const Route = createLazyFileRoute("/business/$businessKey/invoice/")({
   component: Page,
 });
 
 function Page() {
-  const invoiceList = useInvoiceListQuery();
-  const clientList = useClientListQuery();
+  const { businessKey } = Route.useParams();
+  const business_id = parseInt(businessKey);
+
+  const invoiceList = useInvoiceListQuery({ business_id });
+  const clientList = useClientListQuery({ business_id });
   const businessList = useBusinessListQuery();
 
   const {
@@ -65,7 +68,9 @@ function Page() {
     [items],
   );
 
-  const { data: invoiceTemplates } = useInvoiceTemplateListQuery();
+  const { data: invoiceTemplates } = useInvoiceTemplateListQuery({
+    business_id,
+  });
   const { mutate: duplicateInvoice } = useInvoiceDuplicateMutation();
   const handleCreateFromTemplate =
     (invoiceId: number) => (event: FormEvent<HTMLFormElement>) => {
@@ -244,9 +249,19 @@ export function CreateLineItemForm({
 }: {
   onCreateLineItem: (item: CreateLineItem) => void;
 }) {
+  const { businessKey } = Route.useParams();
+  const business_id = parseInt(businessKey);
+
   const [type, setType] = useState<"product" | "service">("product");
-  const productListQuery = useProductListQuery(type === "product");
-  const serviceListQuery = useServiceListQuery(type === "service");
+
+  const productListQuery = useProductListQuery(
+    { business_id },
+    type === "product",
+  );
+  const serviceListQuery = useServiceListQuery(
+    { business_id },
+    type === "service",
+  );
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");

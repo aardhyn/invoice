@@ -6,6 +6,10 @@ import {
   INVOICE_TEMPLATE_LIST_QUERY_KEY,
 } from "api";
 
+export type InvoiceTemplateListParams = {
+  business_id: number;
+};
+
 export type InvoiceTemplate = Omit<Location, "location_id"> & {
   invoice_id: number;
   name: string;
@@ -14,11 +18,15 @@ export type InvoiceTemplate = Omit<Location, "location_id"> & {
   client_name: string;
 };
 
-export function useInvoiceTemplateListQuery() {
+export function useInvoiceTemplateListQuery(params: InvoiceTemplateListParams) {
   return useQuery<APIResponse<InvoiceTemplate[], string>>({
     queryKey: INVOICE_TEMPLATE_LIST_QUERY_KEY,
     async queryFn() {
-      const response = await fetch(endpoint("invoice.template.list"));
+      const response = await fetch(endpoint("invoice.template.list"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      });
       const data = await response.json();
       return data;
     },

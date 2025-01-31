@@ -1,11 +1,17 @@
 use repository::service::{self, InvoiceList};
-use rocket::http::Status;
+use rocket::{http::Status, serde::json::Json};
+use serde::Deserialize;
 
 use crate::util::response::APIResponse;
 
-#[get("/invoice.list")]
-pub fn invoice_list() -> APIResponse<InvoiceList, String> {
-  service::list_invoices().map_or_else(
+#[derive(Deserialize)]
+pub struct InvoiceListParams {
+  pub business_id: i32,
+}
+
+#[post("/invoice.list", data = "<data>")]
+pub fn invoice_list(data: Json<InvoiceListParams>) -> APIResponse<InvoiceList, String> {
+  service::list_invoices(data.business_id).map_or_else(
     |e| APIResponse {
       status: Some(Status::BadRequest),
       data: None,

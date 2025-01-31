@@ -40,7 +40,7 @@ pub struct InvoiceBusiness {
 }
 
 #[derive(Serialize)]
-pub struct InvoiceGet {
+pub struct Invoice {
   invoice_id: i32,
   invoice_key: String,
   name: String,
@@ -79,7 +79,7 @@ pub enum GetInvoiceError {
   UnknownError(Error),
 }
 
-pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
+pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
   use crate::schema::{business, client, contact, invoice, location, payment, product, service};
 
   let connection = &mut establish_connection().expect("Error connecting to database");
@@ -234,7 +234,7 @@ pub fn get_invoice(invoice_id: i32) -> Result<InvoiceGet, GetInvoiceError> {
     })
     .collect();
 
-  let invoice = InvoiceGet {
+  let invoice = Invoice {
     invoice_id: invoice_entity.invoice_id,
     invoice_key: invoice_entity.invoice_key,
     name: invoice_entity.name,

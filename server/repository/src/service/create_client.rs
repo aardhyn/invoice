@@ -36,10 +36,8 @@ pub struct CreateClient {
   pub name: String,
   pub description: Option<String>,
   pub contact: CreateLocatedContact,
+  pub business_id: i32,
 }
-
-#[derive(Debug, Deserialize)]
-pub struct FilterClient {}
 
 #[derive(Debug, Serialize)]
 pub struct CreatedClient {
@@ -79,9 +77,10 @@ pub fn create_client(new_client: CreateClient) -> Result<CreatedClient, CreateCl
         };
       })?;
 
-    let created_business = diesel::insert_into(client::table)
+    let created_client = diesel::insert_into(client::table)
       .values(&NewClientEntity {
         name: new_client.name.clone(),
+        business_id: new_client.business_id,
         description: new_client.description.clone(),
         contact_id: created_contact.contact_id,
       })
@@ -90,8 +89,8 @@ pub fn create_client(new_client: CreateClient) -> Result<CreatedClient, CreateCl
       .map_err(CreateClientError::UnknownError)?;
 
     Ok(CreatedClient {
-      client_id: created_business.client_id,
-      name: created_business.name,
+      client_id: created_client.client_id,
+      name: created_client.name,
     })
   })
 }

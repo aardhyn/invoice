@@ -41,21 +41,19 @@ pub fn create_product(new_product: CreateProduct) -> Result<CreatedProduct, Crea
 
   let connection = &mut establish_connection().map_err(CreateProductError::ConnectionError)?;
 
-  connection.transaction::<_, CreateProductError, _>(|connection| {
-    let created_product = diesel::insert_into(product::table)
-      .values(new_product)
-      .returning(CreatedProductEntity::as_returning())
-      .get_result(connection)
-      .map_err(|error| match error {
-        Error::DatabaseError(diesel::result::DatabaseErrorKind::UniqueViolation, _) => {
-          CreateProductError::DuplicateNameError
-        }
-        _ => CreateProductError::UnknownError(error),
-      })?;
+  let created_product = diesel::insert_into(product::table)
+    .values(new_product)
+    .returning(CreatedProductEntity::as_returning())
+    .get_result(connection)
+    .map_err(|error| match error {
+      Error::DatabaseError(diesel::result::DatabaseErrorKind::UniqueViolation, _) => {
+        CreateProductError::DuplicateNameError
+      }
+      _ => CreateProductError::UnknownError(error),
+    })?;
 
-    Ok(CreatedProduct {
-      product_id: created_product.product_id,
-      name: created_product.name,
-    })
+  Ok(CreatedProduct {
+    product_id: created_product.product_id,
+    name: created_product.name,
   })
 }

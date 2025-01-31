@@ -11,7 +11,9 @@ export function useBusinessListQuery() {
   return useQuery<APIResponse<BusinessListItem[], string>>({
     queryKey: BUSINESS_LIST_QUERY_KEY,
     async queryFn() {
-      const response = await fetch(endpoint("business.list"));
+      const response = await fetch(endpoint("business.list"), {
+        method: "POST",
+      });
       const data = await response.json();
       return data;
     },

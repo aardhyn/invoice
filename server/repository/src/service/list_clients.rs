@@ -8,12 +8,13 @@ pub type ClientListItem = ClientEntityListItem;
 
 pub type ClientList = Vec<ClientListItem>;
 
-pub fn list_clients() -> Result<ClientList, String> {
+pub fn list_clients(business_id: i32) -> Result<ClientList, String> {
   use crate::schema::client;
 
   let connection = &mut establish_connection().expect("Error connecting to database");
 
   let clients = client::table
+    .filter(client::business_id.eq(business_id))
     .select(ClientEntityListItem::as_select())
     .limit(24)
     .load(connection)

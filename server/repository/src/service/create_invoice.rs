@@ -46,9 +46,6 @@ pub struct CreateInvoice {
   pub client_id: i32,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct FilterInvoice {}
-
 #[derive(Debug, Serialize)]
 pub struct CreatedInvoice {
   pub invoice_id: i32,

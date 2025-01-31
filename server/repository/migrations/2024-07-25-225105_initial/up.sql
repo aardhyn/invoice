@@ -23,22 +23,6 @@ create table contact (
   cell varchar not null
 );
 
-create table service (
-  service_id serial primary key,
-  name varchar not null unique,
-  description varchar null,
-  initial_rate size not null default 0,
-  initial_rate_threshold size not null default 0,
-  rate size not null
-);
-
-create table product (
-  product_id serial primary key,
-  name varchar not null unique,
-  description varchar null,
-  unit_cost size not null
-);
-
 create table business (
   business_id serial primary key,
   payment_id int null references payment(payment_id) on delete cascade,
@@ -48,8 +32,27 @@ create table business (
   description varchar null
 );
 
+create table service (
+  service_id serial primary key,
+  business_id int not null references business(business_id) on delete cascade,
+  name varchar not null unique,
+  description varchar null,
+  initial_rate size not null default 0,
+  initial_rate_threshold size not null default 0,
+  rate size not null
+);
+
+create table product (
+  product_id serial primary key,
+  business_id int not null references business(business_id) on delete cascade,
+  name varchar not null unique,
+  description varchar null,
+  unit_cost size not null
+);
+
 create table client (
   client_id serial primary key,
+  business_id int not null references business(business_id) on delete cascade,
   contact_id int not null references contact(contact_id) on delete cascade,
   name varchar not null,
   description varchar null

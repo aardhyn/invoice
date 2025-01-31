@@ -135,6 +135,7 @@ pub struct BusinessEntityListItem {
 pub struct ClientEntity {
   pub client_id: i32,
   pub contact_id: i32,
+  pub business_id: i32,
   pub name: String,
   pub description: Option<String>,
 }
@@ -144,6 +145,7 @@ pub struct ClientEntity {
 #[diesel(table_name = client)]
 pub struct NewClientEntity {
   pub contact_id: i32,
+  pub business_id: i32,
   pub name: String,
   pub description: Option<String>,
 }
@@ -173,6 +175,7 @@ pub struct ServiceEntity {
   pub service_id: i32,
   pub name: String,
   pub description: Option<String>,
+  pub business_id: i32,
   pub initial_rate: i32,
   pub initial_rate_threshold: i32,
   pub rate: i32,
@@ -184,6 +187,7 @@ pub struct ServiceEntity {
 pub struct NewServiceEntity {
   pub name: String,
   pub description: Option<String>,
+  pub business_id: i32,
   pub initial_rate: Option<i32>,
   pub initial_rate_threshold: Option<i32>,
   pub rate: i32,
@@ -214,6 +218,7 @@ pub struct ProductEntity {
   pub product_id: i32,
   pub name: String,
   pub description: Option<String>,
+  pub business_id: i32,
   pub unit_cost: i32,
 }
 
@@ -223,6 +228,7 @@ pub struct ProductEntity {
 pub struct NewProductEntity {
   pub name: String,
   pub description: Option<String>,
+  pub business_id: i32,
   pub unit_cost: i32,
 }
 
@@ -332,10 +338,10 @@ pub struct NewInvoiceEntity {
   pub line_items: serde_json::Value,
 }
 
-#[derive(Insertable, Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
-pub struct DuplicatingInvoiceEntity {
+pub struct NewDuplicateInvoiceEntity {
   pub name: String,
   pub description: Option<String>,
   pub reference: Option<String>,
@@ -349,7 +355,7 @@ pub struct DuplicatingInvoiceEntity {
   pub line_items: serde_json::Value,
 }
 
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Queryable, Selectable, Deserialize, Serialize)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct CreatedInvoiceEntity {

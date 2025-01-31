@@ -2,7 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { useServiceCreateMutation, useServiceListQuery } from "api";
 import { useState } from "react";
 
-export const Route = createLazyFileRoute("/service")({
+export const Route = createLazyFileRoute("/business/$businessKey/service")({
   component: Page,
 });
 
@@ -18,7 +18,13 @@ function Page() {
 }
 
 function ServiceList() {
-  const { data: serviceList, error, isLoading } = useServiceListQuery();
+  const { businessKey } = Route.useParams();
+  const business_id = parseInt(businessKey);
+  const {
+    data: serviceList,
+    error,
+    isLoading,
+  } = useServiceListQuery({ business_id });
 
   if (isLoading) {
     return <div>Loading...</div>;

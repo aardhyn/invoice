@@ -14,6 +14,7 @@ diesel::table! {
 diesel::table! {
     client (client_id) {
         client_id -> Int4,
+        business_id -> Int4,
         contact_id -> Int4,
         name -> Varchar,
         description -> Nullable<Varchar>,
@@ -75,6 +76,7 @@ diesel::table! {
 diesel::table! {
     product (product_id) {
         product_id -> Int4,
+        business_id -> Int4,
         name -> Varchar,
         description -> Nullable<Varchar>,
         unit_cost -> Int4,
@@ -84,6 +86,7 @@ diesel::table! {
 diesel::table! {
     service (service_id) {
         service_id -> Int4,
+        business_id -> Int4,
         name -> Varchar,
         description -> Nullable<Varchar>,
         initial_rate -> Int4,
@@ -95,12 +98,15 @@ diesel::table! {
 diesel::joinable!(business -> contact (contact_id));
 diesel::joinable!(business -> location (location_id));
 diesel::joinable!(business -> payment (payment_id));
+diesel::joinable!(client -> business (business_id));
 diesel::joinable!(client -> contact (contact_id));
 diesel::joinable!(contact -> location (location_id));
 diesel::joinable!(invoice -> business (business_id));
 diesel::joinable!(invoice -> client (client_id));
 diesel::joinable!(invoice -> location (location_id));
 diesel::joinable!(invoice_template -> invoice (invoice_id));
+diesel::joinable!(product -> business (business_id));
+diesel::joinable!(service -> business (business_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     business,

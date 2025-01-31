@@ -1,11 +1,16 @@
-use repository::service::{self, ProductList};
-use rocket::http::Status;
-
 use crate::util::response::APIResponse;
+use repository::service::{self, ProductList};
+use rocket::{http::Status, serde::json::Json};
+use serde::Deserialize;
 
-#[get("/product.list")]
-pub fn product_list() -> APIResponse<ProductList, String> {
-  service::list_products().map_or_else(
+#[derive(Deserialize)]
+pub struct ProductListParams {
+  business_id: i32,
+}
+
+#[post("/product.list", data = "<data>")]
+pub fn product_list(data: Json<ProductListParams>) -> APIResponse<ProductList, String> {
+  service::list_products(data.business_id).map_or_else(
     |e| APIResponse {
       status: Some(Status::BadRequest),
       data: None,

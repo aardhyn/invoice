@@ -7,17 +7,28 @@ import {
 } from "api";
 import { invariant } from "common";
 
+export type ProductListParams = {
+  business_id: number;
+};
+
 export type ProductListItem = {
   product_id: number;
   name: string;
 };
 
-export function useProductListQuery(enabled: boolean = true) {
+export function useProductListQuery(
+  params: ProductListParams,
+  enabled: boolean = true,
+) {
   return useQuery<APIResponse<ProductListItem[]>>({
     queryKey: PRODUCT_LIST_QUERY_KEY,
     enabled,
     async queryFn() {
-      const response = await fetch(endpoint("product.list"));
+      const response = await fetch(endpoint("product.list"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      });
       const data = await response.json();
 
       invariant(

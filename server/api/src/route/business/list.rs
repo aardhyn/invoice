@@ -2,7 +2,7 @@ use repository::service::{self, BusinessList};
 use rocket::http::Status;
 
 use crate::util::response::APIResponse;
-#[get("/business.list")]
+#[post("/business.list")]
 pub fn business_list() -> APIResponse<BusinessList, String> {
   service::list_businesses().map_or_else(
     |e| APIResponse {

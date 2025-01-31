@@ -21,7 +21,7 @@ pub struct InvoiceTemplateListItem {
 
 pub type InvoiceTemplateList = Vec<InvoiceTemplateListItem>;
 
-pub fn list_invoice_template() -> Result<InvoiceTemplateList, String> {
+pub fn list_invoice_template(business_id: i32) -> Result<InvoiceTemplateList, String> {
   use crate::schema::{client, invoice, invoice_template, location};
 
   let connection = &mut establish_connection().expect("Error connecting to database");
@@ -30,6 +30,7 @@ pub fn list_invoice_template() -> Result<InvoiceTemplateList, String> {
     .inner_join(invoice_template::table)
     .inner_join(location::table)
     .inner_join(client::table)
+    .filter(invoice::business_id.eq(business_id))
     .select((
       invoice::invoice_id,
       invoice::name,

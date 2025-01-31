@@ -1,16 +1,16 @@
-use repository::service::{self, InvoiceGet};
+use repository::service::{self, Invoice};
 use rocket::{http::Status, serde::json::Json};
 use serde::Deserialize;
 
 use crate::util::response::APIResponse;
 
 #[derive(Deserialize)]
-pub struct GetInvoice {
+pub struct InvoiceGetParams {
   pub invoice_id: i32,
 }
 
 #[post("/invoice.get", data = "<data>")]
-pub fn invoice_get(data: Json<GetInvoice>) -> APIResponse<InvoiceGet, String> {
+pub fn invoice_get(data: Json<InvoiceGetParams>) -> APIResponse<Invoice, String> {
   let invoice_id = data.into_inner().invoice_id;
 
   service::get_invoice(invoice_id).map_or_else(

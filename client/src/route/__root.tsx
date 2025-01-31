@@ -19,24 +19,6 @@ function Page() {
         <li>
           <Link to="/">Home</Link>
         </li>
-        <li>
-          <Link to="/business">Businesses</Link>
-        </li>
-        <li>
-          <Link to="/client">Clients</Link>
-        </li>
-        <li>
-          <Link to="/service">Services</Link>
-        </li>
-        <li>
-          <Link to="/product">Products</Link>
-        </li>
-        <li>
-          <Link to="/invoice">Invoices</Link>
-        </li>
-        <li>
-          <Link to="/admin">Admin</Link>
-        </li>
       </ul>
       <Outlet />
       <NoPrint>

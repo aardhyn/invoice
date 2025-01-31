@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useProductCreateMutation, useProductListQuery } from "api";
 
-export const Route = createLazyFileRoute("/product")({
+export const Route = createLazyFileRoute("/business/$businessKey/product")({
   component: Page,
 });
 
@@ -17,7 +17,12 @@ function Page() {
 }
 
 function ProductList() {
-  const { data: productList, error, isLoading } = useProductListQuery();
+  const { businessKey } = Route.useParams();
+  const {
+    data: productList,
+    error,
+    isLoading,
+  } = useProductListQuery({ business_id: parseInt(businessKey) });
 
   if (isLoading) {
     return <div>Loading...</div>;

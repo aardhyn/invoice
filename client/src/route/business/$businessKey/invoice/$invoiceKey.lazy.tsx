@@ -11,7 +11,9 @@ import { useMemo } from "react";
 
 import templateStyles from "component/template/invoice/style.css?inline";
 
-export const Route = createLazyFileRoute("/invoice/$invoiceKey")({
+export const Route = createLazyFileRoute(
+  "/business/$businessKey/invoice/$invoiceKey",
+)({
   component: Page,
 });
 
@@ -63,9 +65,12 @@ function Page() {
 }
 
 function useInvoiceTemplateState() {
-  const { invoiceKey } = Route.useParams();
+  const { invoiceKey, businessKey } = Route.useParams();
+  const business_id = parseInt(businessKey);
 
-  const { data: invoiceTemplates } = useInvoiceTemplateListQuery();
+  const { data: invoiceTemplates } = useInvoiceTemplateListQuery({
+    business_id,
+  });
 
   const createTemplateMutation = useInvoiceTemplateCreateMutation();
   const deleteTemplateMutation = useInvoiceTemplateDeleteMutation();

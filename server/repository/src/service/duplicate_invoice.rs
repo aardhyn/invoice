@@ -50,7 +50,7 @@ pub fn duplicate_invoice(
 
   let invoice = invoice::table
     .find(invoice_id)
-    .select(DuplicatingInvoiceEntity::as_select())
+    .select(NewDuplicateInvoiceEntity::as_select())
     .first(connection)
     .map_err(DuplicateInvoiceError::from)?;
 

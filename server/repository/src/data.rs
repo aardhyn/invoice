@@ -143,17 +143,20 @@ pub fn seed_client() -> Vec<NewClientEntity> {
   vec![
     NewClientEntity {
       name: String::from("Wayne Enterprises"),
+      business_id: 1,
       description: Some(String::from("I Am Vengeance, I Am The Night, I Am Batman")),
       contact_id: 4,
     },
     NewClientEntity {
       name: String::from("Stark Industries"),
       description: Some(String::from("We Have A Hulk")),
+      business_id: 2,
       contact_id: 5,
     },
     NewClientEntity {
       name: String::from("Winter Cooperation"),
       description: Some(String::from("Time Entwined")),
+      business_id: 3,
       contact_id: 6,
     },
   ]
@@ -164,16 +167,19 @@ pub fn seed_product() -> Vec<NewProductEntity> {
     NewProductEntity {
       name: String::from("Product 1"),
       description: Some(String::from("First Product")),
+      business_id: 1,
       unit_cost: 1000,
     },
     NewProductEntity {
       name: String::from("Product 2"),
       description: Some(String::from("Second Product")),
+      business_id: 2,
       unit_cost: 2400,
     },
     NewProductEntity {
       name: String::from("Product 3"),
       description: Some(String::from("Third Product")),
+      business_id: 3,
       unit_cost: 3600,
     },
   ]
@@ -184,6 +190,7 @@ pub fn seed_service() -> Vec<NewServiceEntity> {
     NewServiceEntity {
       name: String::from("Service 1"),
       description: Some(String::from("First Service")),
+      business_id: 1,
       initial_rate: Some(1200),
       initial_rate_threshold: Some(1),
       rate: 1000,
@@ -191,6 +198,7 @@ pub fn seed_service() -> Vec<NewServiceEntity> {
     NewServiceEntity {
       name: String::from("Service 2"),
       description: Some(String::from("Second Service")),
+      business_id: 2,
       initial_rate: Some(4400),
       initial_rate_threshold: Some(1),
       rate: 4100,
@@ -198,6 +206,7 @@ pub fn seed_service() -> Vec<NewServiceEntity> {
     NewServiceEntity {
       name: String::from("Service 3"),
       description: Some(String::from("Third Service")),
+      business_id: 3,
       initial_rate: None,
       initial_rate_threshold: None,
       rate: 2300,
@@ -266,8 +275,8 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
         "custom_fields": [],
       }, {
         "key": Uuid::new_v4(),
-        "name": "Service Item 2",
-        "detail": { "service_id": 3, },
+        "name": "Generic Custom Line Item",
+        "detail": { "service_id": 2, },
         "description": "Second Service Line Item",
         "quantity": 5,
         "custom_fields": [],
@@ -310,6 +319,21 @@ pub fn seed_invoice() -> Vec<NewInvoiceEntity> {
           "key": Uuid::new_v4(),
           "name": "discount",
           "data": 0.3,
+        }],
+      }, {
+        "key": Uuid::new_v4(),
+        "name": "Custom Item 2",
+        "description": "Custom Line Item",
+        "detail": { "service_id": 3, },
+        "quantity": 2,
+        "custom_fields": [{
+          "key": Uuid::new_v4(),
+          "name": "waived",
+          "data": true,
+        }, {
+          "key": Uuid::new_v4(),
+          "name": "discount",
+          "data": 0.35,
         }],
       }, {
         "key": Uuid::new_v4(),

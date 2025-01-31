@@ -1,9 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   component: Page,
 });
 
 function Page() {
-  return <div>I am Root</div>;
+  return (
+    <div>
+      <ul>
+        <li>
+          <Link to="/business">Businesses</Link>
+        </li>
+        <li>
+          <Link to="/admin">Admin</Link>
+        </li>
+      </ul>
+    </div>
+  );
 }

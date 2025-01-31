@@ -3,8 +3,10 @@ use rocket::{http::Status, serde::json::Json};
 
 use crate::util::response::APIResponse;
 
+pub type ClientCreateParams = CreateClient;
+
 #[post("/client.create", data = "<data>")]
-pub fn client_create(data: Json<CreateClient>) -> APIResponse<CreatedClient, String> {
+pub fn client_create(data: Json<ClientCreateParams>) -> APIResponse<CreatedClient, String> {
   let data = data.into_inner();
   service::create_client(data).map_or_else(
     |error| {
