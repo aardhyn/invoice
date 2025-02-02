@@ -19,11 +19,12 @@ export const Route = createLazyFileRoute(
 
 function Page() {
   const { invoiceKey } = Route.useParams();
+  const invoice_id = parseInt(invoiceKey);
   const {
     data: invoice,
     error,
     isLoading,
-  } = useInvoiceGetQuery(parseInt(invoiceKey));
+  } = useInvoiceGetQuery({ invoice_id });
 
   const [isTemplate, toggleTemplate] = useInvoiceTemplateState();
   const toggleTemplateText = isTemplate

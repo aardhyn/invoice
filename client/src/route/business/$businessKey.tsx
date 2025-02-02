@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { useBusinessGetQuery } from "api/business/get";
 
 export const Route = createFileRoute("/business/$businessKey")({
   component: Page,
@@ -6,9 +7,13 @@ export const Route = createFileRoute("/business/$businessKey")({
 
 function Page() {
   const params = Route.useParams();
+  const business_id = parseInt(params.businessKey);
+
+  const { data: business } = useBusinessGetQuery({ business_id });
 
   return (
     <ul>
+      <h2>{business?.data?.name}</h2>
       <li>
         <Link to={`/business/$businessKey/client`} params={params}>
           Clients

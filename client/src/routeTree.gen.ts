@@ -20,6 +20,9 @@ import { Route as BusinessBusinessKeyImport } from './route/business/$businessKe
 
 const AdminLazyImport = createFileRoute('/admin')()
 const BusinessIndexLazyImport = createFileRoute('/business/')()
+const BusinessBusinessKeyIndexLazyImport = createFileRoute(
+  '/business/$businessKey/',
+)()
 const BusinessBusinessKeyServiceLazyImport = createFileRoute(
   '/business/$businessKey/service',
 )()
@@ -57,6 +60,14 @@ const BusinessBusinessKeyRoute = BusinessBusinessKeyImport.update({
   path: '/business/$businessKey',
   getParentRoute: () => rootRoute,
 } as any)
+
+const BusinessBusinessKeyIndexLazyRoute =
+  BusinessBusinessKeyIndexLazyImport.update({
+    path: '/',
+    getParentRoute: () => BusinessBusinessKeyRoute,
+  } as any).lazy(() =>
+    import('./route/business/$businessKey/index.lazy').then((d) => d.Route),
+  )
 
 const BusinessBusinessKeyServiceLazyRoute =
   BusinessBusinessKeyServiceLazyImport.update({
@@ -155,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessBusinessKeyServiceLazyImport
       parentRoute: typeof BusinessBusinessKeyImport
     }
+    '/business/$businessKey/': {
+      id: '/business/$businessKey/'
+      path: '/'
+      fullPath: '/business/$businessKey/'
+      preLoaderRoute: typeof BusinessBusinessKeyIndexLazyImport
+      parentRoute: typeof BusinessBusinessKeyImport
+    }
     '/business/$businessKey/invoice/$invoiceKey': {
       id: '/business/$businessKey/invoice/$invoiceKey'
       path: '/invoice/$invoiceKey'
@@ -178,6 +196,7 @@ interface BusinessBusinessKeyRouteChildren {
   BusinessBusinessKeyClientLazyRoute: typeof BusinessBusinessKeyClientLazyRoute
   BusinessBusinessKeyProductLazyRoute: typeof BusinessBusinessKeyProductLazyRoute
   BusinessBusinessKeyServiceLazyRoute: typeof BusinessBusinessKeyServiceLazyRoute
+  BusinessBusinessKeyIndexLazyRoute: typeof BusinessBusinessKeyIndexLazyRoute
   BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute: typeof BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute
   BusinessBusinessKeyInvoiceIndexLazyRoute: typeof BusinessBusinessKeyInvoiceIndexLazyRoute
 }
@@ -186,6 +205,7 @@ const BusinessBusinessKeyRouteChildren: BusinessBusinessKeyRouteChildren = {
   BusinessBusinessKeyClientLazyRoute: BusinessBusinessKeyClientLazyRoute,
   BusinessBusinessKeyProductLazyRoute: BusinessBusinessKeyProductLazyRoute,
   BusinessBusinessKeyServiceLazyRoute: BusinessBusinessKeyServiceLazyRoute,
+  BusinessBusinessKeyIndexLazyRoute: BusinessBusinessKeyIndexLazyRoute,
   BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute:
     BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute,
   BusinessBusinessKeyInvoiceIndexLazyRoute:
@@ -203,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/business/$businessKey/client': typeof BusinessBusinessKeyClientLazyRoute
   '/business/$businessKey/product': typeof BusinessBusinessKeyProductLazyRoute
   '/business/$businessKey/service': typeof BusinessBusinessKeyServiceLazyRoute
+  '/business/$businessKey/': typeof BusinessBusinessKeyIndexLazyRoute
   '/business/$businessKey/invoice/$invoiceKey': typeof BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute
   '/business/$businessKey/invoice': typeof BusinessBusinessKeyInvoiceIndexLazyRoute
 }
@@ -210,11 +231,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminLazyRoute
-  '/business/$businessKey': typeof BusinessBusinessKeyRouteWithChildren
   '/business': typeof BusinessIndexLazyRoute
   '/business/$businessKey/client': typeof BusinessBusinessKeyClientLazyRoute
   '/business/$businessKey/product': typeof BusinessBusinessKeyProductLazyRoute
   '/business/$businessKey/service': typeof BusinessBusinessKeyServiceLazyRoute
+  '/business/$businessKey': typeof BusinessBusinessKeyIndexLazyRoute
   '/business/$businessKey/invoice/$invoiceKey': typeof BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute
   '/business/$businessKey/invoice': typeof BusinessBusinessKeyInvoiceIndexLazyRoute
 }
@@ -228,6 +249,7 @@ export interface FileRoutesById {
   '/business/$businessKey/client': typeof BusinessBusinessKeyClientLazyRoute
   '/business/$businessKey/product': typeof BusinessBusinessKeyProductLazyRoute
   '/business/$businessKey/service': typeof BusinessBusinessKeyServiceLazyRoute
+  '/business/$businessKey/': typeof BusinessBusinessKeyIndexLazyRoute
   '/business/$businessKey/invoice/$invoiceKey': typeof BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute
   '/business/$businessKey/invoice/': typeof BusinessBusinessKeyInvoiceIndexLazyRoute
 }
@@ -242,17 +264,18 @@ export interface FileRouteTypes {
     | '/business/$businessKey/client'
     | '/business/$businessKey/product'
     | '/business/$businessKey/service'
+    | '/business/$businessKey/'
     | '/business/$businessKey/invoice/$invoiceKey'
     | '/business/$businessKey/invoice'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
-    | '/business/$businessKey'
     | '/business'
     | '/business/$businessKey/client'
     | '/business/$businessKey/product'
     | '/business/$businessKey/service'
+    | '/business/$businessKey'
     | '/business/$businessKey/invoice/$invoiceKey'
     | '/business/$businessKey/invoice'
   id:
@@ -264,6 +287,7 @@ export interface FileRouteTypes {
     | '/business/$businessKey/client'
     | '/business/$businessKey/product'
     | '/business/$businessKey/service'
+    | '/business/$businessKey/'
     | '/business/$businessKey/invoice/$invoiceKey'
     | '/business/$businessKey/invoice/'
   fileRoutesById: FileRoutesById
@@ -313,6 +337,7 @@ export const routeTree = rootRoute
         "/business/$businessKey/client",
         "/business/$businessKey/product",
         "/business/$businessKey/service",
+        "/business/$businessKey/",
         "/business/$businessKey/invoice/$invoiceKey",
         "/business/$businessKey/invoice/"
       ]
@@ -330,6 +355,10 @@ export const routeTree = rootRoute
     },
     "/business/$businessKey/service": {
       "filePath": "business/$businessKey/service.lazy.tsx",
+      "parent": "/business/$businessKey"
+    },
+    "/business/$businessKey/": {
+      "filePath": "business/$businessKey/index.lazy.tsx",
       "parent": "/business/$businessKey"
     },
     "/business/$businessKey/invoice/$invoiceKey": {
