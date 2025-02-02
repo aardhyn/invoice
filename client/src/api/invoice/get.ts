@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   type Client,
   type Location,
-  type Payment,
   type Timestampz,
   endpoint,
   isAPIResponse,
@@ -11,6 +10,10 @@ import {
   INVOICE_QUERY_KEY,
 } from "api";
 import { invariant } from "common";
+
+export type InvoiceGetParams = {
+  invoice_id: number;
+};
 
 export type Invoice = {
   invoice_id: number;
@@ -21,20 +24,19 @@ export type Invoice = {
   due_date: Timestampz;
   line_items: LineItem[];
   business: Business;
-  payment: Payment;
   client: Client;
   location: Location;
   total: number;
 };
 
-export function useInvoiceGetQuery(invoiceId: number) {
+export function useInvoiceGetQuery(params: InvoiceGetParams) {
   return useQuery({
-    queryKey: [...INVOICE_QUERY_KEY, invoiceId],
+    queryKey: [...INVOICE_QUERY_KEY, params.invoice_id],
     async queryFn() {
       const res = await fetch(endpoint("invoice.get"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoice_id: invoiceId }),
+        body: JSON.stringify(params),
       });
       const data = await res.json();
 

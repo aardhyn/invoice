@@ -18,6 +18,7 @@ async fn main() -> Result<(), rocket::Error> {
     cors::all_options,
     business_create,
     business_list,
+    business_get,
     client_create,
     client_list,
     service_create,

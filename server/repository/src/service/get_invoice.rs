@@ -1,26 +1,10 @@
 use crate::connection::establish_connection;
 use crate::model::*;
+use crate::utility::contact::{BusinessContact, ClientContact};
 use crate::utility::line_item::{compute_product_total, compute_service_total};
 use chrono::{DateTime, Utc};
 use diesel::{prelude::*, result::Error};
 use serde::Serialize;
-
-#[derive(Serialize)]
-pub struct ClientContact {
-  contact_id: i32,
-  name: String,
-  email: String,
-  cell: String,
-  location: LocationEntity,
-}
-
-#[derive(Serialize)]
-pub struct BusinessContact {
-  contact_id: i32,
-  name: String,
-  email: String,
-  cell: String,
-}
 
 #[derive(Serialize)]
 pub struct InvoiceClient {
@@ -37,6 +21,7 @@ pub struct InvoiceBusiness {
   description: Option<String>,
   contact: BusinessContact,
   location: LocationEntity,
+  payment: PaymentEntity,
 }
 
 #[derive(Serialize)]
@@ -48,7 +33,6 @@ pub struct Invoice {
   reference: Option<String>,
   due_date: DateTime<Utc>,
   line_items: Vec<InvoiceLineItem>,
-  payment: PaymentEntity,
   business: InvoiceBusiness,
   client: InvoiceClient,
   location: LocationEntity,
@@ -147,6 +131,7 @@ pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
     description: business_entity.description,
     contact: business_contact,
     location: business_location,
+    payment: payment_entity,
   };
 
   let location_entity = location::table
@@ -241,7 +226,6 @@ pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
     reference: invoice_entity.reference,
     description: invoice_entity.description,
     due_date: invoice_entity.due_date,
-    payment: payment_entity,
     line_items: detailed_items,
     business,
     client,
