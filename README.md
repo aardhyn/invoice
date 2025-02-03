@@ -1,35 +1,25 @@
-# invoice
+# Inv.
 
 Invoice builder and tracking software
 
-## Building
+## Build
 
-Install the [Diesel CLI](https://diesel.rs/guides/getting-started#installing-diesel-cli). You will only need postgres feature for this project.
-
-While the database runs in a container for local development you will still need to install PostgreSQL as the Diesel crate needs access to `libpq`.
-
-## Development
-
-Build and run the database container
+### Environment
 
 ```bash
-make database
+cp .env.template .env
 ```
 
-Build the backend, run migrations, and start the REST API
+Most variables have default values; `DATABASE_PASSWORD` is unset.
+
+### Run
+
+Build and run each service
 
 ```bash
-make server
+make
 ```
 
-Install the web client dependencies
+This builds and runs each component in Docker containers. Web client is served to [https://localhost](https://localhost).
 
-```bash
-cd client && pnpm install
-```
-
-Build and run the web client in development mode
-
-```bash
-make client
-```
+See [Makefile](Makefile) for more commands and details.

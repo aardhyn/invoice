@@ -2,7 +2,7 @@ import { QueryClient } from "@tanstack/react-query";
 
 const STALE_TIME = 1000 * 60 * 5; // 5 minutes
 
-const API_ROOT = import.meta.env.VITE_API_URL;
+const API_ROOT = import.meta.env.VITE_API_BASE_URL;
 
 export function endpoint(...path: string[]) {
   return `${API_ROOT}/${path.join("/")}`;

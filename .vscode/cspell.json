@@ -1,6 +1,8 @@
 {
   "words": [
     "argless",
+    "binstall",
+    "Caddyfile",
     "chrono",
     "clientside",
     "Datelike",
@@ -10,7 +12,9 @@
     "Insertable",
     "INVC",
     "isready",
+    "libc",
     "libpq",
+    "PGPORT",
     "psql",
     "serde",
     "tanstack",

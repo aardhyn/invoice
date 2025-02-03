@@ -7,10 +7,11 @@ mod util;
 
 use middleware::cors;
 use route::*;
+use util::rocket::build_config;
 
 #[rocket::main]
-async fn main() -> Result<(), rocket::Error> {
-  dotenvy::dotenv().expect("Failed to load .env file");
+async fn main() -> Result<(), String> {
+  dotenvy::dotenv().ok(); // note: we don't care if this fails because the variables might be set some other way.
 
   let catchers = catchers![handle_not_found, handle_unprocessable_entity];
 
@@ -36,12 +37,16 @@ async fn main() -> Result<(), rocket::Error> {
     system_seed,
   ];
 
-  let _rocket = rocket::build()
+  let config = build_config()?;
+
+  rocket::build()
+    .configure(config)
     .attach(cors::CORS)
     .register("/", catchers)
     .mount("/", routes)
     .launch()
-    .await?;
+    .await
+    .map_err(|e| format!("Failed to launch Rocket: {}", e))?;
 
   Ok(())
 }

@@ -4,13 +4,40 @@ services:
     image: postgres
     restart: always
     shm_size: 128mb
-    user: postgres
+    user: ${DATABASE_USER} 
     environment:
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - PGPORT=${DATABASE_PORT}
     ports:
-      - "${DATABASE_PORT}:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 1s
-      timeout: 5s
-      retries: 10
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+  server:
+    container_name: server
+    image: server 
+    restart: always
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}
+      - API_PORT=${API_PORT}
+      - API_ALLOW_ORIGIN=${API_ALLOW_ORIGIN}
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    depends_on:
+      - database
+  client:
+    container_name: client
+    image: client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - API_BASE_URL=http://${CLIENT_API_HOST}:${API_PORT}
+    ports:
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
+    depends_on:
+      - server

@@ -1,5 +1,3 @@
-use std::env;
-
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
 use rocket::{Request, Response};
@@ -22,9 +20,7 @@ impl Fairing for CORS {
   }
 
   async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
-    let client_domain = env::var("CLIENT_DOMAIN").expect("CLIENT_DOMAIN must be set");
-
-    response.set_header(Header::new("Access-Control-Allow-Origin", client_domain));
+    response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
     response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
     response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
     response.set_header(Header::new(
