@@ -1,4 +1,4 @@
-localhost:443
+{$CLIENT_HOST}:${CLIENT_PORT}
 
 root * /srv
 file_server

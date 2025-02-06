@@ -4,6 +4,7 @@ dist
 .git
 .gitignore
 
+.eslint.config.js
 .prettierrc
 .prettierignore
 
