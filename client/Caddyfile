@@ -1,4 +1,4 @@
-{$CLIENT_HOST}:${CLIENT_PORT}
+{$CLIENT_HOST}:{$CLIENT_PORT}
 
 root * /srv
 file_server

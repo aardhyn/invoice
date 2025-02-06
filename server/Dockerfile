@@ -1,8 +1,16 @@
 FROM rust:1.84.0
+
 RUN cargo install diesel_cli --no-default-features --features postgres
+
 WORKDIR /app
-COPY . .
+
+COPY Cargo.* .
+COPY repository/Cargo.* ./repository
+COPY api/Cargo.* ./api 
 RUN cargo build --release
+
+COPY . .
+
 CMD cd repository \
   && diesel migration run --database-url $DATABASE_URL \
-  && /usr/src/server/target/release/api
+  && /app/target/release/api
