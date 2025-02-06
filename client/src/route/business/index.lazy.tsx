@@ -19,11 +19,16 @@ function Page() {
       <section>
         <h2>Businesses</h2>
         <ul>
-          {businessList?.data?.map(({ name, business_id }) => (
-            <li key={business_id}>
-              <Link to={`/business/${business_id}/`}>{name}</Link>
-            </li>
-          ))}
+          {businessList?.data?.map(({ name, business_id }) => {
+            const businessKey = business_id.toString();
+            return (
+              <li key={businessKey}>
+                <Link to="/business/$businessKey" params={{ businessKey }}>
+                  {name}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
         {isSuccess && !businessList?.data?.length && (
           <p>
