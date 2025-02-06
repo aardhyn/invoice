@@ -4,6 +4,10 @@
 dev:
 	docker compose --env-file .env --profile dev up -d;
 
+# Build and/or run each service in production mode in containers
+prod:
+	docker compose --env-file .env --profile prod up -d;
+
 # Build the images of each service for production
 build.dev:
 	docker compose --profile dev build 
@@ -11,10 +15,6 @@ build.dev:
 # Build the images of each service for production
 build.prod:
 	docker compose --profile prod build 
-
-# Build and/or run each service in production mode in containers
-prod:
-	docker compose --env-file .env --profile prod up -d;
 
 # Stop all running services
 stop:
