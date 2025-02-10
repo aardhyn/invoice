@@ -2,7 +2,8 @@
 
 # Run each service in development mode in containers
 dev:
-	docker compose --env-file .env --profile dev up -d;
+	docker compose --env-file .env --profile dev up -d
+	cd client && pnpm run lint:watch
 
 # Build and/or run each service in production mode in containers
 prod:
@@ -27,6 +28,14 @@ server.clean:
 	rm -rf server/target
 
 clean: client.clean server.clean
+
+format:
+	docker exec -it client.dev pnpm run format
+	docker exec -it server.dev cargo fmt
+
+test:
+	docker exec -it client.dev pnpm run lint
+	docker exec -it server.dev cargo test
 
 # Access the database container as an admin
 database-admin:
