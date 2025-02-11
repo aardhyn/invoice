@@ -4,12 +4,10 @@ RUN cargo install diesel_cli --no-default-features --features postgres
 
 WORKDIR /app
 
-COPY Cargo.* .
-COPY repository/Cargo.* ./repository
-COPY api/Cargo.* ./api 
+COPY . .
+
 RUN cargo build --release
 
-COPY . .
 
 CMD cd repository \
   && diesel migration run --database-url $DATABASE_URL \
