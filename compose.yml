@@ -8,6 +8,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - PGPORT=${DATABASE_PORT}
+    volumes:
+      - database_data:/var/lib/postgresql/data
     ports:
       - "${DATABASE_PORT}:${DATABASE_PORT}"
 
@@ -96,3 +98,6 @@ services:
       - server.dev
     profiles:
       - dev
+
+volumes:
+  database_data:
