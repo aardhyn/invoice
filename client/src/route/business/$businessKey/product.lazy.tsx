@@ -43,6 +43,9 @@ function ProductList() {
 }
 
 function CreateProductForm() {
+  const { businessKey } = Route.useParams();
+  const business_id = parseInt(businessKey);
+
   const {
     mutate: createService,
     error,
@@ -54,9 +57,10 @@ function CreateProductForm() {
     const formData = new FormData(event.currentTarget);
 
     createService({
+      business_id,
       name: formData.get("name") as string,
       description: formData.get("description") as string,
-      price: Number(formData.get("price")),
+      unit_cost: Number(formData.get("price")),
     });
   }
 

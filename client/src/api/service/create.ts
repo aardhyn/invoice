@@ -10,6 +10,7 @@ import { invariant } from "common";
 export type CreateService = {
   name: string;
   description: string;
+  business_id: number;
   initial_rate?: number;
   initial_rate_threshold?: number;
   rate: number;

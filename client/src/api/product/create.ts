@@ -8,13 +8,14 @@ import {
 import { invariant } from "common";
 
 export type CreateProduct = {
+  business_id: number;
   name: string;
   description: string;
-  price: number;
+  unit_cost: number;
 };
 
 export type CreatedProduct = {
-  service_id: number;
+  product_id: number;
   name: string;
 };
 

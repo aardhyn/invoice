@@ -45,6 +45,9 @@ function ServiceList() {
 }
 
 function CreateServiceForm() {
+  const { businessKey } = Route.useParams();
+  const business_id = parseInt(businessKey);
+
   const {
     mutate: createService,
     error,
@@ -56,6 +59,7 @@ function CreateServiceForm() {
     const formData = new FormData(event.currentTarget);
 
     createService({
+      business_id,
       name: formData.get("name") as string,
       description: formData.get("description") as string,
       initial_rate: Number(formData.get("initial_rate")),
