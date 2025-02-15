@@ -17,4 +17,4 @@ RUN pnpm build
 FROM caddy:latest
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY --from=build /app/dist /srv
-ENTRYPOINT caddy run --config /etc/caddy/Caddyfile
+CMD caddy run --config /etc/caddy/Caddyfile
