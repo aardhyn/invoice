@@ -3,7 +3,6 @@
 # Run each service in development mode in containers
 dev:
 	docker compose --env-file .env --profile dev up -d
-	cd client && pnpm run lint:watch
 
 # Build and/or run each service in production mode in containers
 prod:

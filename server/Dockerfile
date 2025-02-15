@@ -8,7 +8,6 @@ COPY . .
 
 RUN cargo build --release
 
-
 CMD cd repository \
   && diesel migration run --database-url $DATABASE_URL \
   && /app/target/release/api
