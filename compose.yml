@@ -46,6 +46,9 @@ services:
     environment:
       - CLIENT_HOST=${CLIENT_HOST}
       - CLIENT_PORT=${CLIENT_PORT}
+    labels:
+      - "caddy_0.root=* /srv"
+      - "caddy_0.tls=internal"
     ports:
       - "${CLIENT_PORT}:${CLIENT_PORT}"
     depends_on:
