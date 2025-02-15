@@ -14,7 +14,6 @@ RUN corepack enable
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm build
 
-# note: we're using Coolify for deployment. So it's proxy can serve the static files from /dist
-# FROM caddy:latest AS production
-# COPY Caddyfile /etc/caddy/Caddyfile
-# COPY --from=build /app/dist /srv
+FROM caddy:latest AS production
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /srv
