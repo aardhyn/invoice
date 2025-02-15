@@ -13,7 +13,7 @@ COPY . .
 RUN corepack enable
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 # RUN pnpm build
-RUN pnpm dev
+ENTRYPOINT pnpm dev
 
 # FROM caddy:latest
 # COPY Caddyfile /etc/caddy/Caddyfile
