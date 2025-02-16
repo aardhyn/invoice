@@ -1,6 +1,5 @@
-:{$CLIENT_PORT} {
-	root * /srv
-	file_server
- 	try_files {path} /index.html
- 	tls internal
-}
+:{$CLIENT_PORT} 
+
+root * /srv
+file_server
+try_files {path} /index.html
