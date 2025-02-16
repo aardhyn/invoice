@@ -12,10 +12,9 @@ WORKDIR /app
 COPY . .
 RUN corepack enable
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-# RUN pnpm build
-ENTRYPOINT pnpm dev
+RUN pnpm build
 
-# FROM caddy:latest
-# COPY Caddyfile /etc/caddy/Caddyfile
-# COPY --from=build /app/dist /srv
-# CMD caddy run --config /etc/caddy/Caddyfile
+FROM caddy:latest
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /srv
+CMD caddy run --config /etc/caddy/Caddyfile
