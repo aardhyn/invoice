@@ -22,5 +22,5 @@ export default defineConfig({
     tsconfigPaths(),
     TanStackRouterVite({ routesDirectory: "src/route" }),
   ],
-  server: { port: getClientPort() },
+  server: { port: getClientPort(), allowedHosts: ["invoice.aardhyn.dev"] },
 });
