@@ -2,7 +2,7 @@ services:
   database:
     container_name: database
     image: postgres
-    restart: always
+    restart: unless-stopped
     shm_size: 128mb
     user: ${DATABASE_USER}
     environment:
@@ -16,7 +16,7 @@ services:
   server:
     container_name: server
     image: server
-    restart: always
+    restart: unless-stopped
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -38,6 +38,7 @@ services:
   client:
     container_name: client
     image: client
+    restart: unless-stopped
     build:
       context: ./client
       dockerfile: Dockerfile
@@ -56,7 +57,7 @@ services:
   server.dev:
     container_name: server.dev
     image: server.dev
-    restart: always
+    restart: unless-stopped
     build:
       context: ./server
       dockerfile: Dockerfile.dev
@@ -82,6 +83,7 @@ services:
   client.dev:
     container_name: client.dev
     image: client.dev
+    restart: unless-stopped
     build:
       context: ./client
       dockerfile: Dockerfile.dev
