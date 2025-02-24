@@ -12,6 +12,8 @@ services:
       - invoice_postgres_data:/var/lib/postgresql/data
     ports:
       - "${DATABASE_PORT}:${DATABASE_PORT}"
+    profiles:
+      - prod
 
   server:
     container_name: server
@@ -54,6 +56,20 @@ services:
     profiles:
       - prod
 
+  database.dev:
+    container_name: database.dev
+    image: postgres
+    restart: unless-stopped
+    shm_size: 128mb
+    user: ${DATABASE_USER}
+    environment:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - PGPORT=${DATABASE_PORT}
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    profiles:
+      - dev
+
   server.dev:
     container_name: server.dev
     image: server.dev
@@ -76,7 +92,7 @@ services:
     ports:
       - "${API_PORT}:${API_PORT}"
     depends_on:
-      - database
+      - database.dev
     profiles:
       - dev
 
