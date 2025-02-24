@@ -7,7 +7,7 @@ export function useSystemSeedMutation() {
       return fetch(endpoint("sys.seed"), { method: "POST" });
     },
     onSuccess() {
-      queryClient.invalidateQueries(); // yes, everything
+      queryClient.invalidateQueries(); // simpler to just invalidate all queries than selectively
     },
   });
 }

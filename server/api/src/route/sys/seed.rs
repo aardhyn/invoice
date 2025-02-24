@@ -12,10 +12,21 @@ pub fn system_seed() -> APIResponse<SeedResult, String> {
         status: Some(Status::BadRequest),
         error: Some("The system has already been seeded".to_string()),
       },
-      _ => APIResponse {
+      service::SeedError::ConnectionError(error) => APIResponse {
         data: None,
         status: Some(Status::InternalServerError),
-        error: Some(String::from("An unknown error occurred")),
+        error: Some(String::from(format!(
+          "An error occurred while connecting to the database: {}",
+          error
+        ))),
+      },
+      service::SeedError::UnknownError(error) => APIResponse {
+        data: None,
+        status: Some(Status::InternalServerError),
+        error: Some(String::from(format!(
+          "An error unknown error occurred while connecting to the database: {}",
+          error
+        ))),
       },
     },
     |data| APIResponse {
