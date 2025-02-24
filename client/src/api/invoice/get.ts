@@ -3,10 +3,10 @@ import {
   type Client,
   type Location,
   type Timestampz,
-  endpoint,
-  isAPIResponse,
   type LineItem,
   type Business,
+  endpoint,
+  isAPIResponse,
   INVOICE_QUERY_KEY,
 } from "api";
 import { invariant } from "common";
@@ -21,11 +21,11 @@ export type Invoice = {
   name: string;
   description: string | null;
   reference: string | null;
-  due_date: Timestampz;
+  due_date: Timestampz | null;
   line_items: LineItem[];
   business: Business;
-  client: Client;
-  location: Location;
+  client: Client | null;
+  location: Location | null;
   total: number;
 };
 

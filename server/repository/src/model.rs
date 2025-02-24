@@ -310,14 +310,13 @@ pub struct InvoiceEntity {
   pub name: String,
   pub description: Option<String>,
   pub reference: Option<String>,
-  pub due_date: DateTime<Utc>,
-  pub payment_data: serde_json::Value,
+  pub due_date: Option<DateTime<Utc>>,
   pub business_id: i32,
-  pub client_id: i32,
-  pub client_data: serde_json::Value,
+  pub client_id: Option<i32>,
+  pub client_data: Option<serde_json::Value>,
   pub line_items: serde_json::Value, // todo: can we map this directly to a struct?
-  pub location_id: i32,
-  pub location_data: serde_json::Value,
+  pub location_id: Option<i32>,
+  pub location_data: Option<serde_json::Value>,
 }
 
 #[derive(Insertable, Queryable, Selectable, Debug)]
@@ -325,17 +324,8 @@ pub struct InvoiceEntity {
 #[diesel(table_name = invoice)]
 pub struct NewInvoiceEntity {
   pub invoice_key: String,
-  pub name: String,
-  pub description: Option<String>,
-  pub reference: Option<String>,
   pub business_id: i32,
-  pub payment_data: serde_json::Value,
-  pub client_id: i32,
-  pub client_data: serde_json::Value,
-  pub location_id: i32,
-  pub location_data: serde_json::Value,
-  pub due_date: DateTime<Utc>,
-  pub line_items: serde_json::Value,
+  pub name: String,
 }
 
 #[derive(Queryable, Selectable, Debug)]
@@ -343,16 +333,15 @@ pub struct NewInvoiceEntity {
 #[diesel(table_name = invoice)]
 pub struct NewDuplicateInvoiceEntity {
   pub name: String,
-  pub description: Option<String>,
-  pub reference: Option<String>,
   pub business_id: i32,
-  pub payment_data: serde_json::Value,
-  pub client_id: i32,
-  pub client_data: serde_json::Value,
-  pub location_id: i32,
-  pub location_data: serde_json::Value,
-  pub due_date: DateTime<Utc>,
-  pub line_items: serde_json::Value,
+  // pub description: Option<String>,
+  // pub reference: Option<String>,
+  // pub client_id: Option<i32>,
+  // pub client_data: Option<serde_json::Value>,
+  // pub location_id: Option<i32>,
+  // pub location_data: Option<serde_json::Value>,
+  // pub due_date: Option<DateTime<Utc>>,
+  // pub line_items: serde_json::Value,
 }
 
 #[derive(Queryable, Selectable, Deserialize, Serialize)]
@@ -372,7 +361,7 @@ pub struct InvoiceEntityListItem {
   pub invoice_id: i32,
   pub name: String,
   pub description: Option<String>,
-  pub due_date: DateTime<Utc>,
+  pub due_date: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Queryable, Selectable)]

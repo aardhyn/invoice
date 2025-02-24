@@ -31,11 +31,11 @@ pub struct Invoice {
   name: String,
   description: Option<String>,
   reference: Option<String>,
-  due_date: DateTime<Utc>,
+  due_date: Option<DateTime<Utc>>,
   line_items: Vec<InvoiceLineItem>,
   business: InvoiceBusiness,
-  client: InvoiceClient,
-  location: LocationEntity,
+  client: Option<InvoiceClient>,
+  location: Option<LocationEntity>,
   total: i32,
 }
 
@@ -134,45 +134,53 @@ pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
     payment: payment_entity,
   };
 
-  let location_entity = location::table
-    .find(invoice_entity.location_id)
-    .select(LocationEntity::as_select())
-    .first(connection)
-    .expect("Error loading location");
+  let location_entity = invoice_entity.location_id.map(|location_id| {
+    location::table
+      .find(location_id)
+      .select(LocationEntity::as_select())
+      .first(connection)
+      .expect("Error loading location")
+  });
 
-  let client_entity = client::table
-    .find(invoice_entity.client_id)
-    .select(ClientEntity::as_select())
-    .first(connection)
-    .expect("Error loading client");
-  let client_contact_entity = contact::table
-    .find(client_entity.contact_id)
-    .select(ContactEntity::as_select())
-    .first(connection)
-    .expect("Error loading client location");
-  let client_contact_location_id = client_contact_entity
-    .location_id
-    .expect("Client contact has no location");
-  let client_contact_location = location::table
-    .find(client_contact_location_id)
-    .select(LocationEntity::as_select())
-    .first(connection)
-    .expect("Error loading client location");
+  let client = invoice_entity
+    .client_id
+    .map(|client_id| {
+      client::table
+        .find(client_id)
+        .select(ClientEntity::as_select())
+        .first(connection)
+        .expect("Failed to get client")
+    })
+    .map(|client_entity| {
+      let client_contact_entity = contact::table
+        .find(client_entity.contact_id)
+        .select(ContactEntity::as_select())
+        .first(connection)
+        .expect("Failed to get client contact");
+      let client_contact_location_id = client_contact_entity
+        .location_id
+        .expect("Failed to get client contact location");
+      let client_contact_location = location::table
+        .find(client_contact_location_id)
+        .select(LocationEntity::as_select())
+        .first(connection)
+        .expect("Error loading client location");
 
-  let client_contact = ClientContact {
-    contact_id: client_contact_entity.contact_id,
-    name: client_contact_entity.name,
-    email: client_contact_entity.email,
-    cell: client_contact_entity.cell,
-    location: client_contact_location,
-  };
+      let client_contact = ClientContact {
+        contact_id: client_contact_entity.contact_id,
+        name: client_contact_entity.name,
+        email: client_contact_entity.email,
+        cell: client_contact_entity.cell,
+        location: client_contact_location,
+      };
 
-  let client = InvoiceClient {
-    client_id: client_entity.client_id,
-    name: client_entity.name,
-    description: client_entity.description,
-    contact: client_contact,
-  };
+      InvoiceClient {
+        client_id: client_entity.client_id,
+        name: client_entity.name,
+        description: client_entity.description,
+        contact: client_contact,
+      }
+    });
 
   let line_items = serde_json::from_value::<Vec<LineItemEntity>>(invoice_entity.line_items)
     .expect("Failed to deserialize invoice_entity::line_items");

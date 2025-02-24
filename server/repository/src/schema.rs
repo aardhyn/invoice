@@ -1,5 +1,11 @@
 // @generated automatically by Diesel CLI.
 
+pub mod sql_types {
+    #[derive(diesel::query_builder::QueryId, Clone, diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "state"))]
+    pub struct State;
+}
+
 diesel::table! {
     business (business_id) {
         business_id -> Int4,
@@ -37,16 +43,25 @@ diesel::table! {
         invoice_key -> Varchar,
         name -> Varchar,
         description -> Nullable<Varchar>,
-        reference -> Nullable<Varchar>,
-        due_date -> Timestamptz,
-        line_items -> Jsonb,
-        payment_data -> Jsonb,
         business_id -> Int4,
-        client_id -> Int4,
-        client_data -> Jsonb,
-        location_id -> Int4,
-        location_data -> Jsonb,
+        reference -> Nullable<Varchar>,
+        due_date -> Nullable<Timestamptz>,
+        line_items -> Jsonb,
+        client_id -> Nullable<Int4>,
+        client_data -> Nullable<Jsonb>,
+        location_id -> Nullable<Int4>,
+        location_data -> Nullable<Jsonb>,
         created_timestamp -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    use diesel::sql_types::*;
+    use super::sql_types::State;
+
+    invoice_status (invoice_id) {
+        invoice_id -> Int4,
+        state -> State,
     }
 }
 
@@ -104,6 +119,7 @@ diesel::joinable!(contact -> location (location_id));
 diesel::joinable!(invoice -> business (business_id));
 diesel::joinable!(invoice -> client (client_id));
 diesel::joinable!(invoice -> location (location_id));
+diesel::joinable!(invoice_status -> invoice (invoice_id));
 diesel::joinable!(invoice_template -> invoice (invoice_id));
 diesel::joinable!(product -> business (business_id));
 diesel::joinable!(service -> business (business_id));
@@ -113,6 +129,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     client,
     contact,
     invoice,
+    invoice_status,
     invoice_template,
     location,
     payment,

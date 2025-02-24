@@ -29,7 +29,10 @@ pub fn get_business(business_id: i32) -> Result<Business, GetBusinessError> {
     .find(business_id)
     .select(BusinessEntity::as_select())
     .first(connection)
-    .expect("Error loading business");
+    .map_err(|error| match error {
+      Error::NotFound => GetBusinessError::NotFound,
+      _ => GetBusinessError::UnknownError(error),
+    })?;
 
   let business_contact_id = business_entity.contact_id.expect("Business has no contact");
   let business_contact = contact::table

@@ -16,6 +16,7 @@
     "libc",
     "libpq",
     "PGPORT",
+    "plpgsql",
     "psql",
     "serde",
     "tanstack",
@@ -24,6 +25,7 @@
     "tsbuildinfo",
     "tseslint",
     "uuidv",
+    "varchar",
     "VITE"
   ]
 }

@@ -40,26 +40,32 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
               <b>Nō</b> {invoice.invoice_key}
             </p>
             <p className="row">
-              <b>Date</b>
+              <b>Due</b>{" "}
+              {invoice.due_date ? dateFromTimestamp(invoice.due_date) : "Unset"}
             </p>
             <p className="row">
-              <b>Due</b> {dateFromTimestamp(invoice.due_date)}
-            </p>
-            <p className="row">
-              <b>Reference</b> {invoice.reference}
+              <b>Reference</b> {invoice.reference ? invoice.reference : "None"}
             </p>
           </article>
         </div>
         <div className="card">
           <h2>To</h2>
           <article>
-            <ContactPreview contact={invoice.client.contact} />
+            {invoice.client ? (
+              <ContactPreview contact={invoice.client.contact} />
+            ) : (
+              "Unset"
+            )}
           </article>
         </div>
         <div className="card">
           <h2>Property</h2>
           <article>
-            <LocationPreview location={invoice.location} />
+            {invoice.location ? (
+              <LocationPreview location={invoice.location} />
+            ) : (
+              "Unset"
+            )}
           </article>
         </div>
       </div>

@@ -2,6 +2,8 @@ set timezone to 'utc';
 
 create domain size as int check (value >= 0);
 
+create type State as enum ('draft', 'pending', 'paid');
+
 create table location (
   location_id serial primary key,
   address varchar not null,
@@ -63,16 +65,16 @@ create table invoice (
   invoice_key varchar unique not null,
   name varchar not null,
   description varchar null,
-  reference varchar null,
-  due_date timestamp with time zone not null,
-  line_items jsonb not null default '[]'::jsonb,
-  payment_data jsonb not null,
   business_id int not null references business(business_id) on delete cascade,
-  client_id int not null references client(client_id) on delete set null,
-  client_data jsonb not null,
-  location_id int not null references location(location_id) on delete cascade,
-  location_data jsonb not null,
+  reference varchar null,
+  due_date timestamp with time zone null,
+  line_items jsonb not null default '[]'::jsonb,
+  client_id int null references client(client_id) on delete set null,
+  client_data jsonb null,
+  location_id int null references location(location_id) on delete cascade,
+  location_data jsonb null,
   created_timestamp timestamp with time zone not null default now()
+  state State not null default 'draft'
 );
 
 create table invoice_template (
