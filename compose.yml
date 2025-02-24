@@ -9,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - PGPORT=${DATABASE_PORT}
     volumes:
-      - database_data:/var/lib/postgresql/data
+      - invoice_postgres_data:/var/lib/postgresql/data
     ports:
       - "${DATABASE_PORT}:${DATABASE_PORT}"
 
@@ -100,5 +100,5 @@ services:
       - dev
 
 volumes:
-  database_data:
+  invoice_postgres_data:
     external: true

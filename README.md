@@ -1,6 +1,6 @@
 # Inv.
 
-Invoice builder and tracking software
+Invoice builder and tracking software for small businesses and self-employed individuals.
 
 ## Build
 
@@ -11,6 +11,14 @@ cp .env.template .env
 ```
 
 Most variables have default values; `DATABASE_PASSWORD` is unset.
+
+### Persistence
+
+Create a Docker volume to persist database data
+
+```bash
+make database-volume
+```
 
 ### Development
 
@@ -34,7 +42,7 @@ See the [Makefile](Makefile) for more commands and details.
 
 ### Production
 
-Build services for a production environment
+Build services for a production environment.
 
 ```bash
 make prod

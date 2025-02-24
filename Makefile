@@ -39,3 +39,6 @@ test:
 # Access the database container as an admin
 database-admin:
 	docker exec -it database psql -U postgres -d postgres;
+
+database-volume:
+	docker volume create invoice_postgres_data
