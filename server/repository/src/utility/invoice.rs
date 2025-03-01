@@ -1,11 +1,15 @@
 use std::cmp::max;
 
+use crate::model::InvoiceState;
 use crate::utility::string::extract_trailing_integer;
 use diesel::prelude::*;
 use diesel::PgConnection;
 
 use super::temporal::get_tax_year;
 
+/**
+ * Return the number of invoices for a business.
+ */
 pub fn invoice_count(
   connection: &mut PgConnection,
   business_id: i32,
@@ -24,6 +28,9 @@ fn create_untitled_invoice_name(invoice_count: i32) -> String {
   format!("{} {}", DEFAULT_UNTITLED_INVOICE_NAME, invoice_count)
 }
 
+/*
+ * Return a next-in-sequence untitled invoice name.
+ */
 pub fn next_untitled_invoice_name(
   connection: &mut PgConnection,
   business_id: i32,
@@ -45,6 +52,9 @@ pub fn next_untitled_invoice_name(
   Ok(next_name)
 }
 
+/**
+ * Returns a next-in-sequence unique invoice key.
+ */
 pub fn invoice_key(
   connection: &mut PgConnection,
   business_id: i32,
@@ -53,4 +63,21 @@ pub fn invoice_key(
   let tax_year = get_tax_year();
   let invoice_key = format!("INVC-{tax_year}{invoice_count:0>5}");
   Ok(invoice_key)
+}
+
+/**
+ * Return the state of an invoice
+ */
+pub fn get_invoice_state(
+  invoice_id: i32,
+  connection: &mut PgConnection,
+) -> Result<InvoiceState, diesel::result::Error> {
+  use crate::schema::invoice;
+
+  let state = invoice::table
+    .find(invoice_id)
+    .select(invoice::state)
+    .get_result(connection)?;
+
+  Ok(state)
 }

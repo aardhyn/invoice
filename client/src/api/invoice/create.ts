@@ -1,31 +1,19 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  CreateLineItem,
-  CreateLocation,
-  INVOICE_LIST_QUERY_KEY,
-  Timestampz,
-  endpoint,
-  queryClient,
-} from "api";
+import { INVOICE_LIST_QUERY_KEY, endpoint, queryClient } from "api";
 
-export type CreateInvoice = {
-  name: string;
-  description: string;
-  business_id: number; // todo: replace with uuid (we don't expose primary keys)
-  client_id: number; //         ''
-  due_date: Timestampz;
-  location: CreateLocation;
-  line_items: CreateLineItem[];
-};
+export type CreateInvoice = { business_id: number };
+export type CreatedInvoice = { invoice_id: number };
 
 export function useInvoiceCreateMutation() {
   return useMutation({
-    mutationFn(invoice: CreateInvoice) {
-      return fetch(endpoint("invoice.create"), {
+    async mutationFn(invoice: CreateInvoice) {
+      const res = await fetch(endpoint("invoice.create"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(invoice),
       });
+      const data = await res.json();
+      return data.data as CreatedInvoice;
     },
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: INVOICE_LIST_QUERY_KEY });

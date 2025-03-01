@@ -6,7 +6,7 @@ import {
   useInvoiceTemplateDeleteMutation,
 } from "api";
 import { invariant } from "common";
-import { InvoicePreview, Print } from "component";
+import { DraftInvoiceMutationForm, InvoicePreview, Print } from "component";
 import { useMemo } from "react";
 
 import templateStyles from "component/template/invoice/style.css?inline";
@@ -40,28 +40,30 @@ function Page() {
   }
 
   return (
-    <div>
+    <>
       <h2>{invoice.data?.name}</h2>
 
       <button onClick={toggleTemplate}>{toggleTemplateText}</button>
 
-      <details>
-        <summary>Raw data</summary>
-        <pre>{JSON.stringify(invoice, null, 2)}</pre>
-      </details>
+      <section>
+        <h3>Edit Invoice</h3>
+        <DraftInvoiceMutationForm invoice={invoice.data} />
+      </section>
 
-      <details>
-        <summary>Print preview</summary>
-        <InvoicePreview invoice={invoice.data} />
-      </details>
-
+      <section>
+        <h3>Preview</h3>
+        <details>
+          <summary>Show</summary>
+          <InvoicePreview invoice={invoice.data} />
+        </details>
+      </section>
       <Print
         style={templateStyles}
         content={<InvoicePreview invoice={invoice.data} />}
       >
         <button>Print</button>
       </Print>
-    </div>
+    </>
   );
 }
 

@@ -5,12 +5,13 @@ use serde::Deserialize;
 
 use crate::connection::establish_connection;
 use crate::model::*;
-use crate::utility::invoice::invoice_key;
+use crate::utility::invoice::{invoice_key, next_untitled_invoice_name};
 use diesel::prelude::*;
 
 #[derive(Debug)]
 pub enum DuplicateInvoiceError {
   ConnectionError(ConnectionError),
+  InvoiceNotFound,
   UnknownError(Error),
 }
 
@@ -42,27 +43,32 @@ pub fn duplicate_invoice(
 
   let invoice = invoice::table
     .find(invoice_id)
-    .select(NewDuplicateInvoiceEntity::as_select())
+    .select(InvoiceEntity::as_select()) // use DuplicateInvoiceEntity
     .first(connection)
-    .map_err(DuplicateInvoiceError::from)?;
+    .map_err(|err| match err {
+      Error::NotFound => DuplicateInvoiceError::InvoiceNotFound,
+      _ => DuplicateInvoiceError::from(err),
+    })?;
 
   let invoice_key =
-    invoice_key(connection, invoice.business_id).expect("failed to generate invoice key");
+    invoice_key(connection, invoice.business_id).map_err(DuplicateInvoiceError::from)?;
 
+  let name = next_untitled_invoice_name(connection, invoice.business_id)
+    .map_err(DuplicateInvoiceError::from)?;
+
+  // change this to NewDuplicateInvoiceEntity... or something
   let new_invoice = diesel::insert_into(invoice::table)
-    .values(NewInvoiceEntity {
+    .values(DuplicateInvoiceEntity {
       invoice_key,
-      name: invoice.name,
+      name,
       business_id: invoice.business_id,
-      // description: invoice.description,
-      // reference: invoice.reference,
-      // due_date: invoice.due_date,
-      // client_id: invoice.client_id,
-      // location_id: invoice.location_id,
-      // payment_data: invoice.payment_data,
-      // client_data: invoice.client_data,
-      // location_data: invoice.location_data,
-      // line_items: invoice.line_items,
+      description: invoice.description,
+      reference: invoice.reference,
+      client_id: invoice.client_id,
+      line_items: invoice.line_items,
+      address: invoice.address,
+      suburb: invoice.suburb,
+      city: invoice.city,
     })
     .returning(CreatedInvoiceEntity::as_returning())
     .get_result(connection)

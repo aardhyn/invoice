@@ -3,14 +3,14 @@ import {
   BUSINESS_LIST_QUERY_KEY,
   endpoint,
   type CreateContact,
-  type CreateLocation,
+  type Location,
   queryClient,
 } from "api";
 
 export type CreateBusiness = {
   name: string;
   description: string;
-  location: CreateLocation;
+  location: Location;
   contact: CreateContact;
   account_number: string;
   account_name: string;

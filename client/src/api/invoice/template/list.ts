@@ -10,7 +10,7 @@ export type InvoiceTemplateListParams = {
   business_id: number;
 };
 
-export type InvoiceTemplate = Omit<Location, "location_id"> & {
+export type InvoiceTemplate = {
   invoice_id: number;
   name: string;
   description: string | null;

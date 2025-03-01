@@ -1,14 +1,11 @@
-use std::fmt;
-
+use crate::connection::establish_connection;
+use crate::model::*;
+use crate::utility::contact::CreateContact;
+use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error};
 use diesel::SelectableHelper;
 use serde::{Deserialize, Serialize};
-
-use crate::connection::establish_connection;
-use crate::model::*;
-use diesel::prelude::*;
-
-use super::common::CreateLocatedContact;
+use std::fmt;
 
 // Create Client //
 
@@ -35,8 +32,8 @@ impl From<Error> for CreateClientError {
 pub struct CreateClient {
   pub name: String,
   pub description: Option<String>,
-  pub contact: CreateLocatedContact,
   pub business_id: i32,
+  pub contact: CreateContact,
 }
 
 #[derive(Debug, Serialize)]
@@ -46,26 +43,24 @@ pub struct CreatedClient {
 }
 
 pub fn create_client(new_client: CreateClient) -> Result<CreatedClient, CreateClientError> {
-  use crate::schema::{client, contact, location};
+  use crate::schema::{client, contact};
 
   let connection = &mut establish_connection().map_err(CreateClientError::ConnectionError)?;
 
-  connection.transaction::<_, CreateClientError, _>(|connection| {
-    let created_contact_location = diesel::insert_into(location::table)
-      .values(&NewLocationEntity {
-        address: new_client.contact.location.address.clone(),
-        suburb: new_client.contact.location.suburb.clone(),
-        city: new_client.contact.location.city.clone(),
-      })
-      .returning(CreatedLocationEntity::as_returning())
-      .get_result(connection)?;
+  let (address, suburb, city) = match new_client.contact.location {
+    Some(location) => (Some(location.address), location.suburb, Some(location.city)),
+    None => (None, None, None),
+  };
 
+  connection.transaction::<_, CreateClientError, _>(|connection| {
     let created_contact = diesel::insert_into(contact::table)
-      .values(&NewContactEntity {
-        location_id: Some(created_contact_location.location_id),
+      .values(&CreateContactEntity {
         name: new_client.contact.name.clone(),
         email: new_client.contact.email.clone(),
         cell: new_client.contact.cell.clone(),
+        address,
+        suburb,
+        city,
       })
       .returning(CreatedContactEntity::as_returning())
       .get_result(connection)
@@ -78,7 +73,7 @@ pub fn create_client(new_client: CreateClient) -> Result<CreatedClient, CreateCl
       })?;
 
     let created_client = diesel::insert_into(client::table)
-      .values(&NewClientEntity {
+      .values(&CreateClientEntity {
         name: new_client.name.clone(),
         business_id: new_client.business_id,
         description: new_client.description.clone(),

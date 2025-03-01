@@ -5,93 +5,55 @@ use std::vec;
 
 use crate::model::*;
 
-pub fn seed_location() -> Vec<NewLocationEntity> {
+pub fn seed_contact() -> Vec<CreateContactEntity> {
   vec![
-    NewLocationEntity {
-      address: String::from("123 Main St"),
-      suburb: Some(String::from("Suburb")),
-      city: String::from("City"),
-    },
-    NewLocationEntity {
-      address: String::from("456 Secondary St"),
-      suburb: Some(String::from("Suburb")),
-      city: String::from("City"),
-    },
-    NewLocationEntity {
-      address: String::from("789 Clients St"),
-      suburb: None,
-      city: String::from("City"),
-    },
-    NewLocationEntity {
-      address: String::from("1011 Business St"),
-      suburb: Some(String::from("Suburb")),
-      city: String::from("City"),
-    },
-    NewLocationEntity {
-      address: String::from("1213 Payment St"),
-      suburb: Some(String::from("Suburb")),
-      city: String::from("City"),
-    },
-    NewLocationEntity {
-      address: String::from("1415 Invoice St"),
-      suburb: Some(String::from("Suburb")),
-      city: String::from("City"),
-    },
-    NewLocationEntity {
-      address: String::from("1617 Line Item St"),
-      suburb: Some(String::from("Suburb")),
-      city: String::from("City"),
-    },
-    NewLocationEntity {
-      address: String::from("1819 Product St"),
-      suburb: Some(String::from("Suburb")),
-      city: String::from("City"),
-    },
-    NewLocationEntity {
-      address: String::from("2021 Service St"),
-      suburb: Some(String::from("Suburb")),
-      city: String::from("City"),
-    },
-  ]
-}
-
-pub fn seed_contact() -> Vec<NewContactEntity> {
-  vec![
-    NewContactEntity {
-      location_id: None,
+    CreateContactEntity {
       name: String::from("John Carmack"),
       email: String::from("jcarmack@id.co.us"),
       cell: String::from("0211234567"),
+      address: None,
+      suburb: None,
+      city: None,
     },
-    NewContactEntity {
-      location_id: None,
+    CreateContactEntity {
       name: String::from("Chris Sawyer"),
       email: String::from("csawyer@rct.co.uk"),
       cell: String::from("0217654321"),
+      address: None,
+      suburb: None,
+      city: None,
     },
-    NewContactEntity {
-      location_id: None,
+    CreateContactEntity {
       name: String::from("Tom Happ"),
       email: String::from("thapp@thg.com"),
       cell: String::from("0219876543"),
+      address: None,
+      suburb: None,
+      city: None,
     },
-    NewContactEntity {
-      location_id: Some(1),
+    CreateContactEntity {
       name: String::from("John Romero"),
       email: String::from("jromero@id.co.us"),
       cell: String::from("0211234567"),
+      address: Some(String::from("123 Main St")),
+      suburb: Some(String::from("Suburb")),
+      city: Some(String::from("City")),
     },
-    NewContactEntity {
-      location_id: Some(2),
+    CreateContactEntity {
       name: String::from("Andreas Kling"),
       email: String::from("courage@ladybird.com"),
       cell: String::from("0217654321"),
+      address: Some(String::from("456 Secondary St")),
+      suburb: Some(String::from("Suburb")),
+      city: Some(String::from("City")),
     },
-    NewContactEntity {
-      location_id: Some(3),
+    CreateContactEntity {
       name: String::from("Tarn Adams"),
       email: String::from("tadams@df.net"),
       cell: String::from("0219876543"),
+      address: Some(String::from("1011 Business St")),
+      suburb: Some(String::from("Suburb")),
+      city: Some(String::from("City")),
     },
   ]
 }
@@ -118,42 +80,48 @@ pub fn seed_business() -> Vec<NewBusinessEntity> {
     NewBusinessEntity {
       name: String::from("Weyland Yutani"),
       description: Some(String::from("Building Better Worlds")),
-      location_id: Some(4),
       contact_id: Some(1),
       payment_id: Some(1),
+      address: Some(String::from("1213 Payment St")),
+      suburb: Some(String::from("Suburb")),
+      city: Some(String::from("City")),
     },
     NewBusinessEntity {
       name: String::from("Tyrell Corp"),
       description: Some(String::from("More Human Than Human")),
-      location_id: Some(5),
       contact_id: Some(2),
       payment_id: Some(1),
+      address: Some(String::from("1415 Invoice St")),
+      suburb: Some(String::from("Suburb")),
+      city: Some(String::from("City")),
     },
     NewBusinessEntity {
       name: String::from("Aperture Science"),
       description: Some(String::from("We Do What We Must Because We Can")),
-      location_id: Some(6),
       contact_id: Some(3),
       payment_id: Some(2),
+      address: Some(String::from("1617 Line Item St")),
+      suburb: Some(String::from("Suburb")),
+      city: Some(String::from("City")),
     },
   ]
 }
 
-pub fn seed_client() -> Vec<NewClientEntity> {
+pub fn seed_client() -> Vec<CreateClientEntity> {
   vec![
-    NewClientEntity {
+    CreateClientEntity {
       name: String::from("Wayne Enterprises"),
       business_id: 1,
       description: Some(String::from("I Am Vengeance, I Am The Night, I Am Batman")),
       contact_id: 4,
     },
-    NewClientEntity {
+    CreateClientEntity {
       name: String::from("Stark Industries"),
       description: Some(String::from("We Have A Hulk")),
       business_id: 2,
       contact_id: 5,
     },
-    NewClientEntity {
+    CreateClientEntity {
       name: String::from("Winter Cooperation"),
       description: Some(String::from("Time Entwined")),
       business_id: 3,

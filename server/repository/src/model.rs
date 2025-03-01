@@ -1,40 +1,13 @@
 use crate::schema::*;
 use chrono::{DateTime, Utc};
-use diesel::{pg::Pg, prelude::*};
+use diesel::deserialize::{self, FromSql, FromSqlRow};
+use diesel::pg::Pg;
+use diesel::pg::PgValue;
+use diesel::serialize::{self, IsNull, Output, ToSql};
+use diesel::{AsChangeset, Insertable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
+use std::io::Write;
 use uuid;
-
-//
-// Repository Model
-//
-// Mapping between the database schema and the Rust type system
-//
-
-// Location //
-
-#[derive(Queryable, Selectable, Serialize)]
-#[diesel(check_for_backend(Pg))]
-#[diesel(table_name = location)]
-pub struct LocationEntity {
-  pub location_id: i32,
-  pub address: String,
-  pub suburb: Option<String>,
-  pub city: String,
-}
-#[derive(Insertable, Deserialize)]
-#[diesel(check_for_backend(Pg))]
-#[diesel(table_name = location)]
-pub struct NewLocationEntity {
-  pub address: String,
-  pub suburb: Option<String>,
-  pub city: String,
-}
-#[derive(Queryable, Selectable, Serialize)]
-#[diesel(check_for_backend(Pg))]
-#[diesel(table_name = location)]
-pub struct CreatedLocationEntity {
-  pub location_id: i32,
-}
 
 // Contact //
 
@@ -43,19 +16,23 @@ pub struct CreatedLocationEntity {
 #[diesel(table_name = contact)]
 pub struct ContactEntity {
   pub contact_id: i32,
-  pub location_id: Option<i32>,
   pub name: String,
   pub email: String,
   pub cell: String,
+  pub address: Option<String>,
+  pub suburb: Option<String>,
+  pub city: Option<String>,
 }
-#[derive(Insertable)]
+#[derive(Debug, Insertable, Serialize, Deserialize)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = contact)]
-pub struct NewContactEntity {
-  pub location_id: Option<i32>,
+pub struct CreateContactEntity {
   pub name: String,
   pub email: String,
   pub cell: String,
+  pub address: Option<String>,
+  pub suburb: Option<String>,
+  pub city: Option<String>,
 }
 #[derive(Queryable, Selectable, Serialize)]
 #[diesel(check_for_backend(Pg))]
@@ -88,6 +65,16 @@ pub struct CreatedPaymentEntity {
   pub payment_id: i32,
 }
 
+// Location //
+
+#[derive(Queryable, Debug, Serialize, Deserialize)]
+#[diesel(check_for_backend(Pg))]
+pub struct LocationEntity {
+  pub address: Option<String>,
+  pub suburb: Option<String>,
+  pub city: Option<String>,
+}
+
 // Business //
 
 #[derive(Queryable, Selectable, Serialize)]
@@ -95,21 +82,25 @@ pub struct CreatedPaymentEntity {
 #[diesel(table_name = business)]
 pub struct BusinessEntity {
   pub business_id: i32,
-  pub payment_id: Option<i32>,
-  pub contact_id: Option<i32>,
-  pub location_id: Option<i32>,
   pub name: String,
   pub description: Option<String>,
+  pub address: Option<String>,
+  pub suburb: Option<String>,
+  pub city: Option<String>,
+  pub payment_id: Option<i32>,
+  pub contact_id: Option<i32>,
 }
 #[derive(Insertable, Debug)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = business)]
 pub struct NewBusinessEntity {
-  pub payment_id: Option<i32>,
-  pub contact_id: Option<i32>,
-  pub location_id: Option<i32>,
   pub name: String,
   pub description: Option<String>,
+  pub address: Option<String>,
+  pub suburb: Option<String>,
+  pub city: Option<String>,
+  pub payment_id: Option<i32>,
+  pub contact_id: Option<i32>,
 }
 #[derive(Queryable, Selectable, Serialize)]
 #[diesel(check_for_backend(Pg))]
@@ -134,20 +125,20 @@ pub struct BusinessEntityListItem {
 #[diesel(table_name = client)]
 pub struct ClientEntity {
   pub client_id: i32,
-  pub contact_id: i32,
-  pub business_id: i32,
   pub name: String,
   pub description: Option<String>,
+  pub contact_id: i32,
+  pub business_id: i32,
 }
 
-#[derive(Insertable, Serialize)]
+#[derive(Debug, Insertable, Serialize, Deserialize)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = client)]
-pub struct NewClientEntity {
-  pub contact_id: i32,
-  pub business_id: i32,
+pub struct CreateClientEntity {
   pub name: String,
   pub description: Option<String>,
+  pub contact_id: i32,
+  pub business_id: i32,
 }
 
 #[derive(Queryable, Selectable, Serialize)]
@@ -283,7 +274,7 @@ pub struct LineItemCustomField {
   pub data: LineItemCustomFieldType,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, FromSqlRow)]
 pub struct LineItemEntity {
   pub key: uuid::Uuid,
   pub name: String,
@@ -301,7 +292,37 @@ pub struct CreatedLineItemEntity {
 
 // Invoice //
 
-#[derive(Queryable, Selectable, QueryableByName, Serialize)]
+#[derive(Debug, FromSqlRow, PartialEq, Serialize)]
+#[diesel(sql_type = sql_types::InvoiceState)]
+pub enum InvoiceState {
+  Draft,
+  Sent,
+  Paid,
+}
+
+impl ToSql<sql_types::InvoiceState, Pg> for InvoiceState {
+  fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
+    match *self {
+      InvoiceState::Draft => out.write_all(b"draft")?,
+      InvoiceState::Sent => out.write_all(b"sent")?,
+      InvoiceState::Paid => out.write_all(b"paid")?,
+    }
+    Ok(IsNull::No)
+  }
+}
+
+impl FromSql<sql_types::InvoiceState, Pg> for InvoiceState {
+  fn from_sql(bytes: PgValue<'_>) -> deserialize::Result<Self> {
+    match bytes.as_bytes() {
+      b"draft" => Ok(InvoiceState::Draft),
+      b"sent" => Ok(InvoiceState::Sent),
+      b"paid" => Ok(InvoiceState::Paid),
+      _ => Err("Invalid Invoice State ".into()),
+    }
+  }
+}
+
+#[derive(Queryable, Selectable)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct InvoiceEntity {
@@ -310,13 +331,30 @@ pub struct InvoiceEntity {
   pub name: String,
   pub description: Option<String>,
   pub reference: Option<String>,
-  pub due_date: Option<DateTime<Utc>>,
   pub business_id: i32,
   pub client_id: Option<i32>,
-  pub client_data: Option<serde_json::Value>,
-  pub line_items: serde_json::Value, // todo: can we map this directly to a struct?
-  pub location_id: Option<i32>,
-  pub location_data: Option<serde_json::Value>,
+  pub address: Option<String>,
+  pub suburb: Option<String>,
+  pub city: Option<String>,
+  pub due_date: Option<DateTime<Utc>>,
+  pub line_items: serde_json::Value, //Vec<LineItemEntity>,
+  pub state: InvoiceState,
+}
+
+#[derive(Insertable, Queryable, Selectable, Debug)]
+#[diesel(check_for_backend(Pg))]
+#[diesel(table_name = invoice)]
+pub struct DuplicateInvoiceEntity {
+  pub invoice_key: String,
+  pub name: String,
+  pub description: Option<String>,
+  pub reference: Option<String>,
+  pub business_id: i32,
+  pub client_id: Option<i32>,
+  pub address: Option<String>,
+  pub suburb: Option<String>,
+  pub city: Option<String>,
+  pub line_items: serde_json::Value, //Vec<LineItemEntity>,
 }
 
 #[derive(Insertable, Queryable, Selectable, Debug)]
@@ -328,20 +366,18 @@ pub struct NewInvoiceEntity {
   pub name: String,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Debug, Queryable, AsChangeset, Deserialize)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
-pub struct NewDuplicateInvoiceEntity {
-  pub name: String,
-  pub business_id: i32,
-  // pub description: Option<String>,
-  // pub reference: Option<String>,
-  // pub client_id: Option<i32>,
-  // pub client_data: Option<serde_json::Value>,
-  // pub location_id: Option<i32>,
-  // pub location_data: Option<serde_json::Value>,
-  // pub due_date: Option<DateTime<Utc>>,
-  // pub line_items: serde_json::Value,
+pub struct DraftInvoiceEntityMutation {
+  pub name: Option<String>,
+  pub description: Option<String>,
+  pub reference: Option<String>,
+  pub address: Option<String>,
+  pub suburb: Option<String>,
+  pub city: Option<String>,
+  pub client_id: Option<i32>,
+  pub due_date: Option<DateTime<Utc>>,
 }
 
 #[derive(Queryable, Selectable, Deserialize, Serialize)]
@@ -394,9 +430,9 @@ pub struct InvoiceTemplateListEntity {
   pub invoice_id: i32,
   pub name: String,
   pub description: Option<String>,
-  pub address: String,
+  pub address: Option<String>,
   pub suburb: Option<String>,
-  pub city: String,
+  pub city: Option<String>,
   pub client_name: String,
 }
 

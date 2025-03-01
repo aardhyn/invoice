@@ -29,6 +29,7 @@ async fn main() -> Result<(), String> {
     invoice_create,
     invoice_list,
     invoice_get,
+    invoice_draft_mutate,
     invoice_duplicate,
     invoice_line_item_add,
     invoice_template_create,

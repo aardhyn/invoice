@@ -13,6 +13,9 @@ pub fn invoice_duplicate(data: Json<DuplicateInvoice>) -> APIResponse<Duplicated
           Status::InternalServerError,
           String::from("An error occurred while connecting to the database"),
         ),
+        service::DuplicateInvoiceError::InvoiceNotFound => {
+          (Status::NotFound, String::from("Invalid invoice"))
+        }
         service::DuplicateInvoiceError::UnknownError(e) => (
           Status::InternalServerError,
           format!("An unknown error occurred: {:?}", e.to_string()),

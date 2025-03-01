@@ -1,26 +1,20 @@
 use crate::connection::establish_connection;
 use crate::model::*;
-use crate::utility::contact::{BusinessContact, ClientContact};
+use crate::utility::client::Client;
+use crate::utility::contact::Contact;
 use crate::utility::line_item::{compute_product_total, compute_service_total};
+use crate::utility::location::Location;
 use chrono::{DateTime, Utc};
 use diesel::{prelude::*, result::Error};
 use serde::Serialize;
-
-#[derive(Serialize)]
-pub struct InvoiceClient {
-  client_id: i32,
-  name: String,
-  description: Option<String>,
-  contact: ClientContact,
-}
 
 #[derive(Serialize)]
 pub struct InvoiceBusiness {
   business_id: i32,
   name: String,
   description: Option<String>,
-  contact: BusinessContact,
-  location: LocationEntity,
+  contact: Contact,
+  location: Option<Location>,
   payment: PaymentEntity,
 }
 
@@ -34,8 +28,9 @@ pub struct Invoice {
   due_date: Option<DateTime<Utc>>,
   line_items: Vec<InvoiceLineItem>,
   business: InvoiceBusiness,
-  client: Option<InvoiceClient>,
-  location: Option<LocationEntity>,
+  client: Option<Client>,
+  location: Option<Location>,
+  state: InvoiceState,
   total: i32,
 }
 
@@ -64,7 +59,7 @@ pub enum GetInvoiceError {
 }
 
 pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
-  use crate::schema::{business, client, contact, invoice, location, payment, product, service};
+  use crate::schema::{business, client, contact, invoice, payment, product, service};
 
   let connection = &mut establish_connection().expect("Error connecting to database");
 
@@ -101,19 +96,16 @@ pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
     .select(ContactEntity::as_select())
     .first(connection)
     .expect("Error loading business contact");
-  let business_location_id = business_entity
-    .location_id
-    .expect("Business contact has no location");
-  let business_location = location::table
-    .find(business_location_id)
-    .select(LocationEntity::as_select())
-    .first(connection)
-    .expect("Error loading business location");
-  let business_contact = BusinessContact {
+  let business_contact = Contact {
     contact_id: business_contact.contact_id,
     name: business_contact.name,
     email: business_contact.email,
     cell: business_contact.cell,
+    location: Location::from_entity(LocationEntity {
+      address: business_contact.address,
+      suburb: business_contact.suburb,
+      city: business_contact.city,
+    }),
   };
 
   let business_payment_id = business_entity
@@ -130,17 +122,13 @@ pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
     name: business_entity.name,
     description: business_entity.description,
     contact: business_contact,
-    location: business_location,
+    location: Location::from_entity(LocationEntity {
+      address: business_entity.address,
+      suburb: business_entity.suburb,
+      city: business_entity.city,
+    }),
     payment: payment_entity,
   };
-
-  let location_entity = invoice_entity.location_id.map(|location_id| {
-    location::table
-      .find(location_id)
-      .select(LocationEntity::as_select())
-      .first(connection)
-      .expect("Error loading location")
-  });
 
   let client = invoice_entity
     .client_id
@@ -157,28 +145,20 @@ pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
         .select(ContactEntity::as_select())
         .first(connection)
         .expect("Failed to get client contact");
-      let client_contact_location_id = client_contact_entity
-        .location_id
-        .expect("Failed to get client contact location");
-      let client_contact_location = location::table
-        .find(client_contact_location_id)
-        .select(LocationEntity::as_select())
-        .first(connection)
-        .expect("Error loading client location");
 
-      let client_contact = ClientContact {
+      let contact = Contact {
         contact_id: client_contact_entity.contact_id,
         name: client_contact_entity.name,
         email: client_contact_entity.email,
         cell: client_contact_entity.cell,
-        location: client_contact_location,
+        location: None,
       };
 
-      InvoiceClient {
+      Client {
         client_id: client_entity.client_id,
         name: client_entity.name,
         description: client_entity.description,
-        contact: client_contact,
+        contact,
       }
     });
 
@@ -227,6 +207,12 @@ pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
     })
     .collect();
 
+  let location = Location::from_entity(LocationEntity {
+    address: invoice_entity.address,
+    suburb: invoice_entity.suburb,
+    city: invoice_entity.city,
+  });
+
   let invoice = Invoice {
     invoice_id: invoice_entity.invoice_id,
     invoice_key: invoice_entity.invoice_key,
@@ -237,8 +223,9 @@ pub fn get_invoice(invoice_id: i32) -> Result<Invoice, GetInvoiceError> {
     line_items: detailed_items,
     business,
     client,
-    location: location_entity,
+    location,
     total: grand_total,
+    state: invoice_entity.state,
   };
 
   Ok(invoice)

@@ -1,22 +1,11 @@
-import { Simplify } from "common";
-
-export type CreateLocation = {
-  address: string;
-  suburb: string;
-  city: string;
-};
-
 export type Location = {
-  location_id: number;
   address: string;
-  suburb: string;
+  suburb: string | null;
   city: string;
 };
-
-export type AnonymousLocation = Simplify<CreateLocation>;
 
 export function locationStringify(
-  location: Location | CreateLocation,
+  location: Location,
   delimiter: string = ", ",
 ) {
   return [location.address, location.suburb, location.city]

@@ -1,5 +1,3 @@
-mod common;
-
 pub mod add_line_item;
 pub mod create_business;
 pub mod create_client;
@@ -17,6 +15,7 @@ pub mod list_invoice_template;
 pub mod list_invoices;
 pub mod list_products;
 pub mod list_service;
+pub mod mutate_draft_invoice;
 pub mod sys_seed;
 
 pub use add_line_item::*;
@@ -36,4 +35,5 @@ pub use list_invoice_template::*;
 pub use list_invoices::*;
 pub use list_products::*;
 pub use list_service::*;
+pub use mutate_draft_invoice::*;
 pub use sys_seed::*;

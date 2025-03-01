@@ -1,4 +1,16 @@
-import { StatusCode, TIMESTAMPZ_REGEX } from "./constant";
+import { StatusCode } from "./constant";
+
+export const HTTP_METHODS = ["POST"] as const; // yes, we're only using POST for now
+export type HTTPMethod = (typeof HTTP_METHODS)[number];
+
+export interface APIData {
+  [key: string]: string | number | boolean | undefined | APIData | APIData[];
+}
+
+export type APIRequest = {
+  method: HTTPMethod;
+  data: APIData;
+};
 
 export type APIResponse<T extends object, E = object> = {
   data: T | null;
@@ -31,9 +43,3 @@ export function isAPIResponse<T extends object, E = object>(
 }
 
 export type StatusCode = (typeof StatusCode)[keyof typeof StatusCode];
-
-export type Timestampz = string; // fixme: brand type?
-
-export function isTimestampz(value: unknown): value is Timestampz {
-  return typeof value === "string" && TIMESTAMPZ_REGEX.test(value);
-}

@@ -1,14 +1,12 @@
-use std::fmt;
-
+use crate::connection::establish_connection;
+use crate::model::*;
+use crate::utility::contact::Contact;
+use crate::utility::location::Location;
+use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error};
 use diesel::SelectableHelper;
 use serde::{Deserialize, Serialize};
-
-use super::common::{CreateContact, CreateLocation};
-
-use crate::connection::establish_connection;
-use crate::model::*;
-use diesel::prelude::*;
+use std::fmt;
 
 #[derive(Debug)]
 pub enum CreateBusinessError {
@@ -34,14 +32,11 @@ impl From<Error> for CreateBusinessError {
 pub struct CreateBusiness {
   pub name: String,
   pub description: Option<String>,
-  pub contact: CreateContact,
-  pub location: CreateLocation,
+  pub contact: Contact,
+  pub location: Option<Location>,
   pub account_number: String,
   pub account_name: String,
 }
-
-#[derive(Debug, Deserialize)]
-pub struct FilterBusiness {}
 
 #[derive(Debug, Serialize)]
 pub struct CreatedBusiness {
@@ -52,26 +47,24 @@ pub struct CreatedBusiness {
 pub fn create_business(
   new_business: CreateBusiness,
 ) -> Result<CreatedBusiness, CreateBusinessError> {
-  use crate::schema::{business, contact, location, payment};
+  use crate::schema::{business, contact, payment};
 
   let connection = &mut establish_connection().map_err(CreateBusinessError::ConnectionError)?;
 
-  connection.transaction::<_, CreateBusinessError, _>(|connection| {
-    let created_location = diesel::insert_into(location::table)
-      .values(&NewLocationEntity {
-        address: new_business.location.address.clone(),
-        suburb: new_business.location.suburb.clone(),
-        city: new_business.location.city.clone(),
-      })
-      .returning(CreatedLocationEntity::as_returning())
-      .get_result(connection)?;
+  let (address, suburb, city) = match new_business.contact.location {
+    Some(location) => (Some(location.address), location.suburb, Some(location.city)),
+    None => (None, None, None),
+  };
 
+  connection.transaction::<_, CreateBusinessError, _>(|connection| {
     let created_contact = diesel::insert_into(contact::table)
-      .values(&NewContactEntity {
-        location_id: None,
+      .values(&CreateContactEntity {
         name: new_business.contact.name.clone(),
         email: new_business.contact.email.clone(),
         cell: new_business.contact.cell.clone(),
+        address,
+        suburb,
+        city,
       })
       .returning(CreatedContactEntity::as_returning())
       .get_result(connection)
@@ -98,13 +91,21 @@ pub fn create_business(
         };
       })?;
 
+    // fixme: shadowing variables from `new_business.contact.location`
+    let (address, suburb, city) = match new_business.location {
+      Some(location) => (Some(location.address), location.suburb, Some(location.city)),
+      None => (None, None, None),
+    };
+
     let created_business = diesel::insert_into(business::table)
       .values(&NewBusinessEntity {
         name: new_business.name.clone(),
         description: new_business.description.clone(),
         contact_id: Some(created_contact.contact_id),
-        location_id: Some(created_location.location_id),
         payment_id: Some(created_payment.payment_id),
+        address,
+        suburb,
+        city,
       })
       .returning(CreatedBusinessEntity::as_returning())
       .get_result(connection)

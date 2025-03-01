@@ -1,20 +1,19 @@
-use serde::Serialize;
+use super::location::Location;
+use serde::{Deserialize, Serialize};
 
-use crate::model::LocationEntity;
-
-#[derive(Serialize)]
-pub struct ClientContact {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Contact {
   pub contact_id: i32,
   pub name: String,
-  pub email: String,
   pub cell: String,
-  pub location: LocationEntity,
+  pub email: String,
+  pub location: Option<Location>,
 }
 
-#[derive(Serialize)]
-pub struct BusinessContact {
-  pub contact_id: i32,
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateContact {
   pub name: String,
-  pub email: String,
   pub cell: String,
+  pub email: String,
+  pub location: Option<Location>,
 }

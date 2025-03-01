@@ -26,7 +26,9 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
           <div className="row">
             <article>
               <h3>{invoice.business.name}</h3>
-              <LocationPreview location={invoice.business.location} />
+              {invoice.business.location && (
+                <LocationPreview location={invoice.business.location} />
+              )}
             </article>
             <article>
               <ContactPreview contact={invoice.business.contact} />

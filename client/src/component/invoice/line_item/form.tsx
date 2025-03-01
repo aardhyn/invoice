@@ -4,38 +4,25 @@ import type {
   LineItemCustomField,
   ServiceListItem,
   ProductListItem,
+  LineItem,
 } from "api";
 import { uuid } from "common";
+
+type LineItemMeta = Pick<
+  LineItem,
+  "name" | "description" | "quantity" | "custom_fields"
+>;
 
 /**
  * Generic line item form for creating or editing a line item
  */
-export function LineItemForm({
-  name = "",
-  description = "",
-  quantity,
-  customFields,
-  onNameChange,
-  onDescriptionChange,
-  onQuantityChange,
-  onCustomFieldsChange,
+export function LineItemMetaForm({
+  meta,
+  onMetaChange,
 }: {
-  name: string;
-  description: string;
-  quantity: number;
-  customFields: LineItemCustomField[];
-  onNameChange: (name: string) => void;
-  onDescriptionChange: (description: string) => void;
-  onQuantityChange: (quantity: number) => void;
-  onCustomFieldsChange: (fields: LineItemCustomField[]) => void;
+  meta: LineItemMeta;
+  onMetaChange: (meta: Partial<LineItemMeta>) => void;
 }) {
-  const handleNameChange = (e: FormEvent<HTMLInputElement>) => {
-    onNameChange(e.currentTarget.value);
-  };
-  const handleDescriptionChange = (e: FormEvent<HTMLInputElement>) => {
-    onDescriptionChange(e.currentTarget.value);
-  };
-
   return (
     <div>
       <label htmlFor="name">Name</label>
@@ -43,8 +30,8 @@ export function LineItemForm({
         name="name"
         placeholder="Name"
         type="text"
-        value={name}
-        onChange={handleNameChange}
+        value={meta.name}
+        onChange={(e) => onMetaChange({ name: e.currentTarget.value })}
       />
       <br />
       <label htmlFor="description">Description</label>
@@ -52,8 +39,8 @@ export function LineItemForm({
         name="description"
         type="text"
         placeholder="Description"
-        value={description}
-        onChange={handleDescriptionChange}
+        value={meta.description}
+        onChange={(e) => onMetaChange({ description: e.currentTarget.value })}
       />
       <br />
       <label htmlFor="quantity">Quantity</label>
@@ -61,17 +48,21 @@ export function LineItemForm({
         name="quantity"
         type="number"
         placeholder="Quantity"
-        value={quantity}
-        onChange={(e) => onQuantityChange(Number(e.currentTarget.value))}
+        value={meta.quantity}
+        onChange={(e) =>
+          onMetaChange({ quantity: Number(e.currentTarget.value) })
+        }
       />
       <br />
       <fieldset>
         <legend>Custom Fields</legend>
-        {!customFields.length && <p>No custom fields</p>}
+        {!meta.custom_fields.length && <p>No custom fields</p>}
         <br />
         <LineItemCustomFieldsForm
-          customFields={customFields}
-          onCustomFieldsChange={onCustomFieldsChange}
+          customFields={meta.custom_fields}
+          onCustomFieldsChange={(custom_fields) =>
+            onMetaChange({ custom_fields })
+          }
         />
       </fieldset>
     </div>
