@@ -16,6 +16,11 @@ dev.build:
 prod.build:
 	docker compose --profile prod build;
 
+# Reapply the latest migration 
+migrate:
+	docker exec -w /app/repository -it server.dev \
+	diesel migration redo --database-url=postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)
+
 # Stop all running services
 stop:
 	docker compose --env-file .env --profile prod --profile dev down;
