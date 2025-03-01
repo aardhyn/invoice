@@ -86,6 +86,12 @@ input:focus {
   outline: none;
 }
 
+label:has(input[required])::after {
+  content: "*";
+  color: red;
+  margin-left: 4px;
+}
+
 @media print {
   .no-print,
   .no-print * {
