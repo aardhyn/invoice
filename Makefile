@@ -1,5 +1,7 @@
 .PHONY: dev stop build prod dev.build prod.build clean format test database-admin database-volume
 
+include .env
+
 # Run each service in development mode in containers
 dev:
 	docker compose --env-file .env --profile dev up -d;
@@ -25,23 +27,28 @@ migrate:
 stop:
 	docker compose --env-file .env --profile prod --profile dev down;
 
+# Remove install dependencies and build artifacts
 clean:
 	rm -rf client/node_modules client/dist;
 	rm -rf server/target;
 
-clean: client.clean server.clean;
-
+# Run the formatters
 format:
 	docker exec -it client.dev pnpm run format;
 	docker exec -it server.dev cargo fmt;
 
-test:
+# Run the linters
+lint:
 	docker exec -it client.dev pnpm run lint;
+
+# Run the tests suites
+test:
 	docker exec -it server.dev cargo test;
 
-# Access the database container as an admin
+# Attach to the database container
 database-admin:
-	docker exec -it database psql -U postgres -d postgres;
+	docker exec -it database.dev psql -U postgres -d postgres;
 
-database-volume:
+# Create the database volume
+persistence:
 	docker volume create invoice_postgres_data;

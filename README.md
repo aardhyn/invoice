@@ -17,7 +17,7 @@ Most variables have default values; `DATABASE_PASSWORD` is unset.
 Create a Docker volume to persist database data
 
 ```bash
-make database-volume
+make persistence
 ```
 
 ### Development
