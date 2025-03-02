@@ -1,5 +1,4 @@
 drop table business cascade;
-drop table location cascade;
 drop table payment cascade;
 drop table contact cascade;
 drop table client cascade;

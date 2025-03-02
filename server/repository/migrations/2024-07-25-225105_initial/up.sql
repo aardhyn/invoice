@@ -24,9 +24,9 @@ create table business (
   business_id serial primary key,
   name varchar not null,
   description varchar null,
-  address varchar not null,
-  suburb varchar not null,
-  city varchar not null,
+  address varchar null,
+  suburb varchar null,
+  city varchar null,
   contact_id int null references contact(contact_id) on delete cascade,
   payment_id int null references payment(payment_id) on delete cascade
 );
