@@ -1,8 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "api/config.ts";
+
+import "./preflight.css";
+import "./index.css";
+
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
@@ -10,11 +15,6 @@ declare module "@tanstack/react-router" {
 }
 
 const router = createRouter({ routeTree });
-
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "api/config.ts";
-
-import "./preflight.css";
 
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {

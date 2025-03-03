@@ -1,0 +1,10 @@
+@media (prefers-color-scheme: dark) {
+  :root,
+  input,
+  textarea,
+  select,
+  button {
+    color: #eee;
+    background-color: #0c0c0c;
+  }
+}
