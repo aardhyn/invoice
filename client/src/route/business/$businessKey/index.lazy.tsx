@@ -1,5 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useBusinessGetQuery } from "api/business/get";
+import { Json } from "component";
 
 export const Route = createLazyFileRoute("/business/$businessKey/")({
   component: Page,
@@ -13,7 +14,7 @@ function Page() {
 
   return (
     <div>
-      <h2>{business?.data?.name}</h2>
+      <Json>{business}</Json>
     </div>
   );
 }

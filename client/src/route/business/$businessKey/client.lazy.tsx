@@ -1,5 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useClientListQuery, useClientCreateMutation } from "api";
+import { Json } from "component";
 
 export const Route = createLazyFileRoute("/business/$businessKey/client")({
   component: Page,
@@ -97,7 +98,7 @@ function Page() {
             </fieldset>
           </fieldset>
 
-          {isError && <p>{JSON.stringify(error)}</p>}
+          {isError && <Json>{JSON.stringify(error)}</Json>}
 
           <button disabled={isPending} type="submit">
             Create
