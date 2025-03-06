@@ -7,7 +7,7 @@ use diesel::serialize::{self, IsNull, Output, ToSql};
 use diesel::{AsChangeset, Insertable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
 use std::io::Write;
-use uuid;
+use uuid::Uuid;
 
 // Contact //
 
@@ -241,42 +241,42 @@ pub struct ProductEntityListItem {
 
 // Line Item //
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum LineItemCustomFieldType {
   String(String),
-  Number(i32),
+  Integer(i32),
   Float(f32),
   Boolean(bool),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ServiceLineItemEntity {
   pub service_id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ProductLineItemEntity {
   pub product_id: i32,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum LineItemDetail {
   Service(ServiceLineItemEntity),
   Product(ProductLineItemEntity),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LineItemCustomField {
-  pub key: String,
+  pub key: Uuid,
   pub name: String,
   pub data: LineItemCustomFieldType,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromSqlRow)]
 pub struct LineItemEntity {
-  pub key: uuid::Uuid,
+  pub key: Uuid,
   pub name: String,
   pub description: String,
   pub custom_fields: Vec<LineItemCustomField>,
@@ -284,9 +284,19 @@ pub struct LineItemEntity {
   pub quantity: i32,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MutableLineItemEntity {
+  pub key: Uuid,
+  pub name: Option<String>,
+  pub description: Option<String>,
+  pub custom_fields: Option<Vec<LineItemCustomField>>,
+  pub detail: Option<LineItemDetail>,
+  pub quantity: Option<i32>,
+}
+
 #[derive(Debug, Serialize)]
 pub struct CreatedLineItemEntity {
-  pub key: uuid::Uuid,
+  pub key: Uuid,
   pub name: String,
 }
 

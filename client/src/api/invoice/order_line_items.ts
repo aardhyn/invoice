@@ -1,15 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
-import { endpoint, INVOICE_QUERY_KEY, queryClient } from "api";
+import { INVOICE_QUERY_KEY, endpoint, queryClient } from "api";
+import type { Uuid } from "common";
 
-export type AddLineItem = {
+export type OrderLineItems = {
   invoice_id: number;
-  description: string;
+  line_item_order: Uuid[];
 };
 
-export function useAddLineItemMutation() {
+export function useLineItemOrderMutation() {
   return useMutation({
-    mutationFn(lineItem: AddLineItem) {
-      return fetch(endpoint("invoice.line_item.add"), {
+    mutationFn(lineItem: OrderLineItems) {
+      return fetch(endpoint("invoice.draft.line_item.order"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(lineItem),

@@ -7,7 +7,7 @@
  * const value2 = someValue ? process(someValue) : undefined;
  * // to
  * const value = map(someFunction(), someValue);
- * const value2 = map(someFunction(), process);
+ * const value2 = map(someValue, process);
  * ```
  * @param value
  * @param then

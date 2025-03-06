@@ -1,17 +1,15 @@
 import { FormEvent, useState } from "react";
 import { produce } from "immer";
+import { uuid } from "common";
 import type {
   LineItemCustomField,
   ServiceListItem,
   ProductListItem,
-  LineItem,
+  MutableLineItem,
 } from "api";
-import { uuid } from "common";
 
-type LineItemMeta = Pick<
-  LineItem,
-  "name" | "description" | "quantity" | "custom_fields"
->;
+type MetaFields = "name" | "description" | "quantity";
+type LineItemMeta = Pick<MutableLineItem, MetaFields>;
 
 /**
  * Generic line item form for creating or editing a line item
@@ -54,23 +52,12 @@ export function LineItemMetaForm({
         }
       />
       <br />
-      <fieldset>
-        <legend>Custom Fields</legend>
-        {!meta.custom_fields.length && <p>No custom fields</p>}
-        <br />
-        <LineItemCustomFieldsForm
-          customFields={meta.custom_fields}
-          onCustomFieldsChange={(custom_fields) =>
-            onMetaChange({ custom_fields })
-          }
-        />
-      </fieldset>
     </div>
   );
 }
 
 /**
- * Generic line item custom field form for creating or editing a line item custom field
+ * Custom field form for building or creating custom fields
  */
 export function LineItemCustomFieldsForm({
   customFields,
@@ -120,7 +107,7 @@ export function LineItemCustomFieldsForm({
       ))}
       <fieldset>
         <legend>Add Custom Field</legend>
-        <LineItemNewCustomFieldForm
+        <LineItemCreateCustomFieldForm
           onCreateNewCustomField={handleAddCustomField}
         />
       </fieldset>
@@ -128,14 +115,16 @@ export function LineItemCustomFieldsForm({
   );
 }
 
-function getTypeDefaultValue(type: LineItemCustomField["type"]) {
-  return {
-    boolean: false,
-    number: 0,
-    string: "",
-  }[type];
-}
+export const DEFAULT_LINE_ITEM_CUSTOM_FIELD = (): LineItemCustomField => ({
+  key: uuid(),
+  name: "",
+  data: "",
+});
 
+/**
+ * Custom field form for mutating or creating a custom field
+ * // fixme: facilitate switching type (type a string: converts to string, vice versa)
+ */
 export function LineItemCustomFieldForm({
   customField,
   onCustomFieldChange,
@@ -148,16 +137,6 @@ export function LineItemCustomFieldForm({
     onCustomFieldChange({ ...customField, [name]: value });
   };
 
-  const handleTypeChange = (e: FormEvent<HTMLSelectElement>) => {
-    const nextType = e.currentTarget.value as "string" | "number" | "boolean";
-    const nextData = getTypeDefaultValue(nextType);
-    onCustomFieldChange({
-      ...customField,
-      type: nextType,
-      data: nextData,
-    });
-  };
-
   return (
     <>
       <input
@@ -166,16 +145,11 @@ export function LineItemCustomFieldForm({
         value={customField.name}
         onChange={handleChange}
       />
-      <select name="type" value={customField.type} onChange={handleTypeChange}>
-        <option value="string">String</option>
-        <option value="number">Number</option>
-        <option value="boolean">Boolean</option>
-      </select>
-      {customField.type === "boolean" && (
+      {typeof customField.data === "boolean" && (
         <input
           name="data"
           type="checkbox"
-          checked={customField.data as boolean}
+          checked={customField.data}
           onChange={(e) =>
             onCustomFieldChange({
               ...customField,
@@ -184,7 +158,7 @@ export function LineItemCustomFieldForm({
           }
         />
       )}
-      {customField.type === "number" && (
+      {typeof customField.data === "number" && (
         <input
           name="data"
           type="number"
@@ -197,7 +171,7 @@ export function LineItemCustomFieldForm({
           }
         />
       )}
-      {customField.type === "string" && (
+      {typeof customField.data === "string" && (
         <input
           name="data"
           type="text"
@@ -211,29 +185,18 @@ export function LineItemCustomFieldForm({
   );
 }
 
-const DEFAULT_CUSTOM_FIELD_TYPE = "string";
-function createDefaultCustomField(): LineItemCustomField {
-  return {
-    key: uuid(),
-    name: "",
-    type: DEFAULT_CUSTOM_FIELD_TYPE,
-    data: getTypeDefaultValue(DEFAULT_CUSTOM_FIELD_TYPE),
-  };
-}
-
-function LineItemNewCustomFieldForm({
+function LineItemCreateCustomFieldForm({
   onCreateNewCustomField: handleCreateNewCustomField,
 }: {
-  onCreateNewCustomField: (field: LineItemCustomField) => void;
+  onCreateNewCustomField(field: LineItemCustomField): void;
 }) {
   const [customField, setCustomField] = useState<LineItemCustomField>(
-    createDefaultCustomField(),
+    DEFAULT_LINE_ITEM_CUSTOM_FIELD(),
   );
 
-  const handelCreate = () => {
+  const handleSubmit = () => {
     handleCreateNewCustomField(customField);
-    const blankCustomField = createDefaultCustomField();
-    setCustomField(blankCustomField);
+    setCustomField(DEFAULT_LINE_ITEM_CUSTOM_FIELD());
   };
 
   return (
@@ -242,7 +205,7 @@ function LineItemNewCustomFieldForm({
         customField={customField}
         onCustomFieldChange={setCustomField}
       />
-      <button type="button" onClick={handelCreate}>
+      <button type="button" onClick={handleSubmit}>
         Add
       </button>
     </>
@@ -252,14 +215,14 @@ function LineItemNewCustomFieldForm({
 /**
  * Generic line item form for creating or editing a line item
  */
-export function ServiceLineItemForm({
+export function LineItemServiceSelectionForm({
   services,
   selectedServiceId,
   onServiceIdChange,
 }: {
   services: ServiceListItem[];
   selectedServiceId?: number;
-  onServiceIdChange: (service_id: number) => void;
+  onServiceIdChange(service_id: number): void;
 }) {
   return (
     <>
@@ -282,14 +245,14 @@ export function ServiceLineItemForm({
 /**
  * Generic line item form for creating or editing a line item
  */
-export function ProductLineItemForm({
+export function LineItemProductSelectionForm({
   products,
   selectedProductId,
   onProductIdChange,
 }: {
   products: ProductListItem[];
   selectedProductId?: number;
-  onProductIdChange: (product_id: number) => void;
+  onProductIdChange(product_id: number): void;
 }) {
   return (
     <>

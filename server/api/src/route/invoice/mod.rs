@@ -1,15 +1,21 @@
-pub mod add_line_item;
 pub mod create;
+pub mod create_line_item;
+pub mod delete_line_item;
 pub mod duplicate;
 pub mod get;
 pub mod list;
 pub mod mutate;
+pub mod mutate_line_item;
+pub mod order_line_item;
 pub mod template;
 
-pub use add_line_item::*;
 pub use create::*;
+pub use create_line_item::*;
+pub use delete_line_item::*;
 pub use duplicate::*;
 pub use get::*;
 pub use list::*;
 pub use mutate::*;
+pub use mutate_line_item::*;
+pub use order_line_item::*;
 pub use template::*;

@@ -13,7 +13,11 @@ use util::rocket::build_config;
 async fn main() -> Result<(), String> {
   dotenvy::dotenv().ok(); // note: we don't care if this fails because the variables might be set some other way.
 
-  let catchers = catchers![handle_not_found, handle_unprocessable_entity];
+  let catchers = catchers![
+    handle_not_found,
+    handle_internal_server_error,
+    handle_unprocessable_entity
+  ];
 
   let routes = routes![
     cors::all_options,
@@ -31,7 +35,10 @@ async fn main() -> Result<(), String> {
     invoice_get,
     invoice_draft_mutate,
     invoice_duplicate,
-    invoice_line_item_add,
+    invoice_line_item_create,
+    invoice_line_item_mutate,
+    invoice_line_items_reorder,
+    invoice_line_item_delete,
     invoice_template_create,
     invoice_template_delete,
     invoice_template_list,

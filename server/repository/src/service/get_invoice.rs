@@ -51,7 +51,6 @@ pub struct InvoiceLineItem {
   quantity: i32,
   total: i32,
 }
-
 pub enum GetInvoiceError {
   ConnectionError(ConnectionError),
   NotFound,

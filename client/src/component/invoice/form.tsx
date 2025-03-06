@@ -1,83 +1,82 @@
-import { useState, MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import {
   LINE_ITEM_TYPE,
+  DEFAULT_LINE_ITEM,
   type Invoice,
   type LineItemType,
   type CreateLineItem,
-  type CreateProductLineItem,
+  type MutableLineItem,
+  type KeyedMutableLineItem,
   type CreateServiceLineItem,
   useClientListQuery,
   useProductListQuery,
   useServiceListQuery,
-  useDraftInvoiceMutation,
 } from "api";
 import {
-  Json,
+  LineItemCustomFieldsForm,
   LineItemMetaForm,
-  ProductLineItemForm,
-  ServiceLineItemForm,
+  LineItemProductSelectionForm,
+  LineItemServiceSelectionForm,
 } from "component";
-import { map, invariant, uuid, capitalize, toTimestampz } from "common";
+import { type Uuid, map, splitTimestamp, capitalize } from "common";
+import { produce } from "immer";
+import { useMutableInvoiceState } from "utility";
 
-export function DraftInvoiceMutationForm({ invoice }: { invoice: Invoice }) {
+export function DraftInvoiceMutationForm({
+  invoice: initialInvoice,
+}: {
+  invoice: Invoice;
+}) {
   const clientList = useClientListQuery({
-    business_id: invoice.business.business_id,
+    business_id: initialInvoice.business.business_id,
   });
 
-  const [address, setAddress] = useState<string | undefined>(
-    invoice.location?.address || "",
-  );
-  const [suburb, setSuburb] = useState<string | undefined>(
-    invoice.location?.suburb || "",
-  );
-  const [city, setCity] = useState<string | undefined>(
-    invoice.location?.city || "",
-  );
+  const { invoice, mutateInvoice, lineItems } =
+    useMutableInvoiceState(initialInvoice);
 
-  const isLocationRequired = !!address || !!suburb || !!city;
-
-  const draftInvoiceMutation = useDraftInvoiceMutation();
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const client = parseInt(form.get("client_id") as string);
-    const dueDate = (form.get("due_date") || undefined) as string | undefined;
-
-    const hasLocation = !!form.get("address") && !!form.get("city");
-    const location = hasLocation
-      ? {
-          address: form.get("address") as string,
-          suburb: (form.get("suburb") as string) || null,
-          city: form.get("city") as string,
-        }
-      : undefined;
-    console.log(location);
-
-    draftInvoiceMutation.mutate({
-      invoice_id: invoice.invoice_id,
-      name: form.get("name") as string,
-      description: form.get("description") as string,
-      client,
-      location,
-      due_date: map(dueDate, toTimestampz),
-    });
-  };
+  const isLocationRequired =
+    !!invoice.location?.address ||
+    !!invoice.location?.suburb ||
+    !!invoice.location?.city;
 
   return (
-    <form method="POST" onSubmit={handleSubmit}>
+    <form>
       <label>
         Name
-        <input type="text" name="name" defaultValue={invoice.name} />
+        <input
+          type="text"
+          name="name"
+          value={invoice.name}
+          onChange={(event) => {
+            const name = event.target.value;
+            mutateInvoice({ name });
+          }}
+        />
       </label>
       <br />
       <label>
         Description
-        <textarea name="description" defaultValue={invoice.description ?? ""} />
+        <textarea
+          name="description"
+          value={invoice.description ?? ""}
+          onChange={(event) => {
+            const description = event.target.value;
+            mutateInvoice({ description });
+          }}
+        />
       </label>
       <br />
       <label>
         Reference
-        <input type="text" name="name" defaultValue={invoice.reference ?? ""} />
+        <input
+          type="text"
+          name="reference"
+          value={invoice.reference ?? ""}
+          onChange={(event) => {
+            const reference = event.target.value;
+            mutateInvoice({ reference });
+          }}
+        />
       </label>
       <br />
       <fieldset>
@@ -87,9 +86,18 @@ export function DraftInvoiceMutationForm({ invoice }: { invoice: Invoice }) {
           <input
             type="text"
             name="address"
-            value={address}
+            value={invoice.location?.address ?? ""}
             required={isLocationRequired}
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={(value) => {
+              const address = value.target.value;
+              mutateInvoice({
+                location: {
+                  city: invoice.location?.city ?? "",
+                  address,
+                  suburb: invoice.location?.suburb ?? null,
+                },
+              });
+            }}
           />
         </label>
         <br />
@@ -98,8 +106,17 @@ export function DraftInvoiceMutationForm({ invoice }: { invoice: Invoice }) {
           <input
             type="text"
             name="suburb"
-            value={suburb}
-            onChange={(e) => setSuburb(e.target.value)}
+            value={invoice.location?.suburb ?? ""}
+            onChange={(value) => {
+              const suburb = value.target.value;
+              mutateInvoice({
+                location: {
+                  city: invoice.location?.city ?? "",
+                  address: invoice.location?.address ?? "",
+                  suburb,
+                },
+              });
+            }}
           />
         </label>
         <br />
@@ -109,8 +126,17 @@ export function DraftInvoiceMutationForm({ invoice }: { invoice: Invoice }) {
             type="text"
             name="city"
             required={isLocationRequired}
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
+            value={invoice.location?.city}
+            onChange={(value) => {
+              const city = value.target.value;
+              mutateInvoice({
+                location: {
+                  city,
+                  address: invoice.location?.address ?? "",
+                  suburb: invoice.location?.suburb ?? null,
+                },
+              });
+            }}
           />
         </label>
       </fieldset>
@@ -120,21 +146,25 @@ export function DraftInvoiceMutationForm({ invoice }: { invoice: Invoice }) {
         <input
           type="date"
           name="due_date"
-          defaultValue={invoice.due_date?.split("T")[0]}
+          defaultValue={map(invoice.due_date, splitTimestamp)?.date}
         />
       </label>
       <br />
       <fieldset>
         <legend>Line Items</legend>
-        <LineItems
-          items={invoice.line_items}
-          onChange={console.log}
-          onRemove={console.log}
+        <LineItemsForm
+          business_id={initialInvoice.business.business_id}
+          lineItems={lineItems.items}
+          onMutate={lineItems.mutate}
+          onDelete={lineItems.remove}
         />
-        {!invoice.line_items.length && <p>No Items</p>}
-        <br />
+        {lineItems.items.length && <p>No Items</p>}
         <fieldset>
           <legend>Add Line Item</legend>
+          <CreateLineItemForm
+            business_id={initialInvoice.business.business_id}
+            onCreateLineItem={lineItems.add}
+          />
         </fieldset>
       </fieldset>
       <br />
@@ -144,7 +174,11 @@ export function DraftInvoiceMutationForm({ invoice }: { invoice: Invoice }) {
         {clientList.isSuccess && (
           <select
             name="client_id"
-            defaultValue={invoice.client?.client_id.toString()}
+            value={initialInvoice.client?.client_id}
+            onChange={(e) => {
+              const client = parseInt(e.target.value);
+              mutateInvoice({ client });
+            }}
           >
             <option value="">Select Client</option>
             {clientList?.data?.data?.map(({ client_id, name }) => (
@@ -155,45 +189,48 @@ export function DraftInvoiceMutationForm({ invoice }: { invoice: Invoice }) {
           </select>
         )}
       </label>
-      {draftInvoiceMutation.isError && (
-        <Json>{draftInvoiceMutation.error}</Json>
-      )}
-      <br />
-      <button type="submit">Update</button>
     </form>
   );
 }
 
-function LineItems({
-  items,
-  onChange: handleChange,
-  onRemove: handleRemove,
+function LineItemsForm({
+  business_id,
+  lineItems,
+  onMutate: handleMutate,
+  onDelete: handleDelete,
 }: {
-  onChange: (index: number, item: CreateLineItem) => void;
-  onRemove: (index: number) => void;
-  items: CreateLineItem[];
+  business_id: number;
+  onMutate(mutation: KeyedMutableLineItem): void;
+  onDelete(key: Uuid): void;
+  lineItems: KeyedMutableLineItem[];
 }) {
-  const handleClick = (index: number) => () => {
-    handleRemove(index);
+  const createClickHandler = (key: Uuid) => () => {
+    handleDelete(key);
   };
 
   return (
     <ul>
-      {items.map((item, index) => {
+      {lineItems.map((item) => {
         return (
           <li key={item.key}>
-            <LineItemMetaForm
-              meta={{
-                name: item.name,
-                description: item.description,
-                quantity: item.quantity,
-                custom_fields: item.custom_fields,
+            <LineItemForm
+              business_id={business_id}
+              lineItem={item}
+              onMutateLineItem={(mutation) => {
+                handleMutate({
+                  ...mutation,
+                  key: item.key,
+                });
               }}
-              onMetaChange={(meta) => handleChange(index, { ...item, ...meta })}
             />
-            <button type="button" onClick={handleClick(index)}>
+            <br />
+            <button type="button" onClick={createClickHandler(item.key)}>
               Remove
             </button>
+            <br />
+            <br />
+            <hr />
+            <br />
           </li>
         );
       })}
@@ -201,97 +238,121 @@ function LineItems({
   );
 }
 
-export function CreateLineItemForm({
+export function LineItemForm({
   business_id,
-  onCreateLineItem: handleCreateLineItem,
+  lineItem = DEFAULT_LINE_ITEM(),
+  onMutateLineItem: handleMutateLineItem,
 }: {
   business_id: number;
-  onCreateLineItem: (item: CreateLineItem) => void;
+  lineItem: KeyedMutableLineItem;
+  onMutateLineItem: (item: MutableLineItem) => void;
 }) {
-  const [type, setType] = useState<"product" | "service">("product");
+  const [type, setType] = useState<"product" | "service" | undefined>();
 
-  const productListQuery = useProductListQuery(
-    { business_id },
-    type === "product",
-  );
-  const serviceListQuery = useServiceListQuery(
-    { business_id },
-    type === "service",
-  );
+  useEffect(() => {
+    const type = map(lineItem.detail, (detail) =>
+      "product_id" in detail ? "product" : "service",
+    );
+    setType(type);
+  }, [lineItem.detail]);
 
-  const [item, setItem] = useState<Omit<CreateLineItem, "key">>({
-    name: "",
-    description: "",
-    quantity: 1,
-    custom_fields: [],
-    detail: undefined,
-  });
-  const clear = () => {
-    setItem({
-      name: "",
-      description: "",
-      quantity: 1,
-      custom_fields: [],
-      detail: undefined,
-    });
-  };
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    invariant(name, "Detail must be set");
-    handleCreateLineItem({
-      key: uuid(),
-      name: item.name,
-      description: item.description,
-      quantity: item.quantity,
-      detail: item.detail,
-      custom_fields: item.custom_fields,
-    });
-    clear();
-  };
+  const isProductType = type === "product";
+  const productListQuery = useProductListQuery({ business_id }, isProductType);
+
+  const isServiceType = type === "service";
+  const serviceListQuery = useServiceListQuery({ business_id }, isServiceType);
 
   return (
     <>
       <LineItemMetaForm
         meta={{
-          name: item.name,
-          description: item.description,
-          quantity: item.quantity,
-          custom_fields: item.custom_fields,
+          name: lineItem.name,
+          description: lineItem.description,
+          quantity: lineItem.quantity,
         }}
-        onMetaChange={(meta) => setItem({ ...item, ...meta })}
+        onMetaChange={(meta) => {
+          handleMutateLineItem(meta);
+        }}
       />
       <br />
       <fieldset>
         <legend>Service/Product</legend>
         <TypeDropdown type={type} onTypeChange={setType} />
-        {type === "product" && (
-          <ProductLineItemForm
+        {lineItem.detail && "product_id" in lineItem.detail && (
+          <LineItemProductSelectionForm
             products={productListQuery.data?.data || []}
-            selectedProductId={
-              (item.detail as CreateProductLineItem)?.product_id
-            }
-            onProductIdChange={(product_id) =>
-              setItem({ ...item, detail: { product_id } })
-            }
+            selectedProductId={lineItem.detail.product_id}
+            onProductIdChange={(product_id) => {
+              handleMutateLineItem(
+                produce(lineItem, (draft) => {
+                  draft.detail = { product_id };
+                }),
+              );
+            }}
           />
         )}
-        {type === "service" && (
-          <ServiceLineItemForm
+        {lineItem.detail && "service_id" in lineItem.detail && (
+          <LineItemServiceSelectionForm
             services={serviceListQuery.data?.data || []}
             selectedServiceId={
-              (item.detail as CreateServiceLineItem)?.service_id
+              (lineItem.detail as CreateServiceLineItem)?.service_id
             }
-            onServiceIdChange={(service_id) =>
-              setItem({ ...item, detail: { service_id } })
-            }
+            onServiceIdChange={(service_id) => {
+              handleMutateLineItem(
+                produce(lineItem, (draft) => {
+                  draft.detail = { service_id };
+                }),
+              );
+            }}
           />
         )}
       </fieldset>
       <br />
-      <button type="button" onClick={handleClick}>
+      <fieldset>
+        <legend>Custom Fields</legend>
+        {!lineItem.custom_fields?.length && <p>No custom fields</p>}
+        <br />
+        <LineItemCustomFieldsForm
+          customFields={lineItem.custom_fields || []}
+          onCustomFieldsChange={(custom_fields) => {
+            handleMutateLineItem(
+              produce(lineItem, (draft) => {
+                Object.assign(draft, { custom_fields });
+              }),
+            );
+          }}
+        />
+      </fieldset>
+    </>
+  );
+}
+
+function CreateLineItemForm({
+  business_id,
+  onCreateLineItem: handleCreateLineItem,
+}: {
+  business_id: number;
+  onCreateLineItem(item: CreateLineItem): void;
+}) {
+  const [lineItem, setLineItem] = useState<CreateLineItem>(DEFAULT_LINE_ITEM());
+  const handleSubmit = () => {
+    handleCreateLineItem(lineItem);
+    setLineItem(DEFAULT_LINE_ITEM());
+  };
+
+  return (
+    <div>
+      <LineItemForm
+        business_id={business_id}
+        lineItem={lineItem}
+        onMutateLineItem={(mutation) => {
+          setLineItem((lineItem) => ({ ...lineItem, ...mutation }));
+        }}
+      />
+      <button type="button" onClick={handleSubmit}>
         Add
       </button>
-    </>
+    </div>
   );
 }
 
@@ -299,16 +360,17 @@ function TypeDropdown({
   type,
   onTypeChange: handleTypeChange,
 }: {
-  type: LineItemType;
+  type?: LineItemType;
   onTypeChange(type: LineItemType): void;
 }) {
   return (
     <select
-      value={type}
+      value={type || ""}
       onChange={(e) => {
         handleTypeChange(e.target.value as LineItemType);
       }}
     >
+      <option value="">Select Type</option>
       {LINE_ITEM_TYPE.map((type) => (
         <option key={type} value={type}>
           {capitalize(type)}

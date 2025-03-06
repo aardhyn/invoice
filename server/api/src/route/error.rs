@@ -11,6 +11,15 @@ pub fn handle_not_found(_: &Request) -> APIResponse<(), String> {
   }
 }
 
+#[catch(500)]
+pub fn handle_internal_server_error(_: &Request) -> APIResponse<(), String> {
+  APIResponse {
+    status: Some(Status::InternalServerError),
+    error: Some(String::from("Internal server error")),
+    data: None,
+  }
+}
+
 #[catch(422)]
 pub fn handle_unprocessable_entity(_: &Request) -> APIResponse<(), String> {
   APIResponse {

@@ -15,6 +15,7 @@ export function capitalize(str: string) {
 export function toSentenceCase(str: string) {
   return str
     .split(SPACE)
+    .filter(Boolean)
     .map((word) => capitalize(word))
     .join(SPACE);
 }

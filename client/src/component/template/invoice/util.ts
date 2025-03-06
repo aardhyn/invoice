@@ -53,7 +53,7 @@ export function useCustomFieldCells(
   return useMemo(
     () =>
       customFieldColumns.map((name) => {
-        const data = lineItem.custom_fields.find(({ name: thisName }) => {
+        const data = lineItem.custom_fields?.find(({ name: thisName }) => {
           return thisName === name;
         })?.data;
         const value = formatCellData(data);

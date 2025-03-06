@@ -1,29 +1,28 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  INVOICE_QUERY_KEY,
-  type Location,
-  type CreateClient,
-  endpoint,
-  queryClient,
-} from "api";
+import { INVOICE_QUERY_KEY, type Location, endpoint, queryClient } from "api";
 import type { Timestampz } from "common";
 
-export type MutateDraftInvoice = {
+export type MutableDraftInvoice = {
+  name?: string;
+  description?: string | null;
+  reference?: string | null;
+  client?: number;
+  location?: Location | null;
+  due_date?: Timestampz | null;
+};
+
+export type KeyedMutableDraftInvoice = MutableDraftInvoice & {
   invoice_id: number;
 };
 
-export type MutateDraftInvoiceParams = {
-  name?: string;
-  description?: string;
-  reference?: string;
-  client?: number | CreateClient;
-  location?: Location;
-  due_date?: Timestampz;
+export type MutatedDraftInvoice = {
+  invoice_id: number;
+  name: string;
 };
 
 export function useDraftInvoiceMutation() {
-  return useMutation({
-    async mutationFn(mutation: MutateDraftInvoice & MutateDraftInvoiceParams) {
+  return useMutation<MutatedDraftInvoice, Error, KeyedMutableDraftInvoice>({
+    async mutationFn(mutation) {
       const res = await fetch(endpoint("invoice.draft.mutate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,7 +30,7 @@ export function useDraftInvoiceMutation() {
       });
       const data = await res.json();
       if (data.error) throw new Error(JSON.stringify(data.error));
-      return data.data as MutateDraftInvoice;
+      return data.data;
     },
     onSuccess({ invoice_id }) {
       queryClient.invalidateQueries({

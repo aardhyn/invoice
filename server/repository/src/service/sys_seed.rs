@@ -1,16 +1,14 @@
-use serde::Serialize;
-
-use crate::{
-  connection::establish_connection,
-  data::*,
-  model::{
-    CreatedBusinessEntity, CreatedClientEntity, CreatedContactEntity, CreatedInvoiceEntity,
-    CreatedPaymentEntity, CreatedProductEntity, CreatedServiceEntity,
-  },
+use crate::model::{
+  CreatedBusinessEntity, CreatedClientEntity, CreatedContactEntity, CreatedInvoiceEntity,
+  CreatedPaymentEntity, CreatedProductEntity, CreatedServiceEntity,
 };
-
+use crate::service::create_line_item;
+use crate::{connection::establish_connection, data::*};
 use diesel::prelude::*;
 use diesel::result::Error;
+use serde::Serialize;
+
+use super::CreatedLineItem;
 
 pub enum SeedError {
   AlreadySeeded,
@@ -27,6 +25,7 @@ pub struct SeedResult {
   products: Vec<CreatedProductEntity>,
   services: Vec<CreatedServiceEntity>,
   invoices: Vec<CreatedInvoiceEntity>,
+  line_items: Vec<CreatedLineItem>,
 }
 
 impl From<Error> for SeedError {
@@ -52,6 +51,7 @@ pub fn sys_seed() -> Result<SeedResult, SeedError> {
     .returning(CreatedPaymentEntity::as_returning())
     .get_results(connection)
     .map_err(SeedError::from)?;
+  println!("seeded payments");
 
   let contacts = diesel::insert_into(contact::table)
     .values(seed_contact())
@@ -89,6 +89,17 @@ pub fn sys_seed() -> Result<SeedResult, SeedError> {
     .get_results(connection)
     .map_err(SeedError::from)?;
 
+  let line_items = seed_line_items()
+    .into_iter()
+    .enumerate()
+    .flat_map(|(index, line_items)| {
+      let invoice_id = (index + 1) as i32;
+      line_items.into_iter().map(move |line_item| {
+        create_line_item(invoice_id, line_item).expect("error creating line_item")
+      })
+    })
+    .collect::<Vec<CreatedLineItem>>();
+
   Ok(SeedResult {
     businesses,
     contacts,
@@ -97,5 +108,6 @@ pub fn sys_seed() -> Result<SeedResult, SeedError> {
     products,
     services,
     invoices,
+    line_items,
   })
 }

@@ -3,6 +3,7 @@ export * from "./invariant";
 export * from "./logic";
 export * from "./string";
 export * from "./temporal";
+export * from "./debounce";
 export * from "./option";
 export * from "./type";
 export * from "./uuid";
