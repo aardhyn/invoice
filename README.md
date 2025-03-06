@@ -47,3 +47,9 @@ Build services for a production environment.
 ```bash
 make prod
 ```
+
+## Documentation
+
+### API
+
+API documentation is available on [Postman](https://www.postman.com/aardhyn/invoice/overview).
