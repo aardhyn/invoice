@@ -1,6 +1,6 @@
 use crate::connection::establish_connection;
 use crate::model::*;
-use crate::utility::contact::Contact;
+use crate::utility::contact::CreateContact;
 use crate::utility::location::Location;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error};
@@ -32,7 +32,7 @@ impl From<Error> for CreateBusinessError {
 pub struct CreateBusiness {
   pub name: String,
   pub description: Option<String>,
-  pub contact: Contact,
+  pub contact: CreateContact,
   pub location: Option<Location>,
   pub account_number: String,
   pub account_name: String,
