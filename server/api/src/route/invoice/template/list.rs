@@ -5,6 +5,7 @@ use serde::Deserialize;
 use crate::util::response::APIResponse;
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct InvoiceTemplateListParams {
   business_id: i32,
 }

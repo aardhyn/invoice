@@ -19,12 +19,8 @@ export const Route = createLazyFileRoute(
 
 function Page() {
   const { invoiceKey } = Route.useParams();
-  const invoice_id = parseInt(invoiceKey);
-  const {
-    data: invoice,
-    error,
-    isLoading,
-  } = useInvoiceGetQuery({ invoice_id });
+  const invoiceId = parseInt(invoiceKey);
+  const { data: invoice, error, isLoading } = useInvoiceGetQuery({ invoiceId });
 
   const [isTemplate, toggleTemplate] = useInvoiceTemplateState();
   const toggleTemplateText = isTemplate
@@ -35,31 +31,31 @@ function Page() {
     return <div>Loading...</div>;
   }
 
-  if (error || !invoice?.data) {
+  if (!invoice || error) {
     return <div>Failed to load invoice: {error?.message || "no data"}</div>;
   }
 
   return (
     <>
-      <h2>{invoice.data?.name}</h2>
+      <h2>{invoice.name}</h2>
 
       <button onClick={toggleTemplate}>{toggleTemplateText}</button>
 
       <section>
         <h3>Edit Invoice</h3>
-        <DraftInvoiceMutationForm invoice={invoice.data} />
+        <DraftInvoiceMutationForm initialInvoice={invoice} />
       </section>
 
       <section>
         <h3>Preview</h3>
         <details>
           <summary>Show</summary>
-          <InvoicePreview invoice={invoice.data} />
+          <InvoicePreview invoice={invoice} />
         </details>
       </section>
       <Print
         style={templateStyles}
-        content={<InvoicePreview invoice={invoice.data} />}
+        content={<InvoicePreview invoice={invoice} />}
       >
         <button>Print</button>
       </Print>
@@ -69,10 +65,10 @@ function Page() {
 
 function useInvoiceTemplateState() {
   const { invoiceKey, businessKey } = Route.useParams();
-  const business_id = parseInt(businessKey);
+  const businessId = parseInt(businessKey);
 
   const { data: invoiceTemplates } = useInvoiceTemplateListQuery({
-    business_id,
+    businessId,
   });
 
   const createTemplateMutation = useInvoiceTemplateCreateMutation();
@@ -87,19 +83,17 @@ function useInvoiceTemplateState() {
       "invoiceKey is required to toggle template",
     );
     return [
-      invoiceTemplates?.data?.some(
-        (template) => template.invoice_id === invoiceId,
-      ),
+      invoiceTemplates?.some((template) => template.invoiceId === invoiceId),
       () => {
         invariant(!isPending, "cannot toggle template while pending");
         if (isTemplate) {
-          deleteTemplateMutation.mutate({ invoice_id: invoiceId });
+          deleteTemplateMutation.mutate({ invoiceId });
         } else {
-          createTemplateMutation.mutate({ invoice_id: invoiceId });
+          createTemplateMutation.mutate({ invoiceId });
         }
       },
     ];
-  }, [invoiceKey, isPending, invoiceTemplates?.data]);
+  }, [invoiceKey, isPending, invoiceTemplates]);
 
   return [isTemplate, toggleTemplate] as const;
 }

@@ -19,12 +19,12 @@ function Page() {
 
 function ServiceList() {
   const { businessKey } = Route.useParams();
-  const business_id = parseInt(businessKey);
+  const businessId = parseInt(businessKey);
   const {
     data: serviceList,
     error,
     isLoading,
-  } = useServiceListQuery({ business_id });
+  } = useServiceListQuery({ businessId: businessId });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -37,7 +37,7 @@ function ServiceList() {
   return (
     <ul>
       {serviceList?.data?.map((service) => (
-        <li key={service.service_id}>{service.name}</li>
+        <li key={service.serviceId}>{service.name}</li>
       ))}
       {serviceList?.data?.length === 0 && <li>No services found</li>}
     </ul>
@@ -46,7 +46,7 @@ function ServiceList() {
 
 function CreateServiceForm() {
   const { businessKey } = Route.useParams();
-  const business_id = parseInt(businessKey);
+  const businessId = parseInt(businessKey);
 
   const {
     mutate: createService,
@@ -59,11 +59,11 @@ function CreateServiceForm() {
     const formData = new FormData(event.currentTarget);
 
     createService({
-      business_id,
+      businessId,
       name: formData.get("name") as string,
       description: formData.get("description") as string,
-      initial_rate: Number(formData.get("initial_rate")),
-      initial_rate_threshold: Number(formData.get("initial_rate_threshold")),
+      initialRate: Number(formData.get("initialRate")),
+      initialRateThreshold: Number(formData.get("initialRateThreshold")),
       rate: Number(formData.get("rate")),
     });
   }
@@ -86,7 +86,7 @@ function CreateServiceForm() {
       <label>
         Initial Rate
         <input
-          name="initial_rate"
+          name="initialRate"
           type="number"
           value={initialRate ?? ""}
           onChange={(event) => setInitialRate(Number(event.target.value))}
@@ -100,7 +100,7 @@ function CreateServiceForm() {
       <label>
         Initial Rate Threshold
         <input
-          name="initial_rate_threshold"
+          name="initialRateThreshold"
           type="number"
           value={initialRateThreshold ?? ""}
           onChange={(event) =>

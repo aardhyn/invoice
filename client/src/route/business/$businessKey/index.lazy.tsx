@@ -8,9 +8,9 @@ export const Route = createLazyFileRoute("/business/$businessKey/")({
 
 function Page() {
   const { businessKey } = Route.useParams();
-  const business_id = parseInt(businessKey);
+  const businessId = parseInt(businessKey);
 
-  const { data: business } = useBusinessGetQuery({ business_id });
+  const { data: business } = useBusinessGetQuery({ businessId });
 
   return (
     <div>

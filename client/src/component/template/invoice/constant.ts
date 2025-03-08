@@ -7,10 +7,10 @@ export const DEFAULT_DISPLAY_COLUMNS = [
 ] satisfies (keyof LineItem)[];
 
 export const PRODUCT_DISPLAY_COLUMNS = [
-  "unit_cost",
+  "unitCost",
 ] satisfies (keyof ProductLineItem)[];
 
 export const SERVICE_DISPLAY_COLUMNS = [
-  "initial_rate",
+  "initialRate",
   "rate",
 ] satisfies (keyof ServiceLineItem)[];

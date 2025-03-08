@@ -4,6 +4,7 @@ use rocket::{http::Status, serde::json::Json};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct LineItemMutation {
   pub invoice_id: i32,
   pub mutation: MutableLineItem,

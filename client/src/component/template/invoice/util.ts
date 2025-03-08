@@ -8,10 +8,10 @@ import {
   stringifyBoolean,
 } from "common";
 
-export function useLineItemColumnNames(line_items: LineItem[]) {
+export function useLineItemColumnNames(lineItems: LineItem[]) {
   return useMemo(() => {
-    const hasProductColumns = line_items.some(isProductLineItem);
-    const hasServiceColumns = line_items.some(isServiceLineItem);
+    const hasProductColumns = lineItems.some(isProductLineItem);
+    const hasServiceColumns = lineItems.some(isServiceLineItem);
 
     const standardColumns = [
       "name",
@@ -22,8 +22,8 @@ export function useLineItemColumnNames(line_items: LineItem[]) {
     ] as string[];
 
     const customColumns = dedupe(
-      line_items
-        .flatMap(({ custom_fields }) => custom_fields ?? [])
+      lineItems
+        .flatMap(({ customFields }) => customFields ?? [])
         .map(({ name }) => name),
     );
 
@@ -37,7 +37,7 @@ export function useLineItemColumnNames(line_items: LineItem[]) {
       hasProductColumns,
       hasServiceColumns,
     };
-  }, [line_items]);
+  }, [lineItems]);
 }
 
 /**  Format custom fields for display
@@ -53,23 +53,19 @@ export function useCustomFieldCells(
   return useMemo(
     () =>
       customFieldColumns.map((name) => {
-        const data = lineItem.custom_fields?.find(({ name: thisName }) => {
+        const data = lineItem.customFields?.find(({ name: thisName }) => {
           return thisName === name;
         })?.data;
         const value = formatCellData(data);
         return value;
       }),
-    [customFieldColumns, lineItem.custom_fields],
+    [customFieldColumns, lineItem.customFields],
   );
 }
 
 // Format cell data for display
 export function formatCellData(data: string | number | boolean | undefined) {
-  if (data === undefined) {
-    return "";
-  } else if (typeof data === "boolean") {
-    return stringifyBoolean(data);
-  } else {
-    return data;
-  }
+  if (data === undefined) return "";
+  else if (typeof data === "boolean") return stringifyBoolean(data);
+  else return data;
 }

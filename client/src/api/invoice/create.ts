@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { INVOICE_LIST_QUERY_KEY, endpoint, queryClient } from "api";
 
-export type CreateInvoice = { business_id: number };
-export type CreatedInvoice = { invoice_id: number };
+export type CreateInvoice = { businessId: number };
+export type CreatedInvoice = { invoiceId: number };
 
 export function useInvoiceCreateMutation() {
   return useMutation({

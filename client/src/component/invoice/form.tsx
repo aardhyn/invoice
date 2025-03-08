@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { type Uuid, map, splitTimestamp, capitalize } from "common";
+import { useMutableInvoiceState } from "utility";
 import {
   LINE_ITEM_TYPE,
   DEFAULT_LINE_ITEM,
@@ -8,6 +10,7 @@ import {
   type MutableLineItem,
   type KeyedMutableLineItem,
   type CreateServiceLineItem,
+  type CreateProductLineItem,
   useClientListQuery,
   useProductListQuery,
   useServiceListQuery,
@@ -18,21 +21,18 @@ import {
   LineItemProductSelectionForm,
   LineItemServiceSelectionForm,
 } from "component";
-import { type Uuid, map, splitTimestamp, capitalize } from "common";
-import { produce } from "immer";
-import { useMutableInvoiceState } from "utility";
 
 export function DraftInvoiceMutationForm({
-  invoice: initialInvoice,
+  initialInvoice,
 }: {
-  invoice: Invoice;
+  initialInvoice: Invoice;
 }) {
-  const clientList = useClientListQuery({
-    business_id: initialInvoice.business.business_id,
-  });
-
   const { invoice, mutateInvoice, lineItems } =
     useMutableInvoiceState(initialInvoice);
+
+  const clientList = useClientListQuery({
+    businessId: invoice.business.businessId,
+  });
 
   const isLocationRequired =
     !!invoice.location?.address ||
@@ -146,14 +146,14 @@ export function DraftInvoiceMutationForm({
         <input
           type="date"
           name="due_date"
-          defaultValue={map(invoice.due_date, splitTimestamp)?.date}
+          defaultValue={map(invoice.dueDate, splitTimestamp)?.date}
         />
       </label>
       <br />
       <fieldset>
         <legend>Line Items</legend>
         <LineItemsForm
-          business_id={initialInvoice.business.business_id}
+          businessId={initialInvoice.business.businessId}
           lineItems={lineItems.items}
           onMutate={lineItems.mutate}
           onDelete={lineItems.remove}
@@ -162,7 +162,7 @@ export function DraftInvoiceMutationForm({
         <fieldset>
           <legend>Add Line Item</legend>
           <CreateLineItemForm
-            business_id={initialInvoice.business.business_id}
+            businessId={initialInvoice.business.businessId}
             onCreateLineItem={lineItems.add}
           />
         </fieldset>
@@ -173,16 +173,16 @@ export function DraftInvoiceMutationForm({
         Client
         {clientList.isSuccess && (
           <select
-            name="client_id"
-            value={initialInvoice.client?.client_id}
+            name="clientId"
+            value={initialInvoice.client?.clientId}
             onChange={(e) => {
               const client = parseInt(e.target.value);
               mutateInvoice({ client });
             }}
           >
             <option value="">Select Client</option>
-            {clientList?.data?.data?.map(({ client_id, name }) => (
-              <option key={client_id} value={client_id}>
+            {clientList?.data?.data?.map(({ clientId, name }) => (
+              <option key={clientId} value={clientId}>
                 {name}
               </option>
             ))}
@@ -194,12 +194,12 @@ export function DraftInvoiceMutationForm({
 }
 
 function LineItemsForm({
-  business_id,
+  businessId,
   lineItems,
   onMutate: handleMutate,
   onDelete: handleDelete,
 }: {
-  business_id: number;
+  businessId: number;
   onMutate(mutation: KeyedMutableLineItem): void;
   onDelete(key: Uuid): void;
   lineItems: KeyedMutableLineItem[];
@@ -214,7 +214,7 @@ function LineItemsForm({
         return (
           <li key={item.key}>
             <LineItemForm
-              business_id={business_id}
+              businessId={businessId}
               lineItem={item}
               onMutateLineItem={(mutation) => {
                 handleMutate({
@@ -238,29 +238,38 @@ function LineItemsForm({
   );
 }
 
+function getLineItemType(
+  lineItem: KeyedMutableLineItem,
+): LineItemType | undefined {
+  return map(lineItem.detail, (detail) => {
+    if ("productId" in detail) return "product";
+    else if ("serviceId" in detail) return "service";
+    else throw new Error("Unknown line item type");
+  });
+}
+
 export function LineItemForm({
-  business_id,
+  businessId,
   lineItem = DEFAULT_LINE_ITEM(),
   onMutateLineItem: handleMutateLineItem,
 }: {
-  business_id: number;
+  businessId: number;
   lineItem: KeyedMutableLineItem;
   onMutateLineItem: (item: MutableLineItem) => void;
 }) {
-  const [type, setType] = useState<"product" | "service" | undefined>();
-
+  const [type, setType] = useState(getLineItemType(lineItem));
   useEffect(() => {
-    const type = map(lineItem.detail, (detail) =>
-      "product_id" in detail ? "product" : "service",
-    );
+    const type = getLineItemType(lineItem);
     setType(type);
   }, [lineItem.detail]);
 
-  const isProductType = type === "product";
-  const productListQuery = useProductListQuery({ business_id }, isProductType);
+  const isProductType =
+    type === "product" || (!!lineItem.detail && "productId" in lineItem.detail);
+  const productListQuery = useProductListQuery({ businessId }, isProductType);
 
-  const isServiceType = type === "service";
-  const serviceListQuery = useServiceListQuery({ business_id }, isServiceType);
+  const isServiceType =
+    type === "service" || (!!lineItem.detail && "serviceId" in lineItem.detail);
+  const serviceListQuery = useServiceListQuery({ businessId }, isServiceType);
 
   return (
     <>
@@ -278,31 +287,29 @@ export function LineItemForm({
       <fieldset>
         <legend>Service/Product</legend>
         <TypeDropdown type={type} onTypeChange={setType} />
-        {lineItem.detail && "product_id" in lineItem.detail && (
+        {isProductType && (
           <LineItemProductSelectionForm
             products={productListQuery.data?.data || []}
-            selectedProductId={lineItem.detail.product_id}
-            onProductIdChange={(product_id) => {
-              handleMutateLineItem(
-                produce(lineItem, (draft) => {
-                  draft.detail = { product_id };
-                }),
-              );
+            selectedProductId={
+              (lineItem.detail as CreateProductLineItem)?.productId
+            }
+            onProductIdChange={(productId) => {
+              handleMutateLineItem({
+                detail: productId ? { productId } : null,
+              });
             }}
           />
         )}
-        {lineItem.detail && "service_id" in lineItem.detail && (
+        {isServiceType && (
           <LineItemServiceSelectionForm
             services={serviceListQuery.data?.data || []}
             selectedServiceId={
-              (lineItem.detail as CreateServiceLineItem)?.service_id
+              (lineItem.detail as CreateServiceLineItem)?.serviceId
             }
-            onServiceIdChange={(service_id) => {
-              handleMutateLineItem(
-                produce(lineItem, (draft) => {
-                  draft.detail = { service_id };
-                }),
-              );
+            onServiceIdChange={(serviceId) => {
+              handleMutateLineItem({
+                detail: serviceId ? { serviceId } : null,
+              });
             }}
           />
         )}
@@ -310,16 +317,14 @@ export function LineItemForm({
       <br />
       <fieldset>
         <legend>Custom Fields</legend>
-        {!lineItem.custom_fields?.length && <p>No custom fields</p>}
+        {!lineItem.customFields?.length && <p>No custom fields</p>}
         <br />
         <LineItemCustomFieldsForm
-          customFields={lineItem.custom_fields || []}
-          onCustomFieldsChange={(custom_fields) => {
-            handleMutateLineItem(
-              produce(lineItem, (draft) => {
-                Object.assign(draft, { custom_fields });
-              }),
-            );
+          customFields={lineItem.customFields || []}
+          onCustomFieldsChange={(customFields) => {
+            handleMutateLineItem({
+              customFields,
+            });
           }}
         />
       </fieldset>
@@ -328,10 +333,10 @@ export function LineItemForm({
 }
 
 function CreateLineItemForm({
-  business_id,
+  businessId,
   onCreateLineItem: handleCreateLineItem,
 }: {
-  business_id: number;
+  businessId: number;
   onCreateLineItem(item: CreateLineItem): void;
 }) {
   const [lineItem, setLineItem] = useState<CreateLineItem>(DEFAULT_LINE_ITEM());
@@ -343,7 +348,7 @@ function CreateLineItemForm({
   return (
     <div>
       <LineItemForm
-        business_id={business_id}
+        businessId={businessId}
         lineItem={lineItem}
         onMutateLineItem={(mutation) => {
           setLineItem((lineItem) => ({ ...lineItem, ...mutation }));

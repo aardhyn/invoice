@@ -22,26 +22,17 @@ export function useMutableInvoiceLineItemsState(
 
   const lineItemCreateMutation = useLineItemCreateMutation();
   const handleCreateLineItem = (lineItem: CreateLineItem) => {
-    lineItemCreateMutation.mutate({
-      invoice_id: invoiceId,
-      line_item: lineItem,
-    });
+    lineItemCreateMutation.mutate({ invoiceId, lineItem });
   };
 
   const lineItemDeleteMutation = useLineItemDeleteMutation();
   const handleDeleteLineItem = (key: Uuid) => {
-    lineItemDeleteMutation.mutate({
-      invoice_id: invoiceId,
-      line_item_key: key,
-    });
+    lineItemDeleteMutation.mutate({ invoiceId, lineItemKey: key });
   };
 
   const lineItemMutation = useLineItemMutation();
   const handleMutateLineItem = useDebounce((mutation: KeyedMutableLineItem) => {
-    lineItemMutation.mutate({
-      invoice_id: invoiceId,
-      mutation,
-    });
+    lineItemMutation.mutate({ invoiceId, mutation });
   }, LINE_ITEM_DEBOUNCE_DELAY);
 
   const add = (lineItem: CreateLineItem) => {

@@ -30,11 +30,13 @@ impl From<Error> for CreateInvoiceError {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateInvoice {
   pub business_id: i32,
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreatedInvoice {
   pub invoice_id: i32,
 }

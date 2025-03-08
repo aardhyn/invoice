@@ -2,14 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { type APIResponse, endpoint, INVOICE_LIST_QUERY_KEY } from "api";
 
 export type ListInvoice = {
-  business_id: number;
+  businessId: number;
 };
 
 export type InvoiceListItem = {
-  invoice_id: number;
+  invoiceId: number;
   name: string;
   description: string;
-  due_date: string;
+  dueDate: string;
 };
 
 export function useInvoiceListQuery(params: ListInvoice) {

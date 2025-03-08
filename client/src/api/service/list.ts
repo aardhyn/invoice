@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { APIResponse, endpoint, SERVICE_LIST_QUERY_KEY } from "api";
 
 export type ServiceListParams = {
-  business_id: number;
+  businessId: number;
 };
 
 export type ServiceListItem = {
-  service_id: number;
+  serviceId: number;
   name: string;
 };
 

@@ -3,8 +3,8 @@ import { INVOICE_QUERY_KEY, endpoint, queryClient } from "api";
 import type { Uuid } from "common";
 
 export type OrderLineItems = {
-  invoice_id: number;
-  line_item_order: Uuid[];
+  invoiceId: number;
+  lineItemOrder: Uuid[];
 };
 
 export function useLineItemOrderMutation() {
@@ -16,9 +16,9 @@ export function useLineItemOrderMutation() {
         body: JSON.stringify(lineItem),
       });
     },
-    onSuccess(_, { invoice_id }) {
+    onSuccess(_, { invoiceId }) {
       queryClient.invalidateQueries({
-        queryKey: [...INVOICE_QUERY_KEY, invoice_id],
+        queryKey: [...INVOICE_QUERY_KEY, invoiceId],
       });
     },
   });

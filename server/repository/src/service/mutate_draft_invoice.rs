@@ -41,6 +41,7 @@ pub enum DraftInvoiceClientMutation {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DraftInvoiceMutation {
   pub invoice_id: i32,
   pub name: Option<String>,

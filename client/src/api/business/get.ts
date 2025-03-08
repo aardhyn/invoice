@@ -8,12 +8,12 @@ import {
 import { invariant } from "common";
 
 type BusinessGetParams = {
-  business_id: number;
+  businessId: number;
 };
 
 export function useBusinessGetQuery(params: BusinessGetParams) {
   return useQuery({
-    queryKey: [...BUSINESS_QUERY_KEY, params.business_id],
+    queryKey: [...BUSINESS_QUERY_KEY, params.businessId],
     async queryFn() {
       const res = await fetch(endpoint("business.get"), {
         method: "POST",

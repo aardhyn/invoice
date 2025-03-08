@@ -28,6 +28,7 @@ impl From<Error> for DuplicateInvoiceError {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DuplicateInvoice {
   invoice_id: i32,
 }

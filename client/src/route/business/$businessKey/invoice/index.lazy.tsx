@@ -1,4 +1,5 @@
 import { FormEvent } from "react";
+import { Link, createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   locationStringify,
   useInvoiceListQuery,
@@ -6,7 +7,6 @@ import {
   useInvoiceDuplicateMutation,
   useInvoiceCreateMutation,
 } from "api";
-import { Link, createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/business/$businessKey/invoice/")({
   component: Page,
@@ -14,28 +14,28 @@ export const Route = createLazyFileRoute("/business/$businessKey/invoice/")({
 
 function Page() {
   const { businessKey } = Route.useParams();
-  const business_id = parseInt(businessKey);
+  const businessId = parseInt(businessKey);
 
-  const invoiceList = useInvoiceListQuery({ business_id });
+  const invoiceList = useInvoiceListQuery({ businessId });
 
   const { data: invoiceTemplates } = useInvoiceTemplateListQuery({
-    business_id,
+    businessId,
   });
   const { mutate: duplicateInvoice } = useInvoiceDuplicateMutation();
   const handleCreateFromTemplate =
     (invoiceId: number) => (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      duplicateInvoice({ invoice_id: invoiceId });
+      duplicateInvoice({ invoiceId });
     };
 
   const navigate = useNavigate();
   const invoiceCreateMutation = useInvoiceCreateMutation();
   const handleCreateFromScratch = () => {
     invoiceCreateMutation.mutate(
-      { business_id },
+      { businessId },
       {
-        onSuccess({ invoice_id }) {
-          const invoiceKey = invoice_id.toString();
+        onSuccess({ invoiceId }) {
+          const invoiceKey = invoiceId.toString();
           navigate({
             to: "/business/$businessKey/invoice/$invoiceKey",
             params: { businessKey, invoiceKey },
@@ -51,8 +51,10 @@ function Page() {
         <h2>Invoices</h2>
         <ul>
           {invoiceList?.data?.data?.map((invoice) => (
-            <li key={invoice.invoice_id}>
-              <Link to={invoice.invoice_id.toString()}>{invoice.name}</Link>
+            <li key={invoice.invoiceId}>
+              <Link to={invoice.invoiceId.toString()}>
+                {invoice.name || "Untitled Invoice"}
+              </Link>
             </li>
           ))}
         </ul>
@@ -67,14 +69,14 @@ function Page() {
         <fieldset>
           <legend>From Template</legend>
           <ul>
-            {invoiceTemplates?.data?.map(
-              ({ invoice_id, name, description, location, client_name }) => (
-                <li key={invoice_id}>
-                  <form onSubmit={handleCreateFromTemplate(invoice_id)}>
+            {invoiceTemplates?.map(
+              ({ invoiceId, name, description, location, clientName }) => (
+                <li key={invoiceId}>
+                  <form onSubmit={handleCreateFromTemplate(invoiceId)}>
                     <button style={{ textAlign: "left" }}>
                       <h4>{name}</h4>
                       <p>{description}</p>
-                      <p>Client: {client_name}</p>
+                      <p>Client: {clientName}</p>
                       <p>Address: {locationStringify(location)}</p>
                     </button>
                   </form>

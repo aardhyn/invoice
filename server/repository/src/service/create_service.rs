@@ -29,6 +29,7 @@ impl From<Error> for CreateServiceError {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreatedService {
   pub service_id: i32,
   pub name: String,

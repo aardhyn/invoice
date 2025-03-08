@@ -12,8 +12,8 @@ export type CreateBusiness = {
   description: string;
   location: Location;
   contact: CreateContact;
-  account_number: string;
-  account_name: string;
+  accountNumber: string;
+  accountName: string;
 };
 
 export function useBusinessCreateMutation() {

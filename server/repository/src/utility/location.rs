@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::model::LocationEntity;
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Location {
   pub address: String,
   pub suburb: Option<String>,

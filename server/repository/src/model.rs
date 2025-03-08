@@ -1,4 +1,5 @@
 use crate::schema::*;
+use crate::utility::serialization::deserialize_optional_field;
 use chrono::{DateTime, Utc};
 use diesel::deserialize::{self, FromSql, FromSqlRow};
 use diesel::pg::Pg;
@@ -12,6 +13,7 @@ use uuid::Uuid;
 // Contact //
 
 #[derive(Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = contact)]
 pub struct ContactEntity {
@@ -24,6 +26,7 @@ pub struct ContactEntity {
   pub city: Option<String>,
 }
 #[derive(Debug, Insertable, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = contact)]
 pub struct CreateContactEntity {
@@ -35,6 +38,7 @@ pub struct CreateContactEntity {
   pub city: Option<String>,
 }
 #[derive(Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = contact)]
 pub struct CreatedContactEntity {
@@ -44,6 +48,7 @@ pub struct CreatedContactEntity {
 // Payment //
 
 #[derive(Queryable, Selectable, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = payment)]
 pub struct PaymentEntity {
@@ -59,6 +64,7 @@ pub struct NewPaymentEntity {
   pub account_name: String,
 }
 #[derive(Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = payment)]
 pub struct CreatedPaymentEntity {
@@ -68,6 +74,7 @@ pub struct CreatedPaymentEntity {
 // Location //
 
 #[derive(Queryable, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 pub struct LocationEntity {
   pub address: Option<String>,
@@ -78,6 +85,7 @@ pub struct LocationEntity {
 // Business //
 
 #[derive(Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = business)]
 pub struct BusinessEntity {
@@ -103,6 +111,7 @@ pub struct NewBusinessEntity {
   pub contact_id: Option<i32>,
 }
 #[derive(Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = business)]
 pub struct CreatedBusinessEntity {
@@ -111,6 +120,7 @@ pub struct CreatedBusinessEntity {
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = business)]
 pub struct BusinessEntityListItem {
@@ -132,6 +142,7 @@ pub struct ClientEntity {
 }
 
 #[derive(Debug, Insertable, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = client)]
 pub struct CreateClientEntity {
@@ -142,6 +153,7 @@ pub struct CreateClientEntity {
 }
 
 #[derive(Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = client)]
 pub struct CreatedClientEntity {
@@ -150,6 +162,7 @@ pub struct CreatedClientEntity {
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = client)]
 pub struct ClientEntityListItem {
@@ -160,6 +173,7 @@ pub struct ClientEntityListItem {
 // Service //
 
 #[derive(Debug, Deserialize, Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = service)]
 pub struct ServiceEntity {
@@ -173,6 +187,7 @@ pub struct ServiceEntity {
 }
 
 #[derive(Insertable, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = service)]
 pub struct NewServiceEntity {
@@ -185,6 +200,7 @@ pub struct NewServiceEntity {
 }
 
 #[derive(Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = service)]
 pub struct CreatedServiceEntity {
@@ -193,6 +209,7 @@ pub struct CreatedServiceEntity {
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = service)]
 pub struct ServiceEntityListItem {
@@ -203,6 +220,7 @@ pub struct ServiceEntityListItem {
 // Product //
 
 #[derive(Debug, Deserialize, Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = product)]
 pub struct ProductEntity {
@@ -214,6 +232,7 @@ pub struct ProductEntity {
 }
 
 #[derive(Insertable, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = product)]
 pub struct NewProductEntity {
@@ -224,6 +243,7 @@ pub struct NewProductEntity {
 }
 
 #[derive(Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = product)]
 pub struct CreatedProductEntity {
@@ -232,6 +252,7 @@ pub struct CreatedProductEntity {
 }
 
 #[derive(Debug, Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = product)]
 pub struct ProductEntityListItem {
@@ -251,11 +272,13 @@ pub enum LineItemCustomFieldType {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ServiceLineItemEntity {
   pub service_id: i32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ProductLineItemEntity {
   pub product_id: i32,
 }
@@ -268,6 +291,7 @@ pub enum LineItemDetail {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct LineItemCustomField {
   pub key: Uuid,
   pub name: String,
@@ -275,6 +299,7 @@ pub struct LineItemCustomField {
 }
 
 #[derive(Debug, Serialize, Deserialize, FromSqlRow)]
+#[serde(rename_all = "camelCase")]
 pub struct LineItemEntity {
   pub key: Uuid,
   pub name: String,
@@ -284,17 +309,22 @@ pub struct LineItemEntity {
   pub quantity: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[serde(default)]
 pub struct MutableLineItemEntity {
   pub key: Uuid,
   pub name: Option<String>,
   pub description: Option<String>,
   pub custom_fields: Option<Vec<LineItemCustomField>>,
-  pub detail: Option<LineItemDetail>,
+  #[serde(deserialize_with = "deserialize_optional_field")]
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub detail: Option<Option<LineItemDetail>>,
   pub quantity: Option<i32>,
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreatedLineItemEntity {
   pub key: Uuid,
   pub name: String,
@@ -303,6 +333,7 @@ pub struct CreatedLineItemEntity {
 // Invoice //
 
 #[derive(Debug, FromSqlRow, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(sql_type = sql_types::InvoiceState)]
 pub enum InvoiceState {
   Draft,
@@ -377,6 +408,7 @@ pub struct NewInvoiceEntity {
 }
 
 #[derive(Debug, Queryable, AsChangeset, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct DraftInvoiceEntityMutation {
@@ -391,6 +423,7 @@ pub struct DraftInvoiceEntityMutation {
 }
 
 #[derive(Queryable, Selectable, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct CreatedInvoiceEntity {
@@ -401,6 +434,7 @@ pub struct CreatedInvoiceEntity {
 pub type DuplicatedInvoiceEntity = CreatedInvoiceEntity;
 
 #[derive(Debug, Serialize, Queryable, Selectable)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice)]
 pub struct InvoiceEntityListItem {
@@ -420,6 +454,7 @@ pub struct InvoiceLineItems {
 // Invoice Template //
 
 #[derive(Queryable, Selectable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(belongs_to(InvoiceEntity))]
 #[diesel(table_name = invoice_template)]
@@ -428,6 +463,7 @@ pub struct InvoiceTemplateEntity {
 }
 
 #[derive(Insertable, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = invoice_template)]
 pub struct NewInvoiceTemplateEntity {
@@ -435,6 +471,7 @@ pub struct NewInvoiceTemplateEntity {
 }
 
 #[derive(Queryable, Serialize)]
+#[serde(rename_all = "camelCase")]
 #[diesel(check_for_backend(Pg))]
 pub struct InvoiceTemplateListEntity {
   pub invoice_id: i32,

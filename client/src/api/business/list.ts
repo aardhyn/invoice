@@ -1,21 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
-import { type APIResponse, BUSINESS_LIST_QUERY_KEY, endpoint } from "api";
+import { BUSINESS_LIST_QUERY_KEY, endpoint, isAPIResponse } from "api";
+import { invariant } from "common";
 
 export type BusinessListItem = {
-  business_id: number;
+  businessId: number;
   name: string;
   description: string;
 };
 
 export function useBusinessListQuery() {
-  return useQuery<APIResponse<BusinessListItem[], string>>({
+  return useQuery<BusinessListItem[]>({
     queryKey: BUSINESS_LIST_QUERY_KEY,
     async queryFn() {
       const response = await fetch(endpoint("business.list"), {
         method: "POST",
       });
       const data = await response.json();
-      return data;
+      invariant(
+        isAPIResponse<BusinessListItem[]>(data),
+        "Invalid API response",
+      );
+      if (data.error) throw new Error(JSON.stringify(data.error));
+      return data.data;
     },
   });
 }

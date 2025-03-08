@@ -1,5 +1,6 @@
 use std::{env, net::IpAddr};
 
+use rocket::config::Ident;
 use rocket::Config;
 
 pub fn build_config() -> Result<Config, String> {
@@ -13,6 +14,7 @@ pub fn build_config() -> Result<Config, String> {
   let config = Config {
     address,
     port,
+    ident: Ident::none(),
     ..Config::debug_default()
   };
 

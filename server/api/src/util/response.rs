@@ -5,6 +5,7 @@ use serde::Serialize;
 use std::io::Cursor;
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct APIResponse<T, E> {
   pub status: Option<Status>,
   pub error: Option<E>,
@@ -23,10 +24,14 @@ impl<'r, T: Serialize> Responder<'r, 'static> for APIResponse<T, String> {
       }
     });
 
-    response::Response::build()
+    let response = response::Response::build()
       .status(status)
       .sized_body(json.len(), Cursor::new(json))
       .header(ContentType::JSON)
-      .ok()
+      .ok();
+
+    print!("Response: {:?}", response);
+
+    response
   }
 }

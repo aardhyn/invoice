@@ -29,6 +29,7 @@ impl From<Error> for CreateClientError {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateClient {
   pub name: String,
   pub description: Option<String>,
@@ -37,6 +38,7 @@ pub struct CreateClient {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreatedClient {
   pub client_id: i32,
   pub name: String,

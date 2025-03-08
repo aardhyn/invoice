@@ -20,8 +20,8 @@ function Page() {
       <section>
         <h2>Businesses</h2>
         <ul>
-          {businessList?.data?.map(({ name, business_id }) => {
-            const businessKey = business_id.toString();
+          {businessList?.map(({ name, businessId }) => {
+            const businessKey = businessId.toString();
             return (
               <li key={businessKey}>
                 <Link to="/business/$businessKey" params={{ businessKey }}>
@@ -31,7 +31,7 @@ function Page() {
             );
           })}
         </ul>
-        {isSuccess && !businessList?.data?.length && (
+        {isSuccess && !businessList?.length && (
           <p>
             <em>No businesses found</em>
           </p>
@@ -63,8 +63,8 @@ function Page() {
                   city: formData.get("contact-city") as string,
                 },
               },
-              account_number: formData.get("account-number") as string,
-              account_name: formData.get("account-name") as string,
+              accountNumber: formData.get("account-number") as string,
+              accountName: formData.get("account-name") as string,
             });
           }}
         >

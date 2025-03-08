@@ -3,11 +3,11 @@ import { APIResponse, endpoint } from "api";
 import { CLIENT_LIST_QUERY_KEY } from ".";
 
 export type ClientListParams = {
-  business_id: number;
+  businessId: number;
 };
 
 export type ClientListItem = {
-  client_id: number;
+  clientId: number;
   name: string;
   description: string;
 };

@@ -5,6 +5,7 @@ use serde::Deserialize;
 use crate::util::response::APIResponse;
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ServiceListParams {
   pub business_id: i32,
 }

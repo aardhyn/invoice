@@ -1,34 +1,37 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  type APIResponse,
-  type Location,
-  endpoint,
   INVOICE_TEMPLATE_LIST_QUERY_KEY,
+  type Location,
+  isAPIResponse,
+  endpoint,
 } from "api";
+import { invariant } from "common";
 
 export type InvoiceTemplateListParams = {
-  business_id: number;
+  businessId: number;
 };
 
 export type InvoiceTemplate = {
-  invoice_id: number;
+  invoiceId: number;
   name: string;
   description: string | null;
   location: Location;
-  client_name: string;
+  clientName: string;
 };
 
 export function useInvoiceTemplateListQuery(params: InvoiceTemplateListParams) {
-  return useQuery<APIResponse<InvoiceTemplate[], string>>({
+  return useQuery<InvoiceTemplate[]>({
     queryKey: INVOICE_TEMPLATE_LIST_QUERY_KEY,
     async queryFn() {
-      const response = await fetch(endpoint("invoice.template.list"), {
+      const res = await fetch(endpoint("invoice.template.list"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(params),
       });
-      const data = await response.json();
-      return data;
+      const data = await res.json();
+      invariant(isAPIResponse<InvoiceTemplate[]>(data), "Invalid API response");
+      if (data.error) throw new Error(JSON.stringify(data.error));
+      return data.data;
     },
   });
 }

@@ -8,15 +8,15 @@ export type MutableDraftInvoice = {
   reference?: string | null;
   client?: number;
   location?: Location | null;
-  due_date?: Timestampz | null;
+  dueDate?: Timestampz | null;
 };
 
 export type KeyedMutableDraftInvoice = MutableDraftInvoice & {
-  invoice_id: number;
+  invoiceId: number;
 };
 
 export type MutatedDraftInvoice = {
-  invoice_id: number;
+  invoiceId: number;
   name: string;
 };
 
@@ -32,9 +32,9 @@ export function useDraftInvoiceMutation() {
       if (data.error) throw new Error(JSON.stringify(data.error));
       return data.data;
     },
-    onSuccess({ invoice_id }) {
+    onSuccess({ invoiceId }) {
       queryClient.invalidateQueries({
-        queryKey: [...INVOICE_QUERY_KEY, invoice_id],
+        queryKey: [...INVOICE_QUERY_KEY, invoiceId],
       });
     },
   });

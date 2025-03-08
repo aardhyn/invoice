@@ -29,6 +29,7 @@ impl From<Error> for CreateBusinessError {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateBusiness {
   pub name: String,
   pub description: Option<String>,
@@ -39,6 +40,7 @@ pub struct CreateBusiness {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreatedBusiness {
   pub business_id: i32,
   pub name: String,

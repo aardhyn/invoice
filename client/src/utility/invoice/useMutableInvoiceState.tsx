@@ -19,6 +19,16 @@ type MutableDraftInvoiceState = Simplify<
 >;
 
 /**
+ * Format `invoice` as returned from the API to a mutable version for local state and mutation
+ */
+function createInvoiceState(invoice: Invoice): MutableDraftInvoiceState {
+  return {
+    ...invoice,
+    client: invoice.client?.clientId,
+  };
+}
+
+/**
  * Manage the local state of a mutable draft invoice and its line items.
  */
 export function useMutableInvoiceState(initialInvoice: Invoice) {
@@ -30,21 +40,18 @@ export function useMutableInvoiceState(initialInvoice: Invoice) {
     INVOICE_DEBOUNCE_DELAY,
   );
 
-  const [invoice, setInvoice] = useState<MutableDraftInvoiceState>(() => {
-    return {
-      ...initialInvoice,
-      client: initialInvoice.client?.client_id,
-    };
-  });
+  const [invoice, setInvoice] = useState<MutableDraftInvoiceState>(
+    createInvoiceState(initialInvoice),
+  );
 
-  const lineItems = useMutableInvoiceLineItemsState(initialInvoice.line_items, {
-    invoiceId: initialInvoice.invoice_id,
+  const lineItems = useMutableInvoiceLineItemsState(initialInvoice.lineItems, {
+    invoiceId: invoice.invoiceId,
   });
 
   const mutateInvoice = (mutation: MutableDraftInvoice) => {
     const next = produce(invoice, (draft) => Object.assign(draft, mutation));
     setInvoice(next);
-    handleInvoiceMutation({ ...mutation, invoice_id: invoice.invoice_id });
+    handleInvoiceMutation({ ...mutation, invoiceId: invoice.invoiceId });
   };
 
   return { invoice, mutateInvoice, lineItems };

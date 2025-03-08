@@ -29,6 +29,7 @@ impl From<Error> for CreateProductError {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreatedProduct {
   pub product_id: i32,
   pub name: String,

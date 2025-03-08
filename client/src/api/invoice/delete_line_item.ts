@@ -3,13 +3,13 @@ import { INVOICE_QUERY_KEY, endpoint, queryClient } from "api";
 import { Uuid } from "common";
 
 export type DeleteLineItem = {
-  invoice_id: number;
-  line_item_key: Uuid;
+  invoiceId: number;
+  lineItemKey: Uuid;
 };
 
 export type DeletedLineItem = {
-  invoice_id: number;
-  line_item_key: Uuid;
+  invoiceId: number;
+  lineItemKey: Uuid;
 };
 
 export function useLineItemDeleteMutation() {
@@ -24,9 +24,9 @@ export function useLineItemDeleteMutation() {
       if (!res.ok) throw new Error(data.error);
       return data.data;
     },
-    onSuccess({ invoice_id }) {
+    onSuccess({ invoiceId }) {
       queryClient.invalidateQueries({
-        queryKey: [...INVOICE_QUERY_KEY, invoice_id],
+        queryKey: [...INVOICE_QUERY_KEY, invoiceId],
       });
     },
   });

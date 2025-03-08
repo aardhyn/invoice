@@ -5,6 +5,7 @@ use serde::Deserialize;
 use uuid::Uuid;
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct LineItemDeletion {
   pub invoice_id: i32,
   pub line_item_key: Uuid,

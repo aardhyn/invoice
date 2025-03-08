@@ -9,6 +9,7 @@ use diesel::{prelude::*, result::Error};
 use serde::Serialize;
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct InvoiceBusiness {
   business_id: i32,
   name: String,
@@ -19,6 +20,7 @@ pub struct InvoiceBusiness {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Invoice {
   invoice_id: i32,
   invoice_key: String,
@@ -35,13 +37,14 @@ pub struct Invoice {
 }
 
 #[derive(Serialize)]
-#[serde(untagged, rename_all = "snake_case")]
+#[serde(untagged)]
 pub enum InvoiceLineItemDetail {
   Product(ProductEntity),
   Service(ServiceEntity),
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct InvoiceLineItem {
   key: String,
   name: String,

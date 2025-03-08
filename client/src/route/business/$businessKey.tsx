@@ -7,9 +7,9 @@ export const Route = createFileRoute("/business/$businessKey")({
 
 function Page() {
   const params = Route.useParams();
-  const business_id = parseInt(params.businessKey);
+  const businessId = parseInt(params.businessKey);
 
-  const { data: business } = useBusinessGetQuery({ business_id });
+  const { data: business } = useBusinessGetQuery({ businessId });
 
   return (
     <ul>

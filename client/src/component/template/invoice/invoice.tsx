@@ -39,11 +39,11 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
           <h2>Tax</h2>
           <article>
             <p className="row">
-              <b>Nō</b> {invoice.invoice_key}
+              <b>Nō</b> {invoice.invoiceKey}
             </p>
             <p className="row">
               <b>Due</b>{" "}
-              {invoice.due_date ? dateFromTimestamp(invoice.due_date) : "Unset"}
+              {invoice.dueDate ? dateFromTimestamp(invoice.dueDate) : "Unset"}
             </p>
             <p className="row">
               <b>Reference</b> {invoice.reference ? invoice.reference : "None"}
@@ -72,10 +72,7 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
         </div>
       </div>
       <div className="card">
-        <LineItemsPreview
-          line_items={invoice.line_items}
-          total={invoice.total}
-        />
+        <LineItemsPreview lineItems={invoice.lineItems} total={invoice.total} />
       </div>
     </div>
   );
@@ -104,10 +101,10 @@ function LocationPreview({ location }: { location: Location }) {
 }
 
 function LineItemsPreview({
-  line_items,
+  lineItems,
   total,
 }: {
-  line_items: LineItem[];
+  lineItems: LineItem[];
   total: number;
 }) {
   const {
@@ -115,7 +112,7 @@ function LineItemsPreview({
     formattedColumns,
     hasProductColumns,
     hasServiceColumns,
-  } = useLineItemColumnNames(line_items);
+  } = useLineItemColumnNames(lineItems);
 
   return (
     <table>
@@ -127,10 +124,10 @@ function LineItemsPreview({
         </tr>
       </thead>
       <tbody>
-        {line_items.map((line_item) => (
+        {lineItems.map((lineItem) => (
           <LineItemPreview
-            key={line_item.key}
-            line_item={line_item as LineItemView}
+            key={lineItem.key}
+            lineItem={lineItem as LineItemView}
             customFieldColumns={customColumns}
             showProductColumns={hasProductColumns}
             showServiceColumns={hasServiceColumns}
@@ -159,12 +156,12 @@ type LineItemView = Override<
 >;
 
 function LineItemPreview({
-  line_item: lineItem,
+  lineItem: lineItem,
   customFieldColumns,
   showProductColumns,
   showServiceColumns,
 }: {
-  line_item: LineItemView;
+  lineItem: LineItemView;
   customFieldColumns: string[];
   showProductColumns?: boolean;
   showServiceColumns?: boolean;
@@ -177,10 +174,10 @@ function LineItemPreview({
       <td>{lineItem.description}</td>
       <td>{lineItem.quantity}</td>
 
-      {showProductColumns && <td>{lineItem.detail?.unit_cost}</td>}
+      {showProductColumns && <td>{lineItem.detail?.unitCost}</td>}
       {showServiceColumns && (
         <>
-          <td>{lineItem.detail?.initial_rate}</td>
+          <td>{lineItem.detail?.initialRate}</td>
           <td>{lineItem.detail?.rate}</td>
         </>
       )}

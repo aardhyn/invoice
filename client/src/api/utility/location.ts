@@ -4,12 +4,6 @@ export type Location = {
   city: string;
 };
 
-// export type MutableLocation = {
-//   address?: string;
-//   suburb?: string | null;
-//   city?: string;
-// }
-
 export function locationStringify(
   location: Location,
   delimiter: string = ", ",

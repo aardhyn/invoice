@@ -27,6 +27,7 @@ impl From<Error> for CreateLineItemError {
 pub type CreateLineItem = LineItemEntity;
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreatedLineItem {
   pub invoice_id: i32,
   pub line_item_key: Uuid,

@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { endpoint, INVOICE_TEMPLATE_QUERY_KEY, queryClient } from "api";
 
 export type DeleteInvoiceTemplate = {
-  invoice_id: number;
+  invoiceId: number;
 };
 
 export function useInvoiceTemplateDeleteMutation() {

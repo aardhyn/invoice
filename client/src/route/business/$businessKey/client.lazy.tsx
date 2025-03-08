@@ -8,8 +8,8 @@ export const Route = createLazyFileRoute("/business/$businessKey/client")({
 
 function Page() {
   const { businessKey } = Route.useParams();
-  const business_id = parseInt(businessKey);
-  const { data: clientList, isSuccess } = useClientListQuery({ business_id });
+  const businessId = parseInt(businessKey);
+  const { data: clientList, isSuccess } = useClientListQuery({ businessId });
   const {
     mutate: createClient,
     isError,
@@ -23,7 +23,7 @@ function Page() {
         <h2>Clients</h2>
         <ul>
           {clientList?.data?.map((client) => (
-            <li key={client.client_id}>{client.name}</li>
+            <li key={client.clientId}>{client.name}</li>
           ))}
         </ul>
         {isSuccess && !clientList?.data?.length && (
@@ -41,6 +41,7 @@ function Page() {
             const formData = new FormData(event.currentTarget);
 
             createClient({
+              businessId,
               name: formData.get("name") as string,
               description: formData.get("description") as string,
               contact: {

@@ -8,11 +8,11 @@ import {
 import { invariant } from "common";
 
 export type ProductListParams = {
-  business_id: number;
+  businessId: number;
 };
 
 export type ProductListItem = {
-  product_id: number;
+  productId: number;
   name: string;
 };
 
@@ -36,9 +36,7 @@ export function useProductListQuery(
         "API response is not in the correct shape",
       );
 
-      if (data.error) {
-        throw new Error(JSON.stringify(data.error));
-      }
+      if (data.error) throw new Error(JSON.stringify(data.error));
 
       return data;
     },

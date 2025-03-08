@@ -18,11 +18,12 @@ function Page() {
 
 function ProductList() {
   const { businessKey } = Route.useParams();
+  const businessId = parseInt(businessKey);
   const {
     data: productList,
     error,
     isLoading,
-  } = useProductListQuery({ business_id: parseInt(businessKey) });
+  } = useProductListQuery({ businessId });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -35,7 +36,7 @@ function ProductList() {
   return (
     <ul>
       {productList?.data?.map((product) => (
-        <li key={product.product_id}>{product.name}</li>
+        <li key={product.productId}>{product.name}</li>
       ))}
       {productList?.data?.length === 0 && <li>No products found</li>}
     </ul>
@@ -44,7 +45,7 @@ function ProductList() {
 
 function CreateProductForm() {
   const { businessKey } = Route.useParams();
-  const business_id = parseInt(businessKey);
+  const businessId = parseInt(businessKey);
 
   const {
     mutate: createService,
@@ -57,10 +58,10 @@ function CreateProductForm() {
     const formData = new FormData(event.currentTarget);
 
     createService({
-      business_id,
+      businessId,
       name: formData.get("name") as string,
       description: formData.get("description") as string,
-      unit_cost: Number(formData.get("price")),
+      unitCost: Number(formData.get("price")),
     });
   }
 

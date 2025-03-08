@@ -27,6 +27,7 @@ impl From<Error> for MutateLineItemError {
 pub type MutableLineItem = MutableLineItemEntity;
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MutatedLineItem {
   pub invoice_id: i32,
   pub line_item_key: Uuid,
@@ -69,6 +70,11 @@ pub fn mutate_line_item(
       }
       if let Some(custom_fields) = mutation.custom_fields.clone() {
         line_item_entity.custom_fields = custom_fields;
+      }
+
+      if let Some(detail) = mutation.detail.clone() {
+        print!("detail: {:?}", detail);
+        line_item_entity.detail = detail;
       }
 
       line_item_entity

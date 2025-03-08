@@ -8,13 +8,13 @@ import {
 import type { Uuid } from "common";
 
 export type MutateLineItem = {
-  invoice_id: number;
+  invoiceId: number;
   mutation: KeyedMutableLineItem;
 };
 
 export type MutatedLineItem = {
-  invoice_id: number;
-  line_item_key: Uuid;
+  invoiceId: number;
+  lineItemKey: Uuid;
 };
 
 export function useLineItemMutation() {
@@ -29,9 +29,9 @@ export function useLineItemMutation() {
       if (!res.ok) throw new Error(data.error);
       return data.data;
     },
-    onSuccess({ invoice_id }) {
+    onSuccess({ invoiceId }) {
       queryClient.invalidateQueries({
-        queryKey: [...INVOICE_QUERY_KEY, invoice_id],
+        queryKey: [...INVOICE_QUERY_KEY, invoiceId],
       });
     },
   });

@@ -8,37 +8,35 @@ import {
 import { invariant } from "common";
 
 export type CreateProduct = {
-  business_id: number;
+  businessId: number;
   name: string;
   description: string;
-  unit_cost: number;
+  unitCost: number;
 };
 
 export type CreatedProduct = {
-  product_id: number;
+  productId: number;
   name: string;
 };
 
 export function useProductCreateMutation() {
-  return useMutation({
-    async mutationFn(product: CreateProduct) {
-      const response = await fetch(endpoint("product.create"), {
+  return useMutation<CreatedProduct, Error, CreateProduct>({
+    async mutationFn(product) {
+      const res = await fetch(endpoint("product.create"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(product),
       });
-      const data = await response.json();
+      const data = await res.json();
 
       invariant(
         isAPIResponse<CreatedProduct>(data),
         "API response is not in the correct shape",
       );
 
-      if (data.error) {
-        throw new Error(JSON.stringify(data.error));
-      }
+      if (data.error) throw new Error(JSON.stringify(data.error));
 
-      return data;
+      return data.data;
     },
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: PRODUCT_LIST_QUERY_KEY });

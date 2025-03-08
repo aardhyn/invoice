@@ -7,6 +7,7 @@ import {
 } from "api";
 
 export type CreateClient = {
+  businessId: number;
   name: string;
   description: string;
   contact: CreateContact;

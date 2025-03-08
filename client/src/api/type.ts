@@ -1,4 +1,5 @@
 import { STATUS_CODE } from "api";
+import { Simplify, xor } from "common";
 
 export const HTTP_METHODS = ["POST"] as const; // yes, we're only using POST for now
 export type HTTPMethod = (typeof HTTP_METHODS)[number];
@@ -12,11 +13,9 @@ export type APIRequest = {
   data: APIData;
 };
 
-export type APIResponse<T extends object, E = object> = {
-  data: T | null;
-  error: E | null;
-  status: StatusCode;
-};
+export type APIResponse<T extends object, E = object> = Simplify<
+  { status: StatusCode } & ({ data: T; error: null } | { data: null; error: E })
+>;
 
 export function isAPIResponse<T extends object, E = object>(
   response: unknown,
@@ -28,6 +27,7 @@ export function isAPIResponse<T extends object, E = object>(
   if (typeof data !== "object" && data !== null) return false;
   if (typeof error !== "string" && error !== null) return false;
   if (typeof status !== "number") return false;
+  if (!xor(!!data, !!error)) return false; // either data or error should be present
 
   return true;
 }

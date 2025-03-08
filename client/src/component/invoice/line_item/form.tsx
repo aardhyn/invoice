@@ -222,18 +222,22 @@ export function LineItemServiceSelectionForm({
 }: {
   services: ServiceListItem[];
   selectedServiceId?: number;
-  onServiceIdChange(service_id: number): void;
+  onServiceIdChange(serviceId: number | null): void;
 }) {
   return (
     <>
       <select
-        name="service_id"
+        name="serviceId"
         value={selectedServiceId}
-        onChange={(e) => onServiceIdChange(Number(e.currentTarget.value))}
+        onChange={(e) => {
+          const { value } = e.target;
+          const serviceId = !value ? null : Number(e.currentTarget.value);
+          onServiceIdChange(serviceId);
+        }}
       >
         <option value={undefined}>Select a service</option>
         {services.map((service) => (
-          <option key={service.service_id} value={service.service_id}>
+          <option key={service.serviceId} value={service.serviceId}>
             {service.name}
           </option>
         ))}
@@ -252,19 +256,23 @@ export function LineItemProductSelectionForm({
 }: {
   products: ProductListItem[];
   selectedProductId?: number;
-  onProductIdChange(product_id: number): void;
+  onProductIdChange(productId: number | null): void;
 }) {
   return (
     <>
       <select
-        name="product_id"
+        name="productId"
         value={selectedProductId}
-        onChange={(e) => onProductIdChange(Number(e.currentTarget.value))}
+        onChange={(e) => {
+          const { value } = e.target;
+          const productId = !value ? null : Number(e.currentTarget.value);
+          onProductIdChange(productId);
+        }}
       >
-        <option value={undefined}>Select a product</option>
-        {products.map((product) => (
-          <option key={product.product_id} value={product.product_id}>
-            {product.name}
+        <option value="">Select a product</option>
+        {products.map(({ productId, name }) => (
+          <option key={productId} value={productId}>
+            {name}
           </option>
         ))}
       </select>

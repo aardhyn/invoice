@@ -1,7 +1,7 @@
 import type { Contact, Location } from ".";
 
 export type Client = {
-  client_id: number;
+  clientId: number;
   name: string;
   location: Location;
   contact: Contact;

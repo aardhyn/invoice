@@ -11,20 +11,20 @@ import {
 import { invariant, type Timestampz } from "common";
 
 export type GetInvoice = {
-  invoice_id: number;
+  invoiceId: number;
 };
 
 export const INVOICE_STATES = ["draft", "sent", "paid"];
 export type InvoiceState = (typeof INVOICE_STATES)[number];
 
 export type Invoice = {
-  invoice_id: number;
-  invoice_key: string;
+  invoiceId: number;
+  invoiceKey: string;
   name: string;
   description: string | null;
   reference: string | null;
-  due_date: Timestampz | null;
-  line_items: LineItem[];
+  dueDate: Timestampz | null;
+  lineItems: LineItem[];
   business: Business;
   client: Client | null;
   location: Location | null;
@@ -34,7 +34,7 @@ export type Invoice = {
 
 export function useInvoiceGetQuery(params: GetInvoice) {
   return useQuery({
-    queryKey: [...INVOICE_QUERY_KEY, params.invoice_id],
+    queryKey: [...INVOICE_QUERY_KEY, params.invoiceId],
     async queryFn() {
       const res = await fetch(endpoint("invoice.get"), {
         method: "POST",
@@ -48,11 +48,9 @@ export function useInvoiceGetQuery(params: GetInvoice) {
         "API response is not in the correct shape",
       );
 
-      if (data.error) {
-        throw new Error(JSON.stringify(data.error));
-      }
+      if (data.error) throw new Error(JSON.stringify(data.error));
 
-      return data;
+      return data.data;
     },
   });
 }

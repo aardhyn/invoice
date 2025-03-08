@@ -8,13 +8,13 @@ import {
 import { Uuid } from "common";
 
 export type CreateLineItemParams = {
-  invoice_id: number;
-  line_item: CreateLineItem;
+  invoiceId: number;
+  lineItem: CreateLineItem;
 };
 
 export type CreatedLineItem = {
-  invoice_id: number;
-  line_item_key: Uuid;
+  invoiceId: number;
+  lineItemKey: Uuid;
 };
 
 export function useLineItemCreateMutation() {
@@ -29,9 +29,9 @@ export function useLineItemCreateMutation() {
       if (!res.ok) throw new Error(data.error);
       return data.data;
     },
-    onSuccess({ invoice_id }) {
+    onSuccess({ invoiceId }) {
       queryClient.invalidateQueries({
-        queryKey: [...INVOICE_QUERY_KEY, invoice_id],
+        queryKey: [...INVOICE_QUERY_KEY, invoiceId],
       });
     },
   });

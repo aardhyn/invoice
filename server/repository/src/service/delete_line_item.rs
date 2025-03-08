@@ -25,6 +25,7 @@ impl From<Error> for DeleteLineItemError {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DeletedLineItem {
   invoice_id: i32,
   line_item_key: Uuid,

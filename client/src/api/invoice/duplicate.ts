@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { INVOICE_LIST_QUERY_KEY, endpoint, queryClient } from "api";
 
 export type DuplicateInvoice = {
-  invoice_id: number;
+  invoiceId: number;
 };
 
 export function useInvoiceDuplicateMutation() {

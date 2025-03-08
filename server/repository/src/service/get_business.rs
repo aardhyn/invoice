@@ -6,6 +6,7 @@ use diesel::{prelude::*, result::Error};
 use serde::Serialize;
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Business {
   business_id: i32,
   name: String,

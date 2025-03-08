@@ -27,6 +27,7 @@ impl From<Error> for OrderLineItemsError {
 pub type OrderLineItems = LineItemEntity;
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OrderedLineItems {
   pub key: Uuid,
   pub name: String,
