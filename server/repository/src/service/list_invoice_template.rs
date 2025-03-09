@@ -10,8 +10,8 @@ pub struct InvoiceTemplateListItem {
   pub invoice_id: i32,
   pub name: String,
   pub description: Option<String>,
-  pub location: Location,
-  pub client: String,
+  pub location: Option<Location>,
+  pub client: Option<String>,
 }
 
 pub type InvoiceTemplateList = Vec<InvoiceTemplateListItem>;
@@ -23,7 +23,7 @@ pub fn list_invoice_template(business_id: i32) -> Result<InvoiceTemplateList, St
 
   let templates = invoice::table
     .inner_join(invoice_template::table)
-    .inner_join(client::table)
+    .left_join(client::table)
     .filter(invoice::business_id.eq(business_id))
     .select((
       invoice::invoice_id,
@@ -32,23 +32,27 @@ pub fn list_invoice_template(business_id: i32) -> Result<InvoiceTemplateList, St
       invoice::address,
       invoice::suburb,
       invoice::city,
-      client::name,
+      client::name.nullable(),
     ))
     .load::<InvoiceTemplateListEntity>(connection)
     .expect("Error loading invoice templates");
 
   let list = templates
     .into_iter()
-    .map(|template| InvoiceTemplateListItem {
-      invoice_id: template.invoice_id,
-      name: template.name.clone(),
-      description: template.description.clone(),
-      location: Location {
-        address: template.address.clone().unwrap(), // fixme: no unwrap
-        suburb: template.suburb.clone(),
-        city: template.city.clone().unwrap(), // ditto
-      },
-      client: template.client_name.clone(),
+    .map(|template| {
+      let location = Location::from_entity(LocationEntity {
+        address: template.address,
+        suburb: template.suburb,
+        city: template.city,
+      });
+
+      InvoiceTemplateListItem {
+        invoice_id: template.invoice_id,
+        name: template.name.clone(),
+        description: template.description.clone(),
+        client: template.client_name.clone(),
+        location,
+      }
     })
     .collect();
 

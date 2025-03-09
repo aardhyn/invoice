@@ -76,8 +76,10 @@ function Page() {
                     <button style={{ textAlign: "left" }}>
                       <h4>{name}</h4>
                       <p>{description}</p>
-                      <p>Client: {clientName}</p>
-                      <p>Address: {locationStringify(location)}</p>
+                      {clientName && <p>Client: {clientName}</p>}
+                      {location && (
+                        <p> Address: {locationStringify(location)}</p>
+                      )}
                     </button>
                   </form>
                 </li>

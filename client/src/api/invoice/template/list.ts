@@ -15,8 +15,8 @@ export type InvoiceTemplate = {
   invoiceId: number;
   name: string;
   description: string | null;
-  location: Location;
-  clientName: string;
+  location: Location | null;
+  clientName: string | null;
 };
 
 export function useInvoiceTemplateListQuery(params: InvoiceTemplateListParams) {

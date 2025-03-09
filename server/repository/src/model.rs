@@ -480,7 +480,7 @@ pub struct InvoiceTemplateListEntity {
   pub address: Option<String>,
   pub suburb: Option<String>,
   pub city: Option<String>,
-  pub client_name: String,
+  pub client_name: Option<String>,
 }
 
 pub type CreatedInvoiceTemplateEntity = InvoiceTemplateEntity;
