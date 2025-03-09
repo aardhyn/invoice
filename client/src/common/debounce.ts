@@ -14,9 +14,9 @@ export function useDebounce<Args extends unknown[]>(
   fn: (...args: Args) => void,
   delayMs: number,
 ) {
-  const timeout = useRef<NodeJS.Timeout>();
+  const timeout = useRef<NodeJS.Timeout | null>(null);
   return function (...args: Args) {
-    clearTimeout(timeout.current);
+    if (timeout.current) clearTimeout(timeout.current);
     timeout.current = setTimeout(() => {
       fn(...args);
     }, delayMs);

@@ -1,12 +1,18 @@
-import { Slot } from "@radix-ui/react-slot";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { Portal } from "component";
+import {
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Frame from "react-frame-component";
+import { Slot } from "@radix-ui/react-slot";
+import { Portal } from "component";
+import { invariant } from "common";
 
+import "./style.css";
 import preflight from "preflight.css?inline";
 import print from "print.css?inline";
-import "./style.css";
-import { invariant } from "common";
 
 export type StyleString = string;
 
@@ -16,7 +22,7 @@ export function Print({
   style,
 }: {
   content?: ReactNode;
-  children: JSX.Element;
+  children: ReactElement;
   style?: StyleString;
 }) {
   const [isPrinting, setIsPrinting] = useState(false);
@@ -51,7 +57,7 @@ function getInitialContent(styles: StyleString = "") {
         </style>
       </head>
       <body>
-        <div></div> <!-- providing 'initialContent' requires we have a child of body -->
+        <div></div> <!-- providing 'initialContent' requires we have some child of body -->
       </body>
     </html>
   `;
@@ -75,7 +81,7 @@ function Content({
   const handlePrint = () => {
     invariant(
       printRootRef.current?.contentWindow,
-      "<Frame /> has no 'contentWindow'",
+      "<Frame /> missing `contentWindow`",
     );
 
     // @ts-expect-error '__container__' does not exist on type 'Window'
@@ -87,9 +93,7 @@ function Content({
   };
 
   useEffect(() => {
-    if (hasRunOnce.current) {
-      return;
-    }
+    if (hasRunOnce.current) return;
     setTimeout(handlePrint, PRINT_CONTENT_MOUNT_DELAY); // todo: find a away around this delay... I'm not a fan
     hasRunOnce.current = true;
   }, [children]);
