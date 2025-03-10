@@ -53,15 +53,15 @@ table {
   width: 100%;
   border-collapse: collapse;
 
-  & tr th {
-    padding-top: 16px;
-  }
-
   & th {
-    background-color: var(--background-color);
+    padding-top: 16px;
     font-weight: 800;
     text-align: left;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border-color);
+  }
+
+  & tr {
+    height: 48px;
   }
 }

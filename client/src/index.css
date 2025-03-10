@@ -1,10 +1,8 @@
-@media (prefers-color-scheme: dark) {
-  :root,
-  input,
-  textarea,
-  select,
-  button {
-    color: #eee;
-    background-color: #0c0c0c;
-  }
+@layer reset, base, tokens, recipes, utilities;
+
+@font-face {
+  font-family: "Inter";
+  src: url("/font/Inter.ttf") format("truetype");
+  font-weight: 100 200 300 400 500 600 700 800 900;
+  font-display: swap;
 }

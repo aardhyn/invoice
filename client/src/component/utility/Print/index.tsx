@@ -11,7 +11,6 @@ import { Portal } from "component";
 import { invariant } from "common";
 
 import "./style.css";
-import preflight from "preflight.css?inline";
 import print from "print.css?inline";
 
 export type StyleString = string;
@@ -51,7 +50,6 @@ function getInitialContent(styles: StyleString = "") {
     <html>
       <head>
         <style>
-          ${preflight}
           ${print}
           ${styles}
         </style>

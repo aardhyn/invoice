@@ -18,7 +18,7 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
     <div className="page column">
       <div className="card">
         <h1>{invoice.name}</h1>
-        <p>{invoice.description}</p>
+        {invoice.description && <p>{invoice.description}</p>}
       </div>
       <div className="row">
         <div className="card">
