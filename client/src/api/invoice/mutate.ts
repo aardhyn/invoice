@@ -6,7 +6,7 @@ export type MutableDraftInvoice = {
   name?: string;
   description?: string | null;
   reference?: string | null;
-  client?: number;
+  client?: number | null;
   location?: Location | null;
   dueDate?: Timestampz | null;
 };

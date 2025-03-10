@@ -5,6 +5,7 @@ import {
   LINE_ITEM_TYPE,
   DEFAULT_LINE_ITEM,
   type Invoice,
+  type Location,
   type LineItemType,
   type CreateLineItem,
   type MutableLineItem,
@@ -22,22 +23,22 @@ import {
   LineItemServiceSelectionForm,
 } from "component";
 
+function locationRequired(location?: Location | null) {
+  return !!location?.address || !!location?.suburb || !!location?.city;
+}
+
 export function DraftInvoiceMutationForm({
   initialInvoice,
 }: {
   initialInvoice: Invoice;
 }) {
-  const { invoice, mutateInvoice, lineItems } =
-    useMutableInvoiceState(initialInvoice);
+  const { invoice, mutate, lineItems } = useMutableInvoiceState(initialInvoice);
 
   const clientList = useClientListQuery({
     businessId: invoice.business.businessId,
   });
 
-  const isLocationRequired =
-    !!invoice.location?.address ||
-    !!invoice.location?.suburb ||
-    !!invoice.location?.city;
+  const isLocationRequired = locationRequired(invoice.location);
 
   return (
     <form>
@@ -49,7 +50,7 @@ export function DraftInvoiceMutationForm({
           value={invoice.name}
           onChange={(event) => {
             const name = event.target.value;
-            mutateInvoice({ name });
+            mutate({ name });
           }}
         />
       </label>
@@ -61,7 +62,7 @@ export function DraftInvoiceMutationForm({
           value={invoice.description ?? ""}
           onChange={(event) => {
             const description = event.target.value;
-            mutateInvoice({ description });
+            mutate({ description });
           }}
         />
       </label>
@@ -74,7 +75,7 @@ export function DraftInvoiceMutationForm({
           value={invoice.reference ?? ""}
           onChange={(event) => {
             const reference = event.target.value;
-            mutateInvoice({ reference });
+            mutate({ reference });
           }}
         />
       </label>
@@ -90,7 +91,7 @@ export function DraftInvoiceMutationForm({
             required={isLocationRequired}
             onChange={(value) => {
               const address = value.target.value;
-              mutateInvoice({
+              mutate({
                 location: {
                   city: invoice.location?.city ?? "",
                   address,
@@ -109,7 +110,7 @@ export function DraftInvoiceMutationForm({
             value={invoice.location?.suburb ?? ""}
             onChange={(value) => {
               const suburb = value.target.value;
-              mutateInvoice({
+              mutate({
                 location: {
                   city: invoice.location?.city ?? "",
                   address: invoice.location?.address ?? "",
@@ -129,7 +130,7 @@ export function DraftInvoiceMutationForm({
             value={invoice.location?.city}
             onChange={(value) => {
               const city = value.target.value;
-              mutateInvoice({
+              mutate({
                 location: {
                   city,
                   address: invoice.location?.address ?? "",
@@ -177,7 +178,7 @@ export function DraftInvoiceMutationForm({
             value={initialInvoice.client?.clientId}
             onChange={(e) => {
               const client = parseInt(e.target.value);
-              mutateInvoice({ client });
+              mutate({ client });
             }}
           >
             <option value="">Select Client</option>

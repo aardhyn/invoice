@@ -13,7 +13,7 @@ import {
   useDraftInvoiceMutation,
 } from "api";
 
-const INVOICE_DEBOUNCE_DELAY = 500;
+const INVOICE_DEBOUNCE_DELAY = 1000;
 
 /**
  * An `Invoice` with its mutable fields (the keys of `MutableDraftInvoice`) overridden with those in `MutableDraftInvoice`.
