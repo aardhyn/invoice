@@ -1,21 +1,25 @@
 import { produce } from "immer";
 import { useState } from "react";
-import { type Override, type Simplify, useDebounce } from "common";
 import { useMutableInvoiceLineItemsState } from "utility";
+import {
+  type Override,
+  type Simplify,
+  useDebounce,
+  useStateEffect,
+} from "common";
 import {
   type Invoice,
   type MutableDraftInvoice,
-  type KeyedMutableDraftInvoice,
   useDraftInvoiceMutation,
 } from "api";
 
-const INVOICE_DEBOUNCE_DELAY = 1000;
+const INVOICE_DEBOUNCE_DELAY = 500;
 
 /**
  * An `Invoice` with its mutable fields (the keys of `MutableDraftInvoice`) overridden with those in `MutableDraftInvoice`.
  */
 type MutableDraftInvoiceState = Simplify<
-  Override<Invoice, MutableDraftInvoice>
+  Override<Invoice, Required<MutableDraftInvoice>>
 >;
 
 /**
@@ -24,7 +28,7 @@ type MutableDraftInvoiceState = Simplify<
 function createInvoiceState(invoice: Invoice): MutableDraftInvoiceState {
   return {
     ...invoice,
-    client: invoice.client?.clientId,
+    client: invoice.client?.clientId ?? null,
   };
 }
 
@@ -33,13 +37,14 @@ function createInvoiceState(invoice: Invoice): MutableDraftInvoiceState {
  */
 export function useMutableInvoiceState(initialInvoice: Invoice) {
   const draftInvoiceMutation = useDraftInvoiceMutation();
-  const handleInvoiceMutation = useDebounce(
-    (mutation: KeyedMutableDraftInvoice) => {
-      draftInvoiceMutation.mutate(mutation);
-    },
-    INVOICE_DEBOUNCE_DELAY,
-  );
+  const save = useDebounce((stagedMutation: MutableDraftInvoice) => {
+    if (!Object.keys(stagedMutation).length) return; // prevent empty mutations from being saved && infinite loop after initial save
+    const { invoiceId } = initialInvoice;
+    draftInvoiceMutation.mutate({ invoiceId, ...stagedMutation });
+    setStagedMutation({});
+  }, INVOICE_DEBOUNCE_DELAY);
 
+  const [_, setStagedMutation] = useStateEffect<MutableDraftInvoice>({}, save); // subset of invoice with only changed mutable fields
   const [invoice, setInvoice] = useState<MutableDraftInvoiceState>(
     createInvoiceState(initialInvoice),
   );
@@ -48,11 +53,10 @@ export function useMutableInvoiceState(initialInvoice: Invoice) {
     invoiceId: invoice.invoiceId,
   });
 
-  const mutateInvoice = (mutation: MutableDraftInvoice) => {
-    const next = produce(invoice, (draft) => Object.assign(draft, mutation));
-    setInvoice(next);
-    handleInvoiceMutation({ ...mutation, invoiceId: invoice.invoiceId });
+  const mutate = (mutation: MutableDraftInvoice) => {
+    setStagedMutation((staged) => ({ ...staged, ...mutation }));
+    setInvoice((invoice) => ({ ...invoice, ...mutation }));
   };
 
-  return { invoice, mutateInvoice, lineItems };
+  return { invoice, mutate, lineItems };
 }
