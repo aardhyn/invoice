@@ -21,6 +21,15 @@ export default [
       "react/react-in-jsx-scope": "off",
       "react/jsx-uses-react": "off",
       "react/jsx-uses-vars": "off",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          varsIgnorePattern: "_",
+          argsIgnorePattern: "_",
+          caughtErrorsIgnorePattern: "_",
+        },
+      ],
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
