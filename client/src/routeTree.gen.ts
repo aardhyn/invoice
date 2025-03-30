@@ -13,13 +13,20 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './route/__root'
+import { Route as SignUpImport } from './route/sign-up'
+import { Route as SignInImport } from './route/sign-in'
+import { Route as AdminImport } from './route/admin'
 import { Route as IndexImport } from './route/index'
-import { Route as BusinessBusinessKeyImport } from './route/business/$businessKey'
 
 // Create Virtual Routes
 
-const AdminLazyImport = createFileRoute('/admin')()
-const BusinessIndexLazyImport = createFileRoute('/business/')()
+const AdminIndexLazyImport = createFileRoute('/admin/')()
+const BusinessNewLazyImport = createFileRoute('/business/new')()
+const BusinessBusinessKeyLazyImport = createFileRoute(
+  '/business/$businessKey',
+)()
+const AdminLibraryLazyImport = createFileRoute('/admin/library')()
+const AdminDeveloperLazyImport = createFileRoute('/admin/developer')()
 const BusinessBusinessKeyIndexLazyImport = createFileRoute(
   '/business/$businessKey/',
 )()
@@ -41,11 +48,23 @@ const BusinessBusinessKeyInvoiceInvoiceKeyLazyImport = createFileRoute(
 
 // Create/Update Routes
 
-const AdminLazyRoute = AdminLazyImport.update({
+const SignUpRoute = SignUpImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SignInRoute = SignInImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminRoute = AdminImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./route/admin.lazy').then((d) => d.Route))
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -53,23 +72,45 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const BusinessIndexLazyRoute = BusinessIndexLazyImport.update({
-  id: '/business/',
-  path: '/business/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./route/business/index.lazy').then((d) => d.Route))
+const AdminIndexLazyRoute = AdminIndexLazyImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any).lazy(() => import('./route/admin/index.lazy').then((d) => d.Route))
 
-const BusinessBusinessKeyRoute = BusinessBusinessKeyImport.update({
+const BusinessNewLazyRoute = BusinessNewLazyImport.update({
+  id: '/business/new',
+  path: '/business/new',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./route/business/new.lazy').then((d) => d.Route))
+
+const BusinessBusinessKeyLazyRoute = BusinessBusinessKeyLazyImport.update({
   id: '/business/$businessKey',
   path: '/business/$businessKey',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() =>
+  import('./route/business/$businessKey.lazy').then((d) => d.Route),
+)
+
+const AdminLibraryLazyRoute = AdminLibraryLazyImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AdminRoute,
+} as any).lazy(() => import('./route/admin/library.lazy').then((d) => d.Route))
+
+const AdminDeveloperLazyRoute = AdminDeveloperLazyImport.update({
+  id: '/developer',
+  path: '/developer',
+  getParentRoute: () => AdminRoute,
+} as any).lazy(() =>
+  import('./route/admin/developer.lazy').then((d) => d.Route),
+)
 
 const BusinessBusinessKeyIndexLazyRoute =
   BusinessBusinessKeyIndexLazyImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => BusinessBusinessKeyRoute,
+    getParentRoute: () => BusinessBusinessKeyLazyRoute,
   } as any).lazy(() =>
     import('./route/business/$businessKey/index.lazy').then((d) => d.Route),
   )
@@ -78,7 +119,7 @@ const BusinessBusinessKeyServiceLazyRoute =
   BusinessBusinessKeyServiceLazyImport.update({
     id: '/service',
     path: '/service',
-    getParentRoute: () => BusinessBusinessKeyRoute,
+    getParentRoute: () => BusinessBusinessKeyLazyRoute,
   } as any).lazy(() =>
     import('./route/business/$businessKey/service.lazy').then((d) => d.Route),
   )
@@ -87,7 +128,7 @@ const BusinessBusinessKeyProductLazyRoute =
   BusinessBusinessKeyProductLazyImport.update({
     id: '/product',
     path: '/product',
-    getParentRoute: () => BusinessBusinessKeyRoute,
+    getParentRoute: () => BusinessBusinessKeyLazyRoute,
   } as any).lazy(() =>
     import('./route/business/$businessKey/product.lazy').then((d) => d.Route),
   )
@@ -96,7 +137,7 @@ const BusinessBusinessKeyClientLazyRoute =
   BusinessBusinessKeyClientLazyImport.update({
     id: '/client',
     path: '/client',
-    getParentRoute: () => BusinessBusinessKeyRoute,
+    getParentRoute: () => BusinessBusinessKeyLazyRoute,
   } as any).lazy(() =>
     import('./route/business/$businessKey/client.lazy').then((d) => d.Route),
   )
@@ -105,7 +146,7 @@ const BusinessBusinessKeyInvoiceIndexLazyRoute =
   BusinessBusinessKeyInvoiceIndexLazyImport.update({
     id: '/invoice/',
     path: '/invoice/',
-    getParentRoute: () => BusinessBusinessKeyRoute,
+    getParentRoute: () => BusinessBusinessKeyLazyRoute,
   } as any).lazy(() =>
     import('./route/business/$businessKey/invoice/index.lazy').then(
       (d) => d.Route,
@@ -116,7 +157,7 @@ const BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute =
   BusinessBusinessKeyInvoiceInvoiceKeyLazyImport.update({
     id: '/invoice/$invoiceKey',
     path: '/invoice/$invoiceKey',
-    getParentRoute: () => BusinessBusinessKeyRoute,
+    getParentRoute: () => BusinessBusinessKeyLazyRoute,
   } as any).lazy(() =>
     import('./route/business/$businessKey/invoice/$invoiceKey.lazy').then(
       (d) => d.Route,
@@ -138,71 +179,120 @@ declare module '@tanstack/react-router' {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
-      preLoaderRoute: typeof AdminLazyImport
+      preLoaderRoute: typeof AdminImport
       parentRoute: typeof rootRoute
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInImport
+      parentRoute: typeof rootRoute
+    }
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/developer': {
+      id: '/admin/developer'
+      path: '/developer'
+      fullPath: '/admin/developer'
+      preLoaderRoute: typeof AdminDeveloperLazyImport
+      parentRoute: typeof AdminImport
+    }
+    '/admin/library': {
+      id: '/admin/library'
+      path: '/library'
+      fullPath: '/admin/library'
+      preLoaderRoute: typeof AdminLibraryLazyImport
+      parentRoute: typeof AdminImport
     }
     '/business/$businessKey': {
       id: '/business/$businessKey'
       path: '/business/$businessKey'
       fullPath: '/business/$businessKey'
-      preLoaderRoute: typeof BusinessBusinessKeyImport
+      preLoaderRoute: typeof BusinessBusinessKeyLazyImport
       parentRoute: typeof rootRoute
     }
-    '/business/': {
-      id: '/business/'
-      path: '/business'
-      fullPath: '/business'
-      preLoaderRoute: typeof BusinessIndexLazyImport
+    '/business/new': {
+      id: '/business/new'
+      path: '/business/new'
+      fullPath: '/business/new'
+      preLoaderRoute: typeof BusinessNewLazyImport
       parentRoute: typeof rootRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexLazyImport
+      parentRoute: typeof AdminImport
     }
     '/business/$businessKey/client': {
       id: '/business/$businessKey/client'
       path: '/client'
       fullPath: '/business/$businessKey/client'
       preLoaderRoute: typeof BusinessBusinessKeyClientLazyImport
-      parentRoute: typeof BusinessBusinessKeyImport
+      parentRoute: typeof BusinessBusinessKeyLazyImport
     }
     '/business/$businessKey/product': {
       id: '/business/$businessKey/product'
       path: '/product'
       fullPath: '/business/$businessKey/product'
       preLoaderRoute: typeof BusinessBusinessKeyProductLazyImport
-      parentRoute: typeof BusinessBusinessKeyImport
+      parentRoute: typeof BusinessBusinessKeyLazyImport
     }
     '/business/$businessKey/service': {
       id: '/business/$businessKey/service'
       path: '/service'
       fullPath: '/business/$businessKey/service'
       preLoaderRoute: typeof BusinessBusinessKeyServiceLazyImport
-      parentRoute: typeof BusinessBusinessKeyImport
+      parentRoute: typeof BusinessBusinessKeyLazyImport
     }
     '/business/$businessKey/': {
       id: '/business/$businessKey/'
       path: '/'
       fullPath: '/business/$businessKey/'
       preLoaderRoute: typeof BusinessBusinessKeyIndexLazyImport
-      parentRoute: typeof BusinessBusinessKeyImport
+      parentRoute: typeof BusinessBusinessKeyLazyImport
     }
     '/business/$businessKey/invoice/$invoiceKey': {
       id: '/business/$businessKey/invoice/$invoiceKey'
       path: '/invoice/$invoiceKey'
       fullPath: '/business/$businessKey/invoice/$invoiceKey'
       preLoaderRoute: typeof BusinessBusinessKeyInvoiceInvoiceKeyLazyImport
-      parentRoute: typeof BusinessBusinessKeyImport
+      parentRoute: typeof BusinessBusinessKeyLazyImport
     }
     '/business/$businessKey/invoice/': {
       id: '/business/$businessKey/invoice/'
       path: '/invoice'
       fullPath: '/business/$businessKey/invoice'
       preLoaderRoute: typeof BusinessBusinessKeyInvoiceIndexLazyImport
-      parentRoute: typeof BusinessBusinessKeyImport
+      parentRoute: typeof BusinessBusinessKeyLazyImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface BusinessBusinessKeyRouteChildren {
+interface AdminRouteChildren {
+  AdminDeveloperLazyRoute: typeof AdminDeveloperLazyRoute
+  AdminLibraryLazyRoute: typeof AdminLibraryLazyRoute
+  AdminIndexLazyRoute: typeof AdminIndexLazyRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDeveloperLazyRoute: AdminDeveloperLazyRoute,
+  AdminLibraryLazyRoute: AdminLibraryLazyRoute,
+  AdminIndexLazyRoute: AdminIndexLazyRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface BusinessBusinessKeyLazyRouteChildren {
   BusinessBusinessKeyClientLazyRoute: typeof BusinessBusinessKeyClientLazyRoute
   BusinessBusinessKeyProductLazyRoute: typeof BusinessBusinessKeyProductLazyRoute
   BusinessBusinessKeyServiceLazyRoute: typeof BusinessBusinessKeyServiceLazyRoute
@@ -211,25 +301,33 @@ interface BusinessBusinessKeyRouteChildren {
   BusinessBusinessKeyInvoiceIndexLazyRoute: typeof BusinessBusinessKeyInvoiceIndexLazyRoute
 }
 
-const BusinessBusinessKeyRouteChildren: BusinessBusinessKeyRouteChildren = {
-  BusinessBusinessKeyClientLazyRoute: BusinessBusinessKeyClientLazyRoute,
-  BusinessBusinessKeyProductLazyRoute: BusinessBusinessKeyProductLazyRoute,
-  BusinessBusinessKeyServiceLazyRoute: BusinessBusinessKeyServiceLazyRoute,
-  BusinessBusinessKeyIndexLazyRoute: BusinessBusinessKeyIndexLazyRoute,
-  BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute:
-    BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute,
-  BusinessBusinessKeyInvoiceIndexLazyRoute:
-    BusinessBusinessKeyInvoiceIndexLazyRoute,
-}
+const BusinessBusinessKeyLazyRouteChildren: BusinessBusinessKeyLazyRouteChildren =
+  {
+    BusinessBusinessKeyClientLazyRoute: BusinessBusinessKeyClientLazyRoute,
+    BusinessBusinessKeyProductLazyRoute: BusinessBusinessKeyProductLazyRoute,
+    BusinessBusinessKeyServiceLazyRoute: BusinessBusinessKeyServiceLazyRoute,
+    BusinessBusinessKeyIndexLazyRoute: BusinessBusinessKeyIndexLazyRoute,
+    BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute:
+      BusinessBusinessKeyInvoiceInvoiceKeyLazyRoute,
+    BusinessBusinessKeyInvoiceIndexLazyRoute:
+      BusinessBusinessKeyInvoiceIndexLazyRoute,
+  }
 
-const BusinessBusinessKeyRouteWithChildren =
-  BusinessBusinessKeyRoute._addFileChildren(BusinessBusinessKeyRouteChildren)
+const BusinessBusinessKeyLazyRouteWithChildren =
+  BusinessBusinessKeyLazyRoute._addFileChildren(
+    BusinessBusinessKeyLazyRouteChildren,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminLazyRoute
-  '/business/$businessKey': typeof BusinessBusinessKeyRouteWithChildren
-  '/business': typeof BusinessIndexLazyRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/admin/developer': typeof AdminDeveloperLazyRoute
+  '/admin/library': typeof AdminLibraryLazyRoute
+  '/business/$businessKey': typeof BusinessBusinessKeyLazyRouteWithChildren
+  '/business/new': typeof BusinessNewLazyRoute
+  '/admin/': typeof AdminIndexLazyRoute
   '/business/$businessKey/client': typeof BusinessBusinessKeyClientLazyRoute
   '/business/$businessKey/product': typeof BusinessBusinessKeyProductLazyRoute
   '/business/$businessKey/service': typeof BusinessBusinessKeyServiceLazyRoute
@@ -240,8 +338,12 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminLazyRoute
-  '/business': typeof BusinessIndexLazyRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/admin/developer': typeof AdminDeveloperLazyRoute
+  '/admin/library': typeof AdminLibraryLazyRoute
+  '/business/new': typeof BusinessNewLazyRoute
+  '/admin': typeof AdminIndexLazyRoute
   '/business/$businessKey/client': typeof BusinessBusinessKeyClientLazyRoute
   '/business/$businessKey/product': typeof BusinessBusinessKeyProductLazyRoute
   '/business/$businessKey/service': typeof BusinessBusinessKeyServiceLazyRoute
@@ -253,9 +355,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/admin': typeof AdminLazyRoute
-  '/business/$businessKey': typeof BusinessBusinessKeyRouteWithChildren
-  '/business/': typeof BusinessIndexLazyRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/admin/developer': typeof AdminDeveloperLazyRoute
+  '/admin/library': typeof AdminLibraryLazyRoute
+  '/business/$businessKey': typeof BusinessBusinessKeyLazyRouteWithChildren
+  '/business/new': typeof BusinessNewLazyRoute
+  '/admin/': typeof AdminIndexLazyRoute
   '/business/$businessKey/client': typeof BusinessBusinessKeyClientLazyRoute
   '/business/$businessKey/product': typeof BusinessBusinessKeyProductLazyRoute
   '/business/$businessKey/service': typeof BusinessBusinessKeyServiceLazyRoute
@@ -269,8 +376,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/sign-in'
+    | '/sign-up'
+    | '/admin/developer'
+    | '/admin/library'
     | '/business/$businessKey'
-    | '/business'
+    | '/business/new'
+    | '/admin/'
     | '/business/$businessKey/client'
     | '/business/$businessKey/product'
     | '/business/$businessKey/service'
@@ -280,8 +392,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/admin/developer'
+    | '/admin/library'
+    | '/business/new'
     | '/admin'
-    | '/business'
     | '/business/$businessKey/client'
     | '/business/$businessKey/product'
     | '/business/$businessKey/service'
@@ -292,8 +408,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/sign-in'
+    | '/sign-up'
+    | '/admin/developer'
+    | '/admin/library'
     | '/business/$businessKey'
-    | '/business/'
+    | '/business/new'
+    | '/admin/'
     | '/business/$businessKey/client'
     | '/business/$businessKey/product'
     | '/business/$businessKey/service'
@@ -305,16 +426,20 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminLazyRoute: typeof AdminLazyRoute
-  BusinessBusinessKeyRoute: typeof BusinessBusinessKeyRouteWithChildren
-  BusinessIndexLazyRoute: typeof BusinessIndexLazyRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  SignInRoute: typeof SignInRoute
+  SignUpRoute: typeof SignUpRoute
+  BusinessBusinessKeyLazyRoute: typeof BusinessBusinessKeyLazyRouteWithChildren
+  BusinessNewLazyRoute: typeof BusinessNewLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminLazyRoute: AdminLazyRoute,
-  BusinessBusinessKeyRoute: BusinessBusinessKeyRouteWithChildren,
-  BusinessIndexLazyRoute: BusinessIndexLazyRoute,
+  AdminRoute: AdminRouteWithChildren,
+  SignInRoute: SignInRoute,
+  SignUpRoute: SignUpRoute,
+  BusinessBusinessKeyLazyRoute: BusinessBusinessKeyLazyRouteWithChildren,
+  BusinessNewLazyRoute: BusinessNewLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -329,18 +454,39 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/admin",
+        "/sign-in",
+        "/sign-up",
         "/business/$businessKey",
-        "/business/"
+        "/business/new"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
     "/admin": {
-      "filePath": "admin.lazy.tsx"
+      "filePath": "admin.tsx",
+      "children": [
+        "/admin/developer",
+        "/admin/library",
+        "/admin/"
+      ]
+    },
+    "/sign-in": {
+      "filePath": "sign-in.tsx"
+    },
+    "/sign-up": {
+      "filePath": "sign-up.tsx"
+    },
+    "/admin/developer": {
+      "filePath": "admin/developer.lazy.tsx",
+      "parent": "/admin"
+    },
+    "/admin/library": {
+      "filePath": "admin/library.lazy.tsx",
+      "parent": "/admin"
     },
     "/business/$businessKey": {
-      "filePath": "business/$businessKey.tsx",
+      "filePath": "business/$businessKey.lazy.tsx",
       "children": [
         "/business/$businessKey/client",
         "/business/$businessKey/product",
@@ -350,8 +496,12 @@ export const routeTree = rootRoute
         "/business/$businessKey/invoice/"
       ]
     },
-    "/business/": {
-      "filePath": "business/index.lazy.tsx"
+    "/business/new": {
+      "filePath": "business/new.lazy.tsx"
+    },
+    "/admin/": {
+      "filePath": "admin/index.lazy.tsx",
+      "parent": "/admin"
     },
     "/business/$businessKey/client": {
       "filePath": "business/$businessKey/client.lazy.tsx",
