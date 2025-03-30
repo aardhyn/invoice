@@ -1,20 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+
+const BUSINESS_KEY = "1"; // todo: read from session cookie?
 
 export const Route = createFileRoute("/")({
-  component: Page,
+  loader() {
+    throw redirect({ to: "/business/$businessKey", params: { businessKey: BUSINESS_KEY } });
+  },
 });
-
-function Page() {
-  return (
-    <div>
-      <ul>
-        <li>
-          <Link to="/business">Businesses</Link>
-        </li>
-        <li>
-          <Link to="/admin">Admin</Link>
-        </li>
-      </ul>
-    </div>
-  );
-}
