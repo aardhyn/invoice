@@ -1,10 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  endpoint,
-  isAPIResponse,
-  PRODUCT_LIST_QUERY_KEY,
-  queryClient,
-} from "api";
+import { PRODUCT_LIST_QUERY_KEY, isAPIResponse, endpoint, queryClient } from "api";
 import { invariant } from "common";
 
 export type CreateProduct = {
@@ -28,14 +23,8 @@ export function useProductCreateMutation() {
         body: JSON.stringify(product),
       });
       const data = await res.json();
-
-      invariant(
-        isAPIResponse<CreatedProduct>(data),
-        "API response is not in the correct shape",
-      );
-
-      if (data.error) throw new Error(JSON.stringify(data.error));
-
+      invariant(isAPIResponse<CreatedProduct>(data), "API response is not in the correct shape");
+      if (data.error !== null) throw { error: data.error };
       return data.data;
     },
     onSuccess() {

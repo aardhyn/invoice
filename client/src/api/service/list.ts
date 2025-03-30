@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { APIResponse, endpoint, SERVICE_LIST_QUERY_KEY } from "api";
+import { SERVICE_LIST_QUERY_KEY, APIResponse, endpoint } from "api";
 
 export type ServiceListParams = {
   businessId: number;
@@ -10,10 +10,7 @@ export type ServiceListItem = {
   name: string;
 };
 
-export function useServiceListQuery(
-  params: ServiceListParams,
-  enabled: boolean = true,
-) {
+export function useServiceListQuery(params: ServiceListParams, enabled: boolean = true) {
   return useQuery<APIResponse<ServiceListItem[], string>>({
     queryKey: SERVICE_LIST_QUERY_KEY,
     enabled,

@@ -1,10 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  endpoint,
-  isAPIResponse,
-  queryClient,
-  SERVICE_LIST_QUERY_KEY,
-} from "api";
+import { SERVICE_LIST_QUERY_KEY, endpoint, isAPIResponse, queryClient } from "api";
 import { invariant } from "common";
 
 export type CreateService = {
@@ -31,15 +26,8 @@ export function useServiceCreateMutation() {
       });
       const data = await response.json();
 
-      invariant(
-        isAPIResponse<CreatedService>(data),
-        "API response is not in the correct shape",
-      );
-
-      if (data.error) {
-        throw new Error(JSON.stringify(data.error));
-      }
-
+      invariant(isAPIResponse<CreatedService>(data), "API response is not in the correct shape");
+      if (data.error !== null) throw { error: data.error };
       return data;
     },
     onSuccess() {

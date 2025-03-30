@@ -1,10 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  INVOICE_QUERY_KEY,
-  type KeyedMutableLineItem,
-  endpoint,
-  queryClient,
-} from "api";
+import { INVOICE_QUERY_KEY, type KeyedMutableLineItem, endpoint, queryClient } from "api";
 import type { Uuid } from "common";
 
 export type MutateLineItem = {
@@ -26,7 +21,7 @@ export function useLineItemMutation() {
         body: JSON.stringify(lineItem),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (data.error !== null) throw { error: data.error };
       return data.data;
     },
     onSuccess({ invoiceId }) {

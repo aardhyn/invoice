@@ -29,7 +29,7 @@ export function useDraftInvoiceMutation() {
         body: JSON.stringify(mutation),
       });
       const data = await res.json();
-      if (data.error) throw new Error(JSON.stringify(data.error));
+      if (data.error !== null) throw { error: data.error };
       return data.data;
     },
     onSuccess({ invoiceId }) {

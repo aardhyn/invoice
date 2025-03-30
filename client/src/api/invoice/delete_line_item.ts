@@ -21,7 +21,7 @@ export function useLineItemDeleteMutation() {
         body: JSON.stringify(lineItem),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (data.error !== null) throw { error: data.error };
       return data.data;
     },
     onSuccess({ invoiceId }) {

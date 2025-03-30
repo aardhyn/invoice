@@ -30,7 +30,7 @@ export function useInvoiceTemplateListQuery(params: InvoiceTemplateListParams) {
       });
       const data = await res.json();
       invariant(isAPIResponse<InvoiceTemplate[]>(data), "Invalid API response");
-      if (data.error) throw new Error(JSON.stringify(data.error));
+      if (data.error !== null) throw new Error(JSON.stringify(data.error));
       return data.data;
     },
   });

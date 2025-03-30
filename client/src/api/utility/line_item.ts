@@ -1,4 +1,4 @@
-import { type Override, type Simplify, Uuid, uuid } from "common";
+import { type Override, type Simplify, type Uuid, uuid } from "common";
 
 export type LineItemCustomFieldData = string | number | boolean;
 export type LineItemCustomField = {
@@ -22,21 +22,15 @@ export type ProductLineItem = {
 };
 
 /** Does the detail of the line item contain product information?  */
-export function isProductLineItem(
-  item: Pick<LineItem, "detail">,
-): item is Override<LineItem, { detail: ProductLineItem }> {
+export function isProductLineItem(item: Pick<LineItem, "detail">): item is Override<LineItem, { detail: ProductLineItem }> {
   return !!item.detail && "productId" in item.detail;
 }
 /** Does the detail of the line item contain service information? */
-export function isServiceLineItem(
-  item: Pick<LineItem, "detail">,
-): item is Override<LineItem, { detail: ServiceLineItem }> {
+export function isServiceLineItem(item: Pick<LineItem, "detail">): item is Override<LineItem, { detail: ServiceLineItem }> {
   return !!item.detail && "serviceId" in item.detail;
 }
 /** Is this a freestanding generic line item (no `product` or `service` information) */
-export function isGenericLineItem(
-  item: Pick<LineItem, "detail">,
-): item is Override<LineItem, { detail: null }> {
+export function isGenericLineItem(item: Pick<LineItem, "detail">): item is Override<LineItem, { detail: null }> {
   return !item.detail;
 }
 
@@ -53,13 +47,10 @@ export type LineItem = {
 export type CreateServiceLineItem = Pick<ServiceLineItem, "serviceId">;
 export type CreateProductLineItem = Pick<ProductLineItem, "productId">;
 export type CreateLineItem = Simplify<
-  Override<
-    Omit<LineItem, "total">,
-    { detail?: CreateServiceLineItem | CreateProductLineItem | null }
-  >
+  Override<Omit<LineItem, "total">, { detail?: CreateServiceLineItem | CreateProductLineItem | null }>
 >;
 
-export const LINE_ITEM_TYPE = ["product", "service"] as const;
+export const LINE_ITEM_TYPE = ["product", "service", "ad_hoc"] as const;
 export type LineItemType = (typeof LINE_ITEM_TYPE)[number];
 
 export type MutableLineItem = Simplify<Partial<Omit<CreateLineItem, "key">>>;

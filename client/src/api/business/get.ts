@@ -1,10 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  endpoint,
-  isAPIResponse,
-  BUSINESS_QUERY_KEY,
-  type Business,
-} from "api";
+import { BUSINESS_QUERY_KEY, type Business, isAPIResponse, endpoint } from "api";
 import { invariant } from "common";
 
 type BusinessGetParams = {
@@ -22,16 +17,10 @@ export function useBusinessGetQuery(params: BusinessGetParams) {
       });
       const data = await res.json();
 
-      invariant(
-        isAPIResponse<Business>(data),
-        "API response is not in the correct shape",
-      );
+      invariant(isAPIResponse<Business>(data), "API response is not in the correct shape");
 
-      if (data.error) {
-        throw new Error(JSON.stringify(data.error));
-      }
-
-      return data;
+      if (data.error !== null) throw { error: data.error };
+      return data.data;
     },
   });
 }

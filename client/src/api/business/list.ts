@@ -20,7 +20,7 @@ export function useBusinessListQuery() {
         isAPIResponse<BusinessListItem[]>(data),
         "Invalid API response",
       );
-      if (data.error) throw new Error(JSON.stringify(data.error));
+      if (data.error !== null) throw { error: data.error };
       return data.data;
     },
   });
