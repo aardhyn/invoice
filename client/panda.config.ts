@@ -1,93 +1,216 @@
-import { defineConfig, defineGlobalStyles } from "@pandacss/dev";
+import { type Config, defineConfig, defineGlobalStyles } from "@pandacss/dev";
 
 const globalCss = defineGlobalStyles({
   ":root": {
-    background: "background",
-    "font-family": "Inter",
+    bg: "base",
     color: "text",
-    "font-size": "14px",
-    sm: { "font-size": "16px" },
   },
-  button: {
-    background: "text",
-    color: "background",
-    cursor: "pointer",
-    "border-radius": "4px",
-    padding: "2px 4px",
-    "&:disabled": { cursor: "not-allowed" },
-    "&:focus": { outline: "none" },
-  },
-  h1: { "font-size": "4rem", "font-weight": 800 },
-  h2: { "font-size": "2.5rem", "font-weight": 700 },
-  h3: { "font-size": "1.5rem", "font-weight": 600 },
-  h4: { "font-size": "1.25rem", "font-weight": 600 },
-  h5: { "font-size": "1.125rem", "font-weight": 500 },
-  h6: { "font-size": "1rem", "font-weight": 500 },
-  p: { "line-height": "1.5" },
-  fieldset: {
-    padding: "8px",
-    "border-radius": "4px",
-    outline: "neutral",
-  },
-  "*::placeholder": { color: "textNeutral" },
+
   legend: { "padding-inline": "4px", "margin-inline": "-4px" },
-  "label:has(input[required])::after": {
-    content: '"*"',
-    color: "textError",
-    "margin-left": "4px",
-  },
-  "input, select, textarea": {
-    "font-size": "1rem",
-    border: "neutral",
-    "border-radius": "4px",
-    "&:focus": { outline: "none" },
-  },
+
+  "*::selection": { bg: "text", color: "background" },
 });
 
-export default defineConfig({
+export const config = {
+  eject: true,
   preflight: true,
+  jsxFramework: "react",
   globalCss,
   include: ["./src/**/*.{ts,tsx}"],
-  exclude: [],
-  jsxFramework: "react",
+  presets: ["@pandacss/preset-base"],
   conditions: {
     light: "& prefers-color-scheme: light",
     dark: "& prefers-color-scheme: dark",
   },
+  utilities: {
+    color: { values: "colors" },
+    r: {
+      className: "rounded",
+      values: "radii",
+      group: "Border",
+      transform(value) {
+        return { borderRadius: value };
+      },
+    },
+    b: {
+      className: "border",
+      values: "borders",
+      group: "Border",
+      transform(value) {
+        return { border: value };
+      },
+    },
+    fd: {
+      className: "flex-direction",
+      values: "flexDirection",
+      group: "Layout",
+      transform(value) {
+        return { flexDirection: value };
+      },
+    },
+    ar: {
+      className: "ratio",
+      group: "Layout",
+      transform(value) {
+        return { aspectRatio: value };
+      },
+    },
+    ln: {
+      className: "outline",
+      values: "borders",
+      group: "Border",
+      transform(value) {
+        return { outline: value };
+      },
+    },
+    o: {
+      className: "opacity",
+      group: "Color",
+      transform(value) {
+        return { opacity: value };
+      },
+    },
+    g: {
+      className: "gap",
+      values: "spacing",
+      group: "Layout",
+      transform(value) {
+        return { gap: value };
+      },
+    },
+  },
   theme: {
     tokens: {
       colors: {
-        dark: { value: "#000" },
+        dark: { value: "#020202" },
         light: { value: "#fff" },
-        neutral: { value: "#ccc" },
-        neutral2: { value: "#777" },
-        red: { value: "#b00" },
+        neutral: { value: "#040404" },
+        neutral2: { value: "#222" },
+        neutral3: { value: "#888" },
+        neutral4: { value: "#ddd" },
+        tonal: { value: "#f0f0f0" },
+        tonal2: { value: "#f8f8f8" },
+        tonal3: { value: "#ebebeb" },
+        tomato: { value: "#ff6347" },
+        green: { value: "#00ff00" },
+        blue: { value: "#0000ff" },
+        blue2: { value: "#0000cc" },
+        lightBlue: { value: "#ebebfc" },
+        purple: { value: "#800080" },
+        orange: { value: "#ffa500" },
+      },
+      fonts: {
+        body: { value: "'Inter', sans-serif" },
+        mono: { value: "monospace" },
       },
     },
     semanticTokens: {
       borders: {
         neutral: {
           value: {
-            base: "1px solid {colors.neutral}",
+            base: "1px solid {colors.neutral4}",
             _osDark: "1px solid {colors.neutral2}",
           },
         },
+        focus: {
+          value: {
+            base: "2px solid {colors.neutral4}",
+            _osDark: "2px solid {colors.neutral4}",
+          },
+        },
+        primary: {
+          value: {
+            base: "1px solid {colors.dark}",
+            _osDark: "1px solid {colors.light}",
+          },
+        },
+        error: {
+          value: {
+            base: "1px solid {colors.tomato}",
+            _osDark: "1px solid {colors.tomato}",
+          },
+        },
+        focusError: {
+          value: {
+            base: "2px solid {colors.tomato}",
+            _osDark: "2px solid {colors.tomato}",
+          },
+        },
+        transparent: {
+          value: {
+            base: "1px solid transparent",
+            _osDark: "1px solid transparent",
+          },
+        },
+      },
+      radii: {
+        xs: { value: "4px" },
+        sm: { value: "8px" },
+        md: { value: "16px" },
+        lg: { value: "32px" },
+        xl: { value: "64px" },
+      },
+      spacing: {
+        xs: { value: "4px" },
+        sm: { value: "8px" },
+        md: { value: "16px" },
+        lg: { value: "32px" },
+        xl: { value: "64px" },
+      },
+      fontSizes: {
+        xs: { value: "0.75rem" },
+        sm: { value: "0.875rem" },
+        md: { value: "1rem" },
+        lg: { value: "1.25rem" },
+        xl: { value: "1.5rem" },
       },
       colors: {
+        base: {
+          value: { base: "{colors.tonal2}", _osDark: "{colors.neutral}" },
+        },
         background: {
           value: { base: "{colors.light}", _osDark: "{colors.dark}" },
+        },
+        surface: {
+          value: { base: "{colors.tonal2}", _osDark: "{colors.neutral2}" },
+        },
+        highlight: {
+          value: { base: "{colors.tonal3}", _osDark: "{colors.neutral}" },
         },
         text: {
           value: { base: "{colors.dark}", _osDark: "{colors.light}" },
         },
-        textNeutral: {
-          value: { base: "{colors.neutral}", _osDark: "{colors.neutral2}" },
+        text2: {
+          value: { base: "{colors.neutral3}", _osDark: "{colors.neutral3}" },
+        },
+        text3: {
+          value: { base: "{colors.neutral2}", _osDark: "{colors.neutral2}" },
         },
         textError: {
-          value: { base: "{colors.red}", _osDark: "{colors.red}" },
+          value: { base: "{colors.tomato}", _osDark: "{colors.tomato}" },
+        },
+        outline: {
+          value: { base: "{colors.neutral4}", _osDark: "{colors.neutral2}" },
+        },
+        primary: {
+          // value: { base: "{colors.blue}", _osDark: "{colors.blue}" },
+          value: { base: "{colors.dark}", _osDark: "{colors.light}" },
+        },
+        primary2: {
+          // value: { base: "{colors.blue2}", _osDark: "{colors.blue2}" },
+          value: { base: "{colors.neutral}", _osDark: "{colors.tonal}" },
+        },
+        onPrimary: {
+          value: { base: "{colors.light}", _osDark: "{colors.dark}" },
+        },
+        primaryTonal: {
+          // value: { base: "{colors.lightBlue}", _osDark: "{colors.lightBlue}" },
+          value: { base: "{colors.tonal}", _osDark: "{colors.tonal}" },
         },
       },
     },
   },
   outdir: "src/panda",
-});
+} satisfies Config;
+
+export default defineConfig(config);
