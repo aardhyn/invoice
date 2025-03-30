@@ -20,28 +20,36 @@ function Page() {
   const businessId = parseInt(businessKey);
 
   const invoiceList = useInvoiceListQuery({ businessId });
-
   const { data: invoiceTemplates } = useInvoiceTemplateListQuery({
     businessId,
   });
+
+  const navigate = useNavigate();
+  const toInvoice = (invoiceId: number) => ({
+    to: "/business/$businessKey/invoice/$invoiceKey",
+    params: { businessKey, invoiceKey: invoiceId.toString() },
+  });
+
   const { mutate: duplicateInvoice } = useInvoiceDuplicateMutation();
   const handleCreateFromTemplate = (invoiceId: number) => (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    duplicateInvoice({ invoiceId });
+    duplicateInvoice(
+      { invoiceId },
+      {
+        onSuccess({ invoiceId }) {
+          navigate(toInvoice(invoiceId));
+        },
+      },
+    );
   };
 
-  const navigate = useNavigate();
   const invoiceCreateMutation = useInvoiceCreateMutation();
   const handleCreateFromScratch = () => {
     invoiceCreateMutation.mutate(
       { businessId },
       {
         onSuccess({ invoiceId }) {
-          const invoiceKey = invoiceId.toString();
-          navigate({
-            to: "/business/$businessKey/invoice/$invoiceKey",
-            params: { businessKey, invoiceKey },
-          });
+          navigate(toInvoice(invoiceId));
         },
       },
     );
