@@ -18,6 +18,7 @@ const styles = cva({
     whiteSpace: "nowrap",
 
     cursor: "pointer",
+    userSelect: "none",
 
     "& svg": { w: 18, h: 18 },
 

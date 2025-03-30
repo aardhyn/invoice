@@ -2,7 +2,7 @@ import { Form } from "@radix-ui/react-form";
 import { VStack } from "panda/jsx";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useProductCreateMutation, useProductListQuery } from "api";
-import { Button, Card, Code, H2, Section, Textarea, TextField } from "component";
+import { Button, Card, Code, H2, Section, Text, Textarea, TextField } from "component";
 
 export const Route = createLazyFileRoute("/business/$businessKey/product")({
   component: Page,
@@ -38,7 +38,11 @@ function ProductList() {
 
   return (
     <ul>
-      {productList?.map((product) => <li key={product.productId}>{product.name}</li>)}
+      {productList?.map((product) => (
+        <li key={product.productId}>
+          <Text>{product.name}</Text>
+        </li>
+      ))}
       {productList?.length === 0 && <li>No products found</li>}
     </ul>
   );

@@ -2,7 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { Form } from "@radix-ui/react-form";
 import { Flex, VStack } from "panda/jsx";
 import { useServiceCreateMutation, useServiceListQuery } from "api";
-import { Button, Card, Code, H2, H3, Section, Textarea, TextField } from "component";
+import { Button, Card, Code, Text, H2, H3, Section, Textarea, TextField } from "component";
 
 export const Route = createLazyFileRoute("/business/$businessKey/service")({
   component: Page,
@@ -38,7 +38,11 @@ function ServiceList() {
 
   return (
     <ul>
-      {serviceList?.data?.map((service) => <li key={service.serviceId}>{service.name}</li>)}
+      {serviceList?.data?.map((service) => (
+        <li key={service.serviceId}>
+          <Text>{service.name}</Text>
+        </li>
+      ))}
       {serviceList?.data?.length === 0 && <li>No services found</li>}
     </ul>
   );

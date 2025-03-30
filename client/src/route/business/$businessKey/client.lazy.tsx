@@ -2,7 +2,7 @@ import { Form } from "@radix-ui/react-form";
 import { Flex, VStack } from "panda/jsx";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useClientListQuery, useClientCreateMutation } from "api";
-import { Button, Card, Code, H2, H3, Section, Textarea, TextField } from "component";
+import { Button, Card, Code, Text, H2, H3, Section, Textarea, TextField } from "component";
 
 export const Route = createLazyFileRoute("/business/$businessKey/client")({
   component: Page,
@@ -18,7 +18,13 @@ function Page() {
     <Section>
       <Card>
         <H2>Clients</H2>
-        <ul>{clientList?.data?.map((client) => <li key={client.clientId}>{client.name}</li>)}</ul>
+        <ul>
+          {clientList?.data?.map((client) => (
+            <li key={client.clientId}>
+              <Text>{client.name}</Text>
+            </li>
+          ))}
+        </ul>
         {isSuccess && !clientList?.data?.length && (
           <p>
             <em>No clients found</em>
