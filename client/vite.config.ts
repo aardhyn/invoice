@@ -16,11 +16,14 @@ function getClientPort() {
   return port;
 }
 
+function getAppVersion() {
+  return JSON.stringify(process.env.npm_package_version);
+}
+
 export default defineConfig({
-  plugins: [
-    react(),
-    tsconfigPaths(),
-    TanStackRouterVite({ routesDirectory: "src/route" }),
-  ],
+  plugins: [react(), tsconfigPaths(), TanStackRouterVite({ routesDirectory: "src/route" })],
   server: { port: getClientPort(), allowedHosts: ["invoice.aardhyn.dev"] },
+  define: {
+    __APP_VERSION__: getAppVersion(),
+  },
 });
