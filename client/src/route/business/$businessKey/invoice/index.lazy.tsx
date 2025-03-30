@@ -1,6 +1,8 @@
 import { FormEvent } from "react";
+import { Form } from "@radix-ui/react-form";
 import { Link, createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { Button, Card, H2, H4, Section, Text } from "component";
+import { Flex } from "panda/jsx";
+import { Button, Card, Text, H2, H4, Section } from "component";
 import {
   locationStringify,
   useInvoiceListQuery,
@@ -8,8 +10,6 @@ import {
   useInvoiceDuplicateMutation,
   useInvoiceCreateMutation,
 } from "api";
-import { Flex } from "panda/jsx";
-import { Form } from "@radix-ui/react-form";
 
 export const Route = createLazyFileRoute("/business/$businessKey/invoice/")({
   component: Page,
@@ -57,15 +57,17 @@ function Page() {
         <ul>
           {invoiceList?.data?.data?.map((invoice) => (
             <li key={invoice.invoiceId}>
-              <Link to={invoice.invoiceId.toString()}>{invoice.name || "Untitled Invoice"}</Link>
+              <Link to={invoice.invoiceId.toString()}>
+                <Text>{invoice.name || "Untitled Invoice"}</Text>
+              </Link>
             </li>
           ))}
+          {invoiceList.isSuccess && !invoiceList?.data?.data?.length && (
+            <li>
+              <Text color="2">No invoice found</Text>
+            </li>
+          )}
         </ul>
-        {invoiceList.isSuccess && !invoiceList?.data?.data?.length && (
-          <p>
-            <em>No invoice found</em>
-          </p>
-        )}
       </Card>
       <Card>
         <H2>Templates</H2>
@@ -73,12 +75,15 @@ function Page() {
           {invoiceTemplates?.map(({ invoiceId, name, description, location, clientName }) => (
             <li key={invoiceId}>
               <Form onSubmit={handleCreateFromTemplate(invoiceId)}>
-                <Button style={{ textAlign: "left" }}>
-                  <H4>{name}</H4>
+                <Card>
+                  <Flex align="center" justify="space-between">
+                    <H4>{name}</H4>
+                    <Button>Create</Button>
+                  </Flex>
                   <Text>{description}</Text>
                   {clientName && <Text>Client: {clientName}</Text>}
-                  {location && <Text> Address: {locationStringify(location)}</Text>}
-                </Button>
+                  {location && <Text>{locationStringify(location)}</Text>}
+                </Card>
               </Form>
             </li>
           ))}
