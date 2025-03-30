@@ -1,6 +1,8 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { Form } from "@radix-ui/react-form";
+import { Flex, VStack } from "panda/jsx";
 import { useServiceCreateMutation, useServiceListQuery } from "api";
-import { useState } from "react";
+import { Button, Card, Code, H2, H3, Section, Textarea, TextField } from "component";
 
 export const Route = createLazyFileRoute("/business/$businessKey/service")({
   component: Page,
@@ -8,23 +10,23 @@ export const Route = createLazyFileRoute("/business/$businessKey/service")({
 
 function Page() {
   return (
-    <div>
-      <h2>Services</h2>
-      <ServiceList />
-      <h2>Create Service</h2>
-      <CreateServiceForm />
-    </div>
+    <Section>
+      <Card>
+        <H2>Services</H2>
+        <ServiceList />
+      </Card>
+      <Card>
+        <H2>Create Service</H2>
+        <CreateServiceForm />
+      </Card>
+    </Section>
   );
 }
 
 function ServiceList() {
   const { businessKey } = Route.useParams();
   const businessId = parseInt(businessKey);
-  const {
-    data: serviceList,
-    error,
-    isLoading,
-  } = useServiceListQuery({ businessId: businessId });
+  const { data: serviceList, error, isLoading } = useServiceListQuery({ businessId: businessId });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -36,9 +38,7 @@ function ServiceList() {
 
   return (
     <ul>
-      {serviceList?.data?.map((service) => (
-        <li key={service.serviceId}>{service.name}</li>
-      ))}
+      {serviceList?.data?.map((service) => <li key={service.serviceId}>{service.name}</li>)}
       {serviceList?.data?.length === 0 && <li>No services found</li>}
     </ul>
   );
@@ -48,11 +48,7 @@ function CreateServiceForm() {
   const { businessKey } = Route.useParams();
   const businessId = parseInt(businessKey);
 
-  const {
-    mutate: createService,
-    error,
-    isPending,
-  } = useServiceCreateMutation();
+  const { mutate: createService, error, isPending } = useServiceCreateMutation();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -68,64 +64,66 @@ function CreateServiceForm() {
     });
   }
 
-  const [initialRate, setInitialRate] = useState<number>();
-  const [initialRateThreshold, setInitialRateThreshold] = useState<number>();
-
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Name
-        <input name="name" required />
-      </label>
-      <br />
-      <label>
-        Description
-        <input name="description" required />
-      </label>
-      <br />
-      <label>
-        Initial Rate
-        <input
-          name="initialRate"
+    <Form onSubmit={handleSubmit}>
+      <VStack alignItems="start" gap="md">
+        <TextField name="name" label="Name" required messages={[{ match: "valueMissing", message: "Name is required" }]} />
+        <Textarea name="description" label="Description" />
+        <H3>Rate</H3>
+        <TextField
+          name="rate"
+          label="Rate"
           type="number"
-          value={initialRate ?? ""}
-          onChange={(event) => setInitialRate(Number(event.target.value))}
-          required={typeof initialRateThreshold === "number"}
+          required
+          messages={[{ match: "valueMissing", message: "Rate is required" }]}
         />
-        <button type="button" onClick={() => setInitialRate(undefined)}>
-          Clear
-        </button>
-      </label>
-      <br />
-      <label>
-        Initial Rate Threshold
-        <input
-          name="initialRateThreshold"
-          type="number"
-          value={initialRateThreshold ?? ""}
-          onChange={(event) =>
-            setInitialRateThreshold(Number(event.target.value))
-          }
-          required={typeof initialRate === "number"}
-        />
-        <button
-          type="button"
-          onClick={() => setInitialRateThreshold(undefined)}
-        >
-          Clear
-        </button>
-      </label>
-      <br />
-      <label>
-        Rate
-        <input name="rate" type="number" required />
-      </label>
-      <br />
-      {isPending && <div>Creating...</div>}
-      {error && <div>Error: {error.message}</div>}
-      <button type="submit" disabled={isPending}>
-        Create Service
-      </button>
-    </form>
+        <Flex gap="md">
+          <TextField
+            name="initialRate"
+            label="Initial"
+            type="number"
+            messages={[
+              {
+                match: (value, formData) => !value && !!formData.get("initialRateThreshold"),
+                message: "Provide an initial rate before the threshold",
+              },
+              {
+                match: "rangeUnderflow",
+                message: "Unit cost cannot be negative",
+              },
+              {
+                match: "stepMismatch",
+                message: "Unit cost must be 2 decimal places",
+              },
+            ]}
+          />
+          <TextField
+            name="initialRateThreshold"
+            label="Threshold"
+            type="number"
+            step={1}
+            messages={[
+              {
+                match: (value, formData) => !value && !!formData.get("initialRate"),
+                message: "A threshold is required when an initial rate is set",
+              },
+              {
+                match: "rangeUnderflow",
+                message: "Initial Rate Threshold cannot be less than 0",
+              },
+              {
+                match: "stepMismatch",
+                message: "Initial Rate Threshold must be a whole number",
+              },
+            ]}
+            css={{ width: 64 }}
+          />
+        </Flex>
+        {error && <Code>{error.message}</Code>}
+        <Button type="submit" disabled={isPending}>
+          Create Service
+        </Button>
+      </VStack>
+    </Form>
   );
 }
