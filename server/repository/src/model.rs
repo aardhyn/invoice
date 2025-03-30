@@ -231,8 +231,7 @@ pub struct ProductEntity {
   pub unit_cost: i32,
 }
 
-#[derive(Insertable, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Insertable)]
 #[diesel(check_for_backend(Pg))]
 #[diesel(table_name = product)]
 pub struct NewProductEntity {

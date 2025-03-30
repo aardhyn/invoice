@@ -1,5 +1,8 @@
+import { Form } from "@radix-ui/react-form";
+import { VStack } from "panda/jsx";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useProductCreateMutation, useProductListQuery } from "api";
+import { Button, Card, Code, H2, Section, Textarea, TextField } from "component";
 
 export const Route = createLazyFileRoute("/business/$businessKey/product")({
   component: Page,
@@ -7,23 +10,23 @@ export const Route = createLazyFileRoute("/business/$businessKey/product")({
 
 function Page() {
   return (
-    <div>
-      <h2>Products</h2>
-      <ProductList />
-      <h2>Create Product</h2>
-      <CreateProductForm />
-    </div>
+    <Section>
+      <Card>
+        <H2>Products</H2>
+        <ProductList />
+      </Card>
+      <Card>
+        <H2>Create Product</H2>
+        <CreateProductForm />
+      </Card>
+    </Section>
   );
 }
 
 function ProductList() {
   const { businessKey } = Route.useParams();
   const businessId = parseInt(businessKey);
-  const {
-    data: productList,
-    error,
-    isLoading,
-  } = useProductListQuery({ businessId });
+  const { data: productList, error, isLoading } = useProductListQuery({ businessId });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -35,10 +38,8 @@ function ProductList() {
 
   return (
     <ul>
-      {productList?.data?.map((product) => (
-        <li key={product.productId}>{product.name}</li>
-      ))}
-      {productList?.data?.length === 0 && <li>No products found</li>}
+      {productList?.map((product) => <li key={product.productId}>{product.name}</li>)}
+      {productList?.length === 0 && <li>No products found</li>}
     </ul>
   );
 }
@@ -47,11 +48,7 @@ function CreateProductForm() {
   const { businessKey } = Route.useParams();
   const businessId = parseInt(businessKey);
 
-  const {
-    mutate: createService,
-    error,
-    isPending,
-  } = useProductCreateMutation();
+  const { mutate: createService, error, isPending } = useProductCreateMutation();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -61,32 +58,40 @@ function CreateProductForm() {
       businessId,
       name: formData.get("name") as string,
       description: formData.get("description") as string,
-      unitCost: Number(formData.get("price")),
+      unitCost: Number(formData.get("unit-cost")),
     });
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Name
-        <input name="name" required />
-      </label>
-      <br />
-      <label>
-        Description
-        <input name="description" required />
-      </label>
-      <br />
-      <label>
-        Price
-        <input name="rate" type="number" required />
-      </label>
-      <br />
-      {isPending && <div>Creating...</div>}
-      {error && <div>Error: {error.message}</div>}
-      <button type="submit" disabled={isPending}>
-        Create Product
-      </button>
-    </form>
+    <Form onSubmit={handleSubmit}>
+      <VStack gap="md" alignItems="start">
+        <TextField name="name" label="Name" required messages={[{ match: "valueMissing", message: "Name is required" }]} />
+        <Textarea name="description" label="Description" />
+        <TextField
+          name="unit-cost"
+          label="Unit cost"
+          type="number"
+          min={0}
+          step="0.01"
+          required
+          messages={[
+            { match: "valueMissing", message: "Unit cost is required" },
+            {
+              match: "rangeUnderflow",
+              message: "Unit cost cannot be negative",
+            },
+            {
+              match: "stepMismatch",
+              message: "Unit cost must be 2 decimal places",
+            },
+          ]}
+        />
+        {isPending && <div>Creating...</div>}
+        {error && <Code language="json">{error}</Code>}
+        <Button type="submit" disabled={isPending}>
+          Create Product
+        </Button>
+      </VStack>
+    </Form>
   );
 }

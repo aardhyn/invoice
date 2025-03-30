@@ -1,7 +1,7 @@
 use std::fmt;
 
 use diesel::result::Error;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::connection::establish_connection;
 use crate::model::*;
@@ -28,6 +28,15 @@ impl From<Error> for CreateProductError {
   }
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateProduct {
+  pub business_id: i32,
+  pub name: String,
+  pub description: Option<String>,
+  pub unit_cost: f32,
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatedProduct {
@@ -35,15 +44,21 @@ pub struct CreatedProduct {
   pub name: String,
 }
 
-pub type CreateProduct = NewProductEntity;
-
 pub fn create_product(new_product: CreateProduct) -> Result<CreatedProduct, CreateProductError> {
   use crate::schema::product;
 
   let connection = &mut establish_connection().map_err(CreateProductError::ConnectionError)?;
 
+  let unit_cost_cents = (new_product.unit_cost * 100.0).round() as i32; // fixme: is rounding correct here? will this cast truncate?
+  let product_entity = NewProductEntity {
+    name: new_product.name,
+    business_id: new_product.business_id,
+    description: new_product.description,
+    unit_cost: unit_cost_cents,
+  };
+
   let created_product = diesel::insert_into(product::table)
-    .values(new_product)
+    .values(product_entity)
     .returning(CreatedProductEntity::as_returning())
     .get_result(connection)
     .map_err(|error| match error {
