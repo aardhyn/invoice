@@ -1,29 +1,26 @@
-import {
-  createRootRoute,
-  Link,
-  Outlet,
-  RootRoute,
-} from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { NoPrint } from "component/utility/NoPrint";
+import { createRootRoute, Outlet, RootRoute } from "@tanstack/react-router";
+import { NotFound, Ribbon } from "component";
+import { styled } from "panda/jsx";
 
 export const Route: RootRoute = createRootRoute({
   component: Page,
+  notFoundComponent: NotFound,
 });
 
 function Page() {
   return (
-    <main>
-      <h1>Invoice</h1>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-      </ul>
+    <Root>
+      <Ribbon />
       <Outlet />
-      <NoPrint>
-        <TanStackRouterDevtools />
-      </NoPrint>
-    </main>
+    </Root>
   );
 }
+const Root = styled("div", {
+  base: {
+    h: "100vh",
+    w: "100vw",
+    d: "grid",
+    gridTemplateRows: "auto 1fr",
+    overflow: "hidden",
+  },
+});
