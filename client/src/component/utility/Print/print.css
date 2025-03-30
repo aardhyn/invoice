@@ -1,0 +1,19 @@
+/**
+  * Default styling for print media
+  */
+
+@media print {
+  @page {
+    size: auto;
+    margin: 0; /* hide browser injected header/footer */
+  }
+
+  :root {
+    font-size: 12px;
+  }
+
+  header,
+  footer {
+    display: none !important;
+  }
+}
