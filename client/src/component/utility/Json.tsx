@@ -1,11 +1,8 @@
-import { Override } from "common";
+import { type Override, formatJson } from "common";
 
 /**
  * Renders JSON in preformatted text.
  */
-export function Json({
-  children,
-  ...props
-}: Override<React.HTMLProps<HTMLPreElement>, { children: unknown }>) {
-  return <pre {...props}>{JSON.stringify(children, null, 2)}</pre>;
+export function Json({ children, ...props }: Override<React.HTMLProps<HTMLPreElement>, { children: unknown }>) {
+  return <pre {...props}>{formatJson(children)}</pre>;
 }
