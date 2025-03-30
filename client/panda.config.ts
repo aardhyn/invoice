@@ -83,7 +83,7 @@ export const config = {
     tokens: {
       colors: {
         dark: { value: "#020202" },
-        light: { value: "#fff" },
+        light: { value: "#fafafa" },
         neutral: { value: "#040404" },
         neutral2: { value: "#222" },
         neutral3: { value: "#888" },
