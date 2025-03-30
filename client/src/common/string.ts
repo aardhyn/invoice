@@ -39,3 +39,24 @@ export function stringifyBoolean(
 ) {
   return value ? yes : no;
 }
+
+/**
+ * Modern API wrapper for `JSON.stringify` with sensible defaults.
+ * @example formatJson({ hello: "world" }); // "{\n  \"hello\": \"world\"\n}"
+ */
+export function formatJson(
+  json: unknown,
+  {
+    indent = 2,
+    replacer,
+  }: {
+    indent?: number;
+    replacer?(key: string, value: unknown): unknown;
+  } = {},
+) {
+  if (typeof json === "string") {
+    return formatJson(JSON.parse(json), { indent, replacer });
+  } else {
+    return JSON.stringify(json, replacer, indent);
+  }
+}

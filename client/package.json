@@ -14,6 +14,10 @@
     "pull": "pnpm update -iL"
   },
   "dependencies": {
+    "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-form": "^0.1.2",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@tanstack/react-query": "^5.67.2",
     "@tanstack/react-router": "^1.114.3",
