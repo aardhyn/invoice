@@ -1,5 +1,6 @@
 import { FormEvent } from "react";
 import { Link, createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { Button, Card, H2, H4, Section, Text } from "component";
 import {
   locationStringify,
   useInvoiceListQuery,
@@ -7,6 +8,8 @@ import {
   useInvoiceDuplicateMutation,
   useInvoiceCreateMutation,
 } from "api";
+import { Flex } from "panda/jsx";
+import { Form } from "@radix-ui/react-form";
 
 export const Route = createLazyFileRoute("/business/$businessKey/invoice/")({
   component: Page,
@@ -22,11 +25,10 @@ function Page() {
     businessId,
   });
   const { mutate: duplicateInvoice } = useInvoiceDuplicateMutation();
-  const handleCreateFromTemplate =
-    (invoiceId: number) => (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      duplicateInvoice({ invoiceId });
-    };
+  const handleCreateFromTemplate = (invoiceId: number) => (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    duplicateInvoice({ invoiceId });
+  };
 
   const navigate = useNavigate();
   const invoiceCreateMutation = useInvoiceCreateMutation();
@@ -46,15 +48,16 @@ function Page() {
   };
 
   return (
-    <>
-      <section>
-        <h2>Invoices</h2>
+    <Section>
+      <Card>
+        <Flex justify="space-between" gap="sm">
+          <H2>Invoices</H2>
+          <Button onClick={handleCreateFromScratch}>New</Button>
+        </Flex>
         <ul>
           {invoiceList?.data?.data?.map((invoice) => (
             <li key={invoice.invoiceId}>
-              <Link to={invoice.invoiceId.toString()}>
-                {invoice.name || "Untitled Invoice"}
-              </Link>
+              <Link to={invoice.invoiceId.toString()}>{invoice.name || "Untitled Invoice"}</Link>
             </li>
           ))}
         </ul>
@@ -63,35 +66,29 @@ function Page() {
             <em>No invoice found</em>
           </p>
         )}
-      </section>
-      <section>
-        <h3>Create Invoice</h3>
-        <fieldset>
-          <legend>From Template</legend>
-          <ul>
-            {invoiceTemplates?.map(
-              ({ invoiceId, name, description, location, clientName }) => (
-                <li key={invoiceId}>
-                  <form onSubmit={handleCreateFromTemplate(invoiceId)}>
-                    <button style={{ textAlign: "left" }}>
-                      <h4>{name}</h4>
-                      <p>{description}</p>
-                      {clientName && <p>Client: {clientName}</p>}
-                      {location && (
-                        <p> Address: {locationStringify(location)}</p>
-                      )}
-                    </button>
-                  </form>
-                </li>
-              ),
-            )}
-          </ul>
-        </fieldset>
-        <fieldset>
-          <legend>From Scratch</legend>
-          <button onClick={handleCreateFromScratch}>Create</button>
-        </fieldset>
-      </section>
-    </>
+      </Card>
+      <Card>
+        <H2>Templates</H2>
+        <ul>
+          {invoiceTemplates?.map(({ invoiceId, name, description, location, clientName }) => (
+            <li key={invoiceId}>
+              <Form onSubmit={handleCreateFromTemplate(invoiceId)}>
+                <Button style={{ textAlign: "left" }}>
+                  <H4>{name}</H4>
+                  <Text>{description}</Text>
+                  {clientName && <Text>Client: {clientName}</Text>}
+                  {location && <Text> Address: {locationStringify(location)}</Text>}
+                </Button>
+              </Form>
+            </li>
+          ))}
+          {!invoiceTemplates?.length && (
+            <li>
+              <Text color="2">No templates</Text>
+            </li>
+          )}
+        </ul>
+      </Card>
+    </Section>
   );
 }

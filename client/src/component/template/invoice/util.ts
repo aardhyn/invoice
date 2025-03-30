@@ -1,12 +1,7 @@
 import { useMemo } from "react";
 import { PRODUCT_DISPLAY_COLUMNS, SERVICE_DISPLAY_COLUMNS } from "./constant";
-import { LineItem, isProductLineItem, isServiceLineItem } from "api";
-import {
-  fromSnakeCase,
-  toSentenceCase,
-  dedupe,
-  stringifyBoolean,
-} from "common";
+import { type LineItem, isProductLineItem, isServiceLineItem } from "api";
+import { fromSnakeCase, toSentenceCase, stringifyBoolean, dedupe } from "common";
 
 export function useLineItemColumnNames(lineItems: LineItem[]) {
   return useMemo(() => {
@@ -21,15 +16,9 @@ export function useLineItemColumnNames(lineItems: LineItem[]) {
       ...(hasServiceColumns ? SERVICE_DISPLAY_COLUMNS : []),
     ] as string[];
 
-    const customColumns = dedupe(
-      lineItems
-        .flatMap(({ customFields }) => customFields ?? [])
-        .map(({ name }) => name),
-    );
+    const customColumns = dedupe(lineItems.flatMap(({ customFields }) => customFields ?? []).map(({ name }) => name));
 
-    const formattedColumns = [...standardColumns, ...customColumns, "total"]
-      .map(fromSnakeCase)
-      .map(toSentenceCase);
+    const formattedColumns = [...standardColumns, ...customColumns, "total"].map(fromSnakeCase).map(toSentenceCase);
 
     return {
       formattedColumns,
@@ -46,10 +35,7 @@ export function useLineItemColumnNames(lineItems: LineItem[]) {
  * [ ][b][c][ ]
  * [a][ ][c][d]
  */
-export function useCustomFieldCells(
-  lineItem: LineItem,
-  customFieldColumns: string[],
-) {
+export function useCustomFieldCells(lineItem: LineItem, customFieldColumns: string[]) {
   return useMemo(
     () =>
       customFieldColumns.map((name) => {

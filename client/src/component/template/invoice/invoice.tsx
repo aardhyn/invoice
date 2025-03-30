@@ -1,74 +1,51 @@
-import {
-  type Invoice,
-  type LineItem,
-  type Location,
-  type Contact,
-  ProductLineItem,
-  ServiceLineItem,
-} from "api";
-import { dateFromTimestamp, Override } from "common";
+import { type Invoice, type LineItem, type Location, type Contact, ProductLineItem, ServiceLineItem } from "api";
+import { H1, H2, H3 } from "component";
+import { type Override, dateFromTimestamp } from "common";
 import { useLineItemColumnNames, useCustomFieldCells } from ".";
-
-import "./style.css";
 
 export type ExportableInvoice = Invoice;
 
 export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
   return (
-    <div className="page column">
+    <div className="page">
       <div className="card">
-        <h1>{invoice.name}</h1>
+        <H1>{invoice.name}</H1>
         {invoice.description && <p>{invoice.description}</p>}
       </div>
       <div className="row">
         <div className="card">
-          <h2>From</h2>
+          <H2>From</H2>
           <div className="row">
-            <article>
-              <h3>{invoice.business.name}</h3>
-              {invoice.business.location && (
-                <LocationPreview location={invoice.business.location} />
-              )}
-            </article>
-            <article>
+            <div className="column">
+              <H3>{invoice.business.name}</H3>
+              {invoice.business.location && <LocationPreview location={invoice.business.location} />}
+            </div>
+            <div className="column">
               <ContactPreview contact={invoice.business.contact} />
-            </article>
+            </div>
           </div>
         </div>
         <div className="card">
-          <h2>Tax</h2>
-          <article>
+          <H2>Tax</H2>
+          <div className="column">
             <p className="row">
               <b>Nō</b> {invoice.invoiceKey}
             </p>
             <p className="row">
-              <b>Due</b>{" "}
-              {invoice.dueDate ? dateFromTimestamp(invoice.dueDate) : "Unset"}
+              <b>Due</b> {invoice.dueDate ? dateFromTimestamp(invoice.dueDate) : "Unset"}
             </p>
             <p className="row">
               <b>Reference</b> {invoice.reference ? invoice.reference : "None"}
             </p>
-          </article>
+          </div>
         </div>
         <div className="card">
-          <h2>To</h2>
-          <article>
-            {invoice.client ? (
-              <ContactPreview contact={invoice.client.contact} />
-            ) : (
-              "Unset"
-            )}
-          </article>
+          <H2>To</H2>
+          <div className="column">{invoice.client ? <ContactPreview contact={invoice.client.contact} /> : "Unset"}</div>
         </div>
         <div className="card">
-          <h2>Property</h2>
-          <article>
-            {invoice.location ? (
-              <LocationPreview location={invoice.location} />
-            ) : (
-              "Unset"
-            )}
-          </article>
+          <H2>Property</H2>
+          <div className="column">{invoice.location ? <LocationPreview location={invoice.location} /> : "Unset"}</div>
         </div>
       </div>
       <div className="card">
@@ -81,7 +58,7 @@ export function InvoicePreview({ invoice }: { invoice: ExportableInvoice }) {
 function ContactPreview({ contact }: { contact: Contact }) {
   return (
     <>
-      <h3>{contact.name}</h3>
+      <H3>{contact.name}</H3>
       <p>{contact.email}</p>
       <p>{contact.cell}</p>
       {contact.location && <LocationPreview location={contact.location} />}
@@ -100,22 +77,11 @@ function LocationPreview({ location }: { location: Location }) {
   );
 }
 
-function LineItemsPreview({
-  lineItems,
-  total,
-}: {
-  lineItems: LineItem[];
-  total: number;
-}) {
-  const {
-    customColumns,
-    formattedColumns,
-    hasProductColumns,
-    hasServiceColumns,
-  } = useLineItemColumnNames(lineItems);
+function LineItemsPreview({ lineItems, total }: { lineItems: LineItem[]; total: number }) {
+  const { customColumns, formattedColumns, hasProductColumns, hasServiceColumns } = useLineItemColumnNames(lineItems);
 
   return (
-    <table>
+    <table style={{ width: "100%" }}>
       <thead>
         <tr>
           {formattedColumns.map((column) => (
@@ -136,10 +102,7 @@ function LineItemsPreview({
       </tbody>
       <tfoot>
         <tr>
-          <td
-            colSpan={formattedColumns.length - 1}
-            style={{ textAlign: "right", paddingRight: 16, fontWeight: "bold" }}
-          >
+          <td colSpan={formattedColumns.length - 1} style={{ textAlign: "right", paddingRight: 16, fontWeight: "bold" }}>
             Total
           </td>
           <td>{total}</td>
@@ -150,10 +113,7 @@ function LineItemsPreview({
 }
 
 // union the keys of possible detail properties so we can type safely render them in the table
-type LineItemView = Override<
-  LineItem,
-  { detail: ServiceLineItem & ProductLineItem }
->;
+type LineItemView = Override<LineItem, { detail: ServiceLineItem & ProductLineItem }>;
 
 function LineItemPreview({
   lineItem: lineItem,

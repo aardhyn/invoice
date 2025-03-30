@@ -1,12 +1,9 @@
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { produce } from "immer";
+import { Flex, styled } from "panda/jsx";
 import { uuid } from "common";
-import type {
-  LineItemCustomField,
-  ServiceListItem,
-  ProductListItem,
-  MutableLineItem,
-} from "api";
+import type { LineItemCustomField, ServiceListItem, ProductListItem, MutableLineItem } from "api";
+import { Button, Card, Checkbox, H5, Select, Spacer, Text, Textarea, TextField } from "component";
 
 type MetaFields = "name" | "description" | "quantity";
 type LineItemMeta = Pick<MutableLineItem, MetaFields>;
@@ -22,37 +19,30 @@ export function LineItemMetaForm({
   onMetaChange: (meta: Partial<LineItemMeta>) => void;
 }) {
   return (
-    <div>
-      <label htmlFor="name">Name</label>
-      <input
+    <>
+      <TextField
+        label="Name"
         name="name"
         placeholder="Name"
-        type="text"
         value={meta.name}
-        onChange={(e) => onMetaChange({ name: e.currentTarget.value })}
+        onValueChange={(name) => onMetaChange({ name })}
       />
-      <br />
-      <label htmlFor="description">Description</label>
-      <input
+      <Textarea
+        label="Description"
         name="description"
-        type="text"
         placeholder="Description"
         value={meta.description}
-        onChange={(e) => onMetaChange({ description: e.currentTarget.value })}
+        onValueChange={(description) => onMetaChange({ description })}
       />
-      <br />
-      <label htmlFor="quantity">Quantity</label>
-      <input
+      <TextField
+        label="Quantity"
         name="quantity"
         type="number"
         placeholder="Quantity"
-        value={meta.quantity}
-        onChange={(e) =>
-          onMetaChange({ quantity: Number(e.currentTarget.value) })
-        }
+        value={meta.quantity?.toString()}
+        onValueChange={(quantity) => onMetaChange({ quantity: Number(quantity) })}
       />
-      <br />
-    </div>
+    </>
   );
 }
 
@@ -84,36 +74,46 @@ export function LineItemCustomFieldsForm({
     );
   };
 
-  const handleRemoveCustomField = (index: number) => {
-    onCustomFieldsChange(
-      produce(customFields, (draft) => {
-        draft.splice(index, 1);
-      }),
-    );
+  const handleCustomFieldDelete = (index: number) => {
+    return () =>
+      onCustomFieldsChange(
+        produce(customFields, (draft) => {
+          draft.splice(index, 1);
+        }),
+      );
   };
 
   return (
     <>
-      {customFields.map((field, index) => (
-        <div key={field.key}>
-          <LineItemCustomFieldForm
-            customField={field}
-            onCustomFieldChange={handleCustomFieldChange(index)}
-          />
-          <button type="button" onClick={() => handleRemoveCustomField(index)}>
-            Remove
-          </button>
-        </div>
-      ))}
-      <fieldset>
-        <legend>Add Custom Field</legend>
-        <LineItemCreateCustomFieldForm
-          onCreateNewCustomField={handleAddCustomField}
-        />
-      </fieldset>
+      <Card r="xs">
+        <H5>Custom Fields</H5>
+        <CustomFields>
+          {customFields.map((field, index) => (
+            <li key={field.key}>
+              <Flex align="center" gap="md" wrap="wrap">
+                <LineItemCustomFieldForm customField={field} onCustomFieldChange={handleCustomFieldChange(index)} />
+                <Spacer greedy />
+                <Button type="button" onClick={handleCustomFieldDelete(index)}>
+                  Delete
+                </Button>
+              </Flex>
+            </li>
+          ))}
+          {!customFields?.length && (
+            <li>
+              <Text color="2">No custom fields</Text>
+            </li>
+          )}
+        </CustomFields>
+        <H5>Create Custom Field</H5>
+        <Flex align="end" gap="md" wrap="wrap">
+          <LineItemCreateCustomFieldForm onCreateNewCustomField={handleAddCustomField} />
+        </Flex>
+      </Card>
     </>
   );
 }
+const CustomFields = styled("ul", { base: { spaceY: "md" } });
 
 export const DEFAULT_LINE_ITEM_CUSTOM_FIELD = (): LineItemCustomField => ({
   key: uuid(),
@@ -127,58 +127,50 @@ export const DEFAULT_LINE_ITEM_CUSTOM_FIELD = (): LineItemCustomField => ({
  */
 export function LineItemCustomFieldForm({
   customField,
-  onCustomFieldChange,
+  onCustomFieldChange: handleCustomFieldChange,
 }: {
   customField: LineItemCustomField;
-  onCustomFieldChange: (field: LineItemCustomField) => void;
+  onCustomFieldChange(field: LineItemCustomField): void;
 }) {
   const handleChange = (e: FormEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
-    onCustomFieldChange({ ...customField, [name]: value });
+    handleCustomFieldChange({ ...customField, [name]: value });
   };
 
   return (
     <>
-      <input
-        name="name"
-        type="text"
-        value={customField.name}
-        onChange={handleChange}
-      />
+      <TextField name="name" label="Field Name" type="text" value={customField.name} onChange={handleChange} />
       {typeof customField.data === "boolean" && (
-        <input
+        <Checkbox
           name="data"
-          type="checkbox"
+          label="Value"
+          inline={false}
           checked={customField.data}
-          onChange={(e) =>
-            onCustomFieldChange({
-              ...customField,
-              data: e.currentTarget.checked,
-            })
-          }
+          onCheckedChange={(data) => {
+            handleCustomFieldChange({ ...customField, data });
+          }}
         />
       )}
       {typeof customField.data === "number" && (
-        <input
+        <TextField
           name="data"
+          label="Value"
           type="number"
-          value={customField.data as number}
-          onChange={(e) =>
-            onCustomFieldChange({
-              ...customField,
-              data: Number(e.currentTarget.value),
-            })
-          }
+          value={customField.data}
+          onValueChange={(data) => {
+            handleCustomFieldChange({ ...customField, data: parseInt(data) });
+          }}
         />
       )}
       {typeof customField.data === "string" && (
-        <input
+        <TextField
           name="data"
+          label="Value"
           type="text"
-          value={customField.data as string}
-          onChange={(e) =>
-            onCustomFieldChange({ ...customField, data: e.currentTarget.value })
-          }
+          value={customField.data}
+          onValueChange={(data) => {
+            handleCustomFieldChange({ ...customField, data });
+          }}
         />
       )}
     </>
@@ -190,9 +182,7 @@ function LineItemCreateCustomFieldForm({
 }: {
   onCreateNewCustomField(field: LineItemCustomField): void;
 }) {
-  const [customField, setCustomField] = useState<LineItemCustomField>(
-    DEFAULT_LINE_ITEM_CUSTOM_FIELD(),
-  );
+  const [customField, setCustomField] = useState<LineItemCustomField>(DEFAULT_LINE_ITEM_CUSTOM_FIELD());
 
   const handleSubmit = () => {
     handleCreateNewCustomField(customField);
@@ -201,13 +191,11 @@ function LineItemCreateCustomFieldForm({
 
   return (
     <>
-      <LineItemCustomFieldForm
-        customField={customField}
-        onCustomFieldChange={setCustomField}
-      />
-      <button type="button" onClick={handleSubmit}>
+      <LineItemCustomFieldForm customField={customField} onCustomFieldChange={setCustomField} />
+      <Spacer greedy />
+      <Button type="button" onClick={handleSubmit}>
         Add
-      </button>
+      </Button>
     </>
   );
 }
@@ -225,24 +213,22 @@ export function LineItemServiceSelectionForm({
   onServiceIdChange(serviceId: number | null): void;
 }) {
   return (
-    <>
-      <select
-        name="serviceId"
-        value={selectedServiceId}
-        onChange={(e) => {
-          const { value } = e.target;
-          const serviceId = !value ? null : Number(e.currentTarget.value);
-          onServiceIdChange(serviceId);
-        }}
-      >
-        <option value={undefined}>Select a service</option>
-        {services.map((service) => (
-          <option key={service.serviceId} value={service.serviceId}>
-            {service.name}
-          </option>
-        ))}
-      </select>
-    </>
+    <Select
+      name="serviceId"
+      label="Service"
+      placeholder="Choose service"
+      value={selectedServiceId?.toString()}
+      onValueChange={(value) => {
+        const serviceId = Number(value);
+        onServiceIdChange(serviceId);
+      }}
+      options={
+        services.map(({ serviceId, name }) => ({
+          value: serviceId.toString(),
+          label: name,
+        })) ?? []
+      }
+    />
   );
 }
 
@@ -259,23 +245,21 @@ export function LineItemProductSelectionForm({
   onProductIdChange(productId: number | null): void;
 }) {
   return (
-    <>
-      <select
-        name="productId"
-        value={selectedProductId}
-        onChange={(e) => {
-          const { value } = e.target;
-          const productId = !value ? null : Number(e.currentTarget.value);
-          onProductIdChange(productId);
-        }}
-      >
-        <option value="">Select a product</option>
-        {products.map(({ productId, name }) => (
-          <option key={productId} value={productId}>
-            {name}
-          </option>
-        ))}
-      </select>
-    </>
+    <Select
+      name="productId"
+      label="Product"
+      placeholder="Choose product"
+      value={selectedProductId?.toString()}
+      onValueChange={(value) => {
+        const productId = Number(value);
+        onProductIdChange(productId);
+      }}
+      options={
+        products.map(({ productId, name }) => ({
+          value: productId.toString(),
+          label: name,
+        })) ?? []
+      }
+    />
   );
 }

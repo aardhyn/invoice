@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { type Uuid, map, splitTimestamp, capitalize } from "common";
+import { useState } from "react";
+import { Form } from "@radix-ui/react-form";
+import { Flex, styled } from "panda/jsx";
+import { type Uuid, map, splitTimestamp, fromSnakeCase, capitalize, toTimestampz } from "common";
 import { useMutableInvoiceState } from "utility";
 import {
   LINE_ITEM_TYPE,
@@ -17,6 +19,14 @@ import {
   useServiceListQuery,
 } from "api";
 import {
+  Card,
+  H3,
+  H4,
+  Text,
+  Textarea,
+  TextField,
+  Select,
+  Button,
   LineItemCustomFieldsForm,
   LineItemMetaForm,
   LineItemProductSelectionForm,
@@ -27,11 +37,7 @@ function locationRequired(location?: Location | null) {
   return !!location?.address || !!location?.suburb || !!location?.city;
 }
 
-export function DraftInvoiceMutationForm({
-  initialInvoice,
-}: {
-  initialInvoice: Invoice;
-}) {
+export function DraftInvoiceMutationForm({ initialInvoice }: { initialInvoice: Invoice }) {
   const { invoice, mutate, lineItems } = useMutableInvoiceState(initialInvoice);
 
   const clientList = useClientListQuery({
@@ -41,56 +47,59 @@ export function DraftInvoiceMutationForm({
   const isLocationRequired = locationRequired(invoice.location);
 
   return (
-    <form>
-      <label>
-        Name
-        <input
-          type="text"
+    <Form>
+      <Flex direction="column" gap="md" align="start">
+        <TextField
+          label="Name"
           name="name"
           value={invoice.name}
-          onChange={(event) => {
-            const name = event.target.value;
+          onValueChange={(name) => {
             mutate({ name });
           }}
         />
-      </label>
-      <br />
-      <label>
-        Description
-        <textarea
+        <Textarea
+          label="Description"
           name="description"
           value={invoice.description ?? ""}
-          onChange={(event) => {
-            const description = event.target.value;
+          onValueChange={(description) => {
             mutate({ description });
           }}
         />
-      </label>
-      <br />
-      <label>
-        Reference
-        <input
-          type="text"
+        <TextField
+          label="Due Date"
+          name="due_date"
+          type="date"
+          value={map(invoice.dueDate, splitTimestamp)?.date ?? ""}
+          onValueChange={(dueDate) => {
+            mutate({ dueDate: toTimestampz(dueDate) });
+          }}
+        />
+        <Select
+          label="Client"
+          name="clientId"
+          value={initialInvoice.client?.clientId.toString()}
+          onValueChange={(client) => {
+            mutate({ client: parseInt(client) });
+          }}
+          placeholder="Select Client"
+          options={clientList.data?.data?.map((client) => ({ value: client.clientId.toString(), label: client.name })) ?? []}
+        />
+        <TextField
+          label="Reference"
           name="reference"
           value={invoice.reference ?? ""}
-          onChange={(event) => {
-            const reference = event.target.value;
+          onValueChange={(reference) => {
             mutate({ reference });
           }}
         />
-      </label>
-      <br />
-      <fieldset>
-        <legend>Location</legend>
-        <label>
-          Street
-          <input
-            type="text"
+        <H3>Location</H3>
+        <Flex gap="sm" wrap="wrap">
+          <TextField
+            label="Street"
             name="address"
             value={invoice.location?.address ?? ""}
             required={isLocationRequired}
-            onChange={(value) => {
-              const address = value.target.value;
+            onValueChange={(address) => {
               mutate({
                 location: {
                   city: invoice.location?.city ?? "",
@@ -100,16 +109,11 @@ export function DraftInvoiceMutationForm({
               });
             }}
           />
-        </label>
-        <br />
-        <label>
-          Suburb
-          <input
-            type="text"
+          <TextField
+            label="Suburb"
             name="suburb"
             value={invoice.location?.suburb ?? ""}
-            onChange={(value) => {
-              const suburb = value.target.value;
+            onValueChange={(suburb) => {
               mutate({
                 location: {
                   city: invoice.location?.city ?? "",
@@ -119,17 +123,12 @@ export function DraftInvoiceMutationForm({
               });
             }}
           />
-        </label>
-        <br />
-        <label>
-          City
-          <input
-            type="text"
+          <TextField
+            label="City"
             name="city"
             required={isLocationRequired}
             value={invoice.location?.city}
-            onChange={(value) => {
-              const city = value.target.value;
+            onValueChange={(city) => {
               mutate({
                 location: {
                   city,
@@ -139,58 +138,18 @@ export function DraftInvoiceMutationForm({
               });
             }}
           />
-        </label>
-      </fieldset>
-      <br />
-      <label>
-        Due Date
-        <input
-          type="date"
-          name="due_date"
-          defaultValue={map(invoice.dueDate, splitTimestamp)?.date}
-        />
-      </label>
-      <br />
-      <fieldset>
-        <legend>Line Items</legend>
+        </Flex>
+        <H3>Line Items</H3>
         <LineItemsForm
           businessId={initialInvoice.business.businessId}
           lineItems={lineItems.items}
           onMutate={lineItems.mutate}
           onDelete={lineItems.remove}
         />
-        {lineItems.items.length && <p>No Items</p>}
-        <fieldset>
-          <legend>Add Line Item</legend>
-          <CreateLineItemForm
-            businessId={initialInvoice.business.businessId}
-            onCreateLineItem={lineItems.add}
-          />
-        </fieldset>
-      </fieldset>
-      <br />
-      <br />
-      <label>
-        Client
-        {clientList.isSuccess && (
-          <select
-            name="clientId"
-            value={initialInvoice.client?.clientId}
-            onChange={(e) => {
-              const client = parseInt(e.target.value);
-              mutate({ client });
-            }}
-          >
-            <option value="">Select Client</option>
-            {clientList?.data?.data?.map(({ clientId, name }) => (
-              <option key={clientId} value={clientId}>
-                {name}
-              </option>
-            ))}
-          </select>
-        )}
-      </label>
-    </form>
+        <H3>Create Line Item</H3>
+        <CreateLineItemForm businessId={initialInvoice.business.businessId} onCreateLineItem={lineItems.add} />
+      </Flex>
+    </Form>
   );
 }
 
@@ -209,44 +168,52 @@ function LineItemsForm({
     handleDelete(key);
   };
 
+  const hasItems = !!lineItems.length;
+
   return (
-    <ul>
+    <LineItems>
       {lineItems.map((item) => {
         return (
           <li key={item.key}>
-            <LineItemForm
-              businessId={businessId}
-              lineItem={item}
-              onMutateLineItem={(mutation) => {
-                handleMutate({
-                  ...mutation,
-                  key: item.key,
-                });
-              }}
-            />
-            <br />
-            <button type="button" onClick={createClickHandler(item.key)}>
-              Remove
-            </button>
-            <br />
-            <br />
-            <hr />
-            <br />
+            <Card r="sm">
+              <Flex justify="space-between" gap="sm">
+                <H4>{item.name}</H4>
+                <Button type="button" onClick={createClickHandler(item.key)}>
+                  Delete
+                </Button>
+              </Flex>
+              <LineItemForm
+                businessId={businessId}
+                lineItem={item}
+                onMutateLineItem={(mutation) => {
+                  handleMutate({ ...mutation, key: item.key });
+                }}
+              />
+            </Card>
           </li>
         );
       })}
-    </ul>
+      {!hasItems && (
+        <li>
+          <Text color="2">No Items</Text>
+        </li>
+      )}
+    </LineItems>
   );
 }
+const LineItems = styled("ul", {
+  base: {
+    alignSelf: "stretch",
+    spaceY: "md",
+  },
+});
 
-function getLineItemType(
-  lineItem: KeyedMutableLineItem,
-): LineItemType | undefined {
-  return map(lineItem.detail, (detail) => {
-    if ("productId" in detail) return "product";
-    else if ("serviceId" in detail) return "service";
-    else throw new Error("Unknown line item type");
-  });
+function getLineItemType({ detail }: KeyedMutableLineItem): LineItemType | undefined {
+  if (!detail) return "ad_hoc";
+  if ("productId" in detail) return "product";
+  if ("serviceId" in detail) return "service";
+
+  throw new Error("Unknown line item type");
 }
 
 export function LineItemForm({
@@ -256,20 +223,19 @@ export function LineItemForm({
 }: {
   businessId: number;
   lineItem: KeyedMutableLineItem;
-  onMutateLineItem: (item: MutableLineItem) => void;
+  onMutateLineItem(item: MutableLineItem): void;
 }) {
+  // fixme: lets combine the services and products into one big select (with search) and set the detail structure accordingly
   const [type, setType] = useState(getLineItemType(lineItem));
-  useEffect(() => {
-    const type = getLineItemType(lineItem);
+  const handleTypeChange = (type: LineItemType) => {
     setType(type);
-  }, [lineItem.detail]);
+    handleMutateLineItem({ detail: null }); // clear current detail
+  };
 
-  const isProductType =
-    type === "product" || (!!lineItem.detail && "productId" in lineItem.detail);
+  const isProductType = !!lineItem.detail && "productId" in lineItem.detail;
   const productListQuery = useProductListQuery({ businessId }, isProductType);
 
-  const isServiceType =
-    type === "service" || (!!lineItem.detail && "serviceId" in lineItem.detail);
+  const isServiceType = !!lineItem.detail && "serviceId" in lineItem.detail;
   const serviceListQuery = useServiceListQuery({ businessId }, isServiceType);
 
   return (
@@ -284,16 +250,12 @@ export function LineItemForm({
           handleMutateLineItem(meta);
         }}
       />
-      <br />
-      <fieldset>
-        <legend>Service/Product</legend>
-        <TypeDropdown type={type} onTypeChange={setType} />
-        {isProductType && (
+      <Flex gap="md">
+        <TypeDropdown type={type} onTypeChange={handleTypeChange} />
+        {type === "product" && (
           <LineItemProductSelectionForm
-            products={productListQuery.data?.data || []}
-            selectedProductId={
-              (lineItem.detail as CreateProductLineItem)?.productId
-            }
+            products={productListQuery.data || []}
+            selectedProductId={(lineItem.detail as CreateProductLineItem)?.productId}
             onProductIdChange={(productId) => {
               handleMutateLineItem({
                 detail: productId ? { productId } : null,
@@ -301,12 +263,10 @@ export function LineItemForm({
             }}
           />
         )}
-        {isServiceType && (
+        {type === "service" && (
           <LineItemServiceSelectionForm
             services={serviceListQuery.data?.data || []}
-            selectedServiceId={
-              (lineItem.detail as CreateServiceLineItem)?.serviceId
-            }
+            selectedServiceId={(lineItem.detail as CreateServiceLineItem)?.serviceId}
             onServiceIdChange={(serviceId) => {
               handleMutateLineItem({
                 detail: serviceId ? { serviceId } : null,
@@ -314,21 +274,15 @@ export function LineItemForm({
             }}
           />
         )}
-      </fieldset>
-      <br />
-      <fieldset>
-        <legend>Custom Fields</legend>
-        {!lineItem.customFields?.length && <p>No custom fields</p>}
-        <br />
-        <LineItemCustomFieldsForm
-          customFields={lineItem.customFields || []}
-          onCustomFieldsChange={(customFields) => {
-            handleMutateLineItem({
-              customFields,
-            });
-          }}
-        />
-      </fieldset>
+      </Flex>
+      <LineItemCustomFieldsForm
+        customFields={lineItem.customFields || []}
+        onCustomFieldsChange={(customFields) => {
+          handleMutateLineItem({
+            customFields,
+          });
+        }}
+      />
     </>
   );
 }
@@ -347,7 +301,7 @@ function CreateLineItemForm({
   };
 
   return (
-    <div>
+    <>
       <LineItemForm
         businessId={businessId}
         lineItem={lineItem}
@@ -355,10 +309,10 @@ function CreateLineItemForm({
           setLineItem((lineItem) => ({ ...lineItem, ...mutation }));
         }}
       />
-      <button type="button" onClick={handleSubmit}>
+      <Button type="button" onClick={handleSubmit}>
         Add
-      </button>
-    </div>
+      </Button>
+    </>
   );
 }
 
@@ -370,18 +324,17 @@ function TypeDropdown({
   onTypeChange(type: LineItemType): void;
 }) {
   return (
-    <select
-      value={type || ""}
-      onChange={(e) => {
-        handleTypeChange(e.target.value as LineItemType);
+    <Select
+      name="lineItemType"
+      label="Type"
+      value={type}
+      onValueChange={(value) => {
+        handleTypeChange(value as LineItemType);
       }}
-    >
-      <option value="">Select Type</option>
-      {LINE_ITEM_TYPE.map((type) => (
-        <option key={type} value={type}>
-          {capitalize(type)}
-        </option>
-      ))}
-    </select>
+      options={LINE_ITEM_TYPE.map((value) => ({
+        value,
+        label: capitalize(fromSnakeCase(value)),
+      }))}
+    />
   );
 }

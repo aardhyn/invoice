@@ -1,99 +1,99 @@
+import { useRef } from "react";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import {
-  useInvoiceGetQuery,
-  useInvoiceTemplateCreateMutation,
-  useInvoiceTemplateListQuery,
-  useInvoiceTemplateDeleteMutation,
-} from "api";
-import { invariant } from "common";
-import { DraftInvoiceMutationForm, InvoicePreview, Print } from "component";
-import { useMemo } from "react";
+import { Flex, styled } from "panda/jsx";
+import Frame from "react-frame-component";
+import { useInvoiceGetQuery } from "api";
+import { useFrameSize, useInvoiceTemplateState } from "utility";
+import { H2, H3, InvoicePreview, DraftInvoiceMutationForm, Print, Text, Button, Section, Card, Code } from "component";
 
-import templateStyles from "component/template/invoice/style.css?inline";
+import invoiceTemplateStylesheet from "component/template/invoice/template.css?inline";
 
-export const Route = createLazyFileRoute(
-  "/business/$businessKey/invoice/$invoiceKey",
-)({
+export const Route = createLazyFileRoute("/business/$businessKey/invoice/$invoiceKey")({
   component: Page,
 });
 
 function Page() {
-  const { invoiceKey } = Route.useParams();
+  const { invoiceKey, businessKey } = Route.useParams();
   const invoiceId = parseInt(invoiceKey);
   const { data: invoice, error, isLoading } = useInvoiceGetQuery({ invoiceId });
 
-  const [isTemplate, toggleTemplate] = useInvoiceTemplateState();
-  const toggleTemplateText = isTemplate
-    ? "Remove from Templates"
-    : "Save as Template";
+  const [isTemplate, toggleTemplate] = useInvoiceTemplateState({ invoiceKey, businessKey });
+  const toggleTemplateText = isTemplate ? "Remove from Templates" : "Save as Template";
+
+  const ref = useRef<HTMLIFrameElement>(null);
+  const { script, size } = useFrameSize(ref);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Section>
+        <Card>
+          <Text color="2">Loading...</Text>
+        </Card>
+      </Section>
+    );
   }
 
   if (!invoice || error) {
-    return <div>Failed to load invoice: {error?.message || "no data"}</div>;
+    return (
+      <Section>
+        <Card>
+          <Text color="2">Failed to load invoice</Text>
+          <Code language="json">{error}</Code>
+        </Card>
+      </Section>
+    );
   }
 
   return (
-    <>
-      <h2>{invoice.name}</h2>
-
-      <button onClick={toggleTemplate}>{toggleTemplateText}</button>
-
-      <section>
-        <h3>Edit Invoice</h3>
+    <Section>
+      <Card>
+        <Flex justify="space-between" gap="sm">
+          <H2>{invoice.name}</H2>
+          <Button onClick={toggleTemplate}>{toggleTemplateText}</Button>
+        </Flex>
         <DraftInvoiceMutationForm initialInvoice={invoice} />
-      </section>
-
-      <section>
-        <h3>Preview</h3>
-        <details>
-          <summary>Show</summary>
+      </Card>
+      <Card>
+        <Flex justify="space-between" gap="sm">
+          <H3>Preview</H3>
+          <Print content={<InvoicePreview invoice={invoice} />} style={invoiceTemplateStylesheet}>
+            <Button>Export</Button>
+          </Print>
+        </Flex>
+        <PreviewFrame
+          ref={ref}
+          style={{
+            height: size.height,
+          }}
+          initialContent={createInitialContent({ script, stylesheet: invoiceTemplateStylesheet })}
+        >
           <InvoicePreview invoice={invoice} />
-        </details>
-      </section>
-      <Print
-        style={templateStyles}
-        content={<InvoicePreview invoice={invoice} />}
-      >
-        <button>Print</button>
-      </Print>
-    </>
+        </PreviewFrame>
+      </Card>
+    </Section>
   );
 }
 
-function useInvoiceTemplateState() {
-  const { invoiceKey, businessKey } = Route.useParams();
-  const businessId = parseInt(businessKey);
+const PreviewFrame = styled(Frame, {
+  base: {
+    w: "100%",
+  },
+});
 
-  const { data: invoiceTemplates } = useInvoiceTemplateListQuery({
-    businessId,
-  });
-
-  const createTemplateMutation = useInvoiceTemplateCreateMutation();
-  const deleteTemplateMutation = useInvoiceTemplateDeleteMutation();
-  const isPending =
-    createTemplateMutation.isPending || deleteTemplateMutation.isPending;
-
-  const [isTemplate, toggleTemplate] = useMemo(() => {
-    const invoiceId = parseInt(invoiceKey);
-    invariant(
-      typeof invoiceId === "number" && !Number.isNaN(invoiceId),
-      "invoiceKey is required to toggle template",
-    );
-    return [
-      invoiceTemplates?.some((template) => template.invoiceId === invoiceId),
-      () => {
-        invariant(!isPending, "cannot toggle template while pending");
-        if (isTemplate) {
-          deleteTemplateMutation.mutate({ invoiceId });
-        } else {
-          createTemplateMutation.mutate({ invoiceId });
-        }
-      },
-    ];
-  }, [invoiceKey, isPending, invoiceTemplates]);
-
-  return [isTemplate, toggleTemplate] as const;
+function createInitialContent({ script, stylesheet }: { script: string; stylesheet?: string }) {
+  return `
+    <html>
+      <head>
+        <script>
+          ${script}
+        </script>
+        <style>
+          ${stylesheet}
+        </style>
+      <head>
+      <body>
+        <div/>
+      </body
+    </html>
+  `;
 }
