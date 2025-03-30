@@ -34,11 +34,6 @@ const styles = cva({
 });
 
 const CodeRoot = styled("div", styles);
-const CodeContainer = styled(Json, {
-  base: {
-    overflowY: "auto",
-  },
-});
 
 type CodeProps = Override<
   ComponentProps<typeof CodeRoot>,
@@ -54,7 +49,7 @@ export function Code({ children, language = "plaintext", inline, ...props }: Cod
   if (inline) {
     return (
       <CodeRoot inline={inline} {...props}>
-        <CodeContainer>{children}</CodeContainer>
+        <Json>{children}</Json>
       </CodeRoot>
     );
   }
@@ -69,8 +64,8 @@ export function Code({ children, language = "plaintext", inline, ...props }: Cod
           Copy
         </Button>
       </Flex>
-      <Scroll>
-        <CodeContainer>{children}</CodeContainer>
+      <Scroll focusVisible>
+        <Json>{children}</Json>
       </Scroll>
     </CodeRoot>
   );

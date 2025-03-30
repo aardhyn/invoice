@@ -144,6 +144,7 @@ export const config = {
         },
       },
       radii: {
+        xxs: { value: "1px" },
         xs: { value: "4px" },
         sm: { value: "8px" },
         md: { value: "16px" },
@@ -175,7 +176,7 @@ export const config = {
           value: { base: "{colors.tonal2}", _osDark: "{colors.neutral2}" },
         },
         highlight: {
-          value: { base: "{colors.tonal3}", _osDark: "{colors.neutral}" },
+          value: { base: "{colors.tonal3}", _osDark: "{colors.neutral2}" },
         },
         text: {
           value: { base: "{colors.dark}", _osDark: "{colors.light}" },

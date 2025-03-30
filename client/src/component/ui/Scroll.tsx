@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import {
   type ScrollAreaProps,
   ScrollArea as PrimitiveScrollArea,
@@ -10,12 +11,9 @@ import { styled } from "panda/jsx";
 
 const THUMB_SIZE = 10;
 
-export function Scroll({
-  children,
-  ...props
-}: {
-  children: React.ReactNode;
-} & ScrollAreaProps) {
+type ScrollProps = ComponentProps<typeof Root> & ScrollAreaProps & { children: React.ReactNode };
+
+export function Scroll({ children, ...props }: ScrollProps) {
   return (
     <Root {...props}>
       <Viewport>{children}</Viewport>
@@ -30,13 +28,28 @@ export function Scroll({
   );
 }
 
-const Root = styled(PrimitiveScrollArea, { base: { overflow: "hidden" } });
+const Root = styled(PrimitiveScrollArea, {
+  base: {
+    r: "xxs",
+    overflow: "hidden",
+  },
+  variants: {
+    focusVisible: {
+      true: {
+        transition: "outline 100ms ease-in-out",
+        ln: "transparent",
+        "&:has(*:focus-within)": { ln: "focus" },
+      },
+    },
+  },
+});
 
 const Viewport = styled(PrimitiveViewport, {
   base: {
     w: "100%",
     h: "100%",
     overflow: "auto",
+    ln: "none",
   },
 });
 

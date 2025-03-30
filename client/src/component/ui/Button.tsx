@@ -72,6 +72,7 @@ const styles = cva({
         bg: "primary",
         color: "onPrimary",
         "&:hover:not(:disabled)": { bg: "primary2" },
+        "&:focus-visible:not(:disabled)": { bg: "primary2" },
       },
     },
     {
@@ -82,6 +83,7 @@ const styles = cva({
         color: "primary",
         b: "primary",
         "&:hover:not(:disabled)": { bg: "highlight" },
+        "&:focus-visible:not(:disabled)": { bg: "highlight" },
       },
     },
     {
@@ -90,6 +92,10 @@ const styles = cva({
       css: {
         color: "primary",
         "&:hover:not(:disabled)": {
+          color: "primary2",
+          textDecoration: "underline",
+        },
+        "&:focus-visible:not(:disabled)": {
           color: "primary2",
           textDecoration: "underline",
         },
@@ -104,6 +110,10 @@ const styles = cva({
           color: "onPrimary",
           bg: "primary",
         },
+        "&:focus-visible:not(:disabled)": {
+          color: "onPrimary",
+          bg: "primary",
+        },
       },
     },
     {
@@ -113,6 +123,7 @@ const styles = cva({
         bg: "surface",
         color: "text",
         "&:hover:not(:disabled)": { bg: "highlight" },
+        "&:focus-visible:not(:disabled)": { bg: "highlight" },
       },
     },
     {
@@ -123,22 +134,25 @@ const styles = cva({
         color: "text",
         b: "neutral",
         "&:hover:not(:disabled)": { bg: "highlight" },
+        "&:focus-visible:not(:disabled)": { bg: "highlight" },
       },
     },
     {
       color: "tonal",
       variant: "ghost",
       css: {
-        color: "text2",
+        color: "text",
         "&:hover:not(:disabled)": { textDecoration: "underline" },
+        "&:focus-visible:not(:disabled)": { textDecoration: "underline" },
       },
     },
     {
       color: "tonal",
       variant: "plain",
       css: {
-        color: "text2",
+        color: "text",
         "&:hover:not(:disabled)": { bg: "highlight" },
+        "&:focus-visible:not(:disabled)": { bg: "highlight" },
       },
     },
   ],
