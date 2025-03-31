@@ -15,6 +15,8 @@ async fn main() -> Result<(), String> {
 
   let catchers = catchers![
     handle_bad_request,
+    handle_unauthorized,
+    handle_forbidden,
     handle_not_found,
     handle_internal_server_error,
     handle_unprocessable_entity
