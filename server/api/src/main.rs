@@ -14,6 +14,7 @@ async fn main() -> Result<(), String> {
   dotenvy::dotenv().ok(); // note: we don't care if this fails because the variables might be set some other way.
 
   let catchers = catchers![
+    handle_bad_request,
     handle_not_found,
     handle_internal_server_error,
     handle_unprocessable_entity

@@ -2,6 +2,17 @@ use rocket::{http::Status, Request};
 
 use crate::util::response::APIResponse;
 
+#[catch(400)]
+pub fn handle_bad_request(_: &Request) -> APIResponse<(), String> {
+  APIResponse {
+    status: Some(Status::BadRequest),
+    error: Some(String::from(
+      "The request is malformed and cannot be understood by the server",
+    )),
+    data: None,
+  }
+}
+
 #[catch(404)]
 pub fn handle_not_found(_: &Request) -> APIResponse<(), String> {
   APIResponse {
