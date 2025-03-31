@@ -1,10 +1,12 @@
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{self, CreateBusiness, CreatedBusiness};
 use rocket::{http::Status, serde::json::Json};
 
-use crate::util::response::APIResponse;
-
 #[post("/business.create", data = "<data>")]
-pub fn business_create(data: Json<CreateBusiness>) -> APIResponse<CreatedBusiness, String> {
+pub fn business_create(
+  data: Json<CreateBusiness>,
+  _key: DevKey,
+) -> APIResponse<CreatedBusiness, String> {
   let data = data.into_inner();
   service::create_business(data).map_or_else(
     |error| {

@@ -1,4 +1,4 @@
-use crate::util::response::APIResponse;
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{self, MutableLineItem, MutatedLineItem};
 use rocket::{http::Status, serde::json::Json};
 use serde::Deserialize;
@@ -13,6 +13,7 @@ pub struct LineItemMutation {
 #[post("/invoice.draft.line_item.mutate", data = "<data>")]
 pub fn invoice_line_item_mutate(
   data: Json<LineItemMutation>,
+  _key: DevKey,
 ) -> APIResponse<MutatedLineItem, String> {
   let data = data.into_inner();
   service::mutate_line_item(data.invoice_id, data.mutation).map_or_else(

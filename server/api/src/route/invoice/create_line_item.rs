@@ -1,4 +1,4 @@
-use crate::util::response::APIResponse;
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{self, CreateLineItem, CreatedLineItem};
 use rocket::{http::Status, serde::json::Json};
 use serde::Deserialize;
@@ -13,6 +13,7 @@ pub struct LineItemCreate {
 #[post("/invoice.draft.line_item.create", data = "<data>")]
 pub fn invoice_line_item_create(
   data: Json<LineItemCreate>,
+  _key: DevKey,
 ) -> APIResponse<CreatedLineItem, String> {
   let data = data.into_inner();
   service::create_line_item(data.invoice_id, data.line_item).map_or_else(

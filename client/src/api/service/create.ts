@@ -22,6 +22,7 @@ export function useServiceCreateMutation() {
       const response = await fetch(endpoint("service.create"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(service),
       });
       const data = await response.json();

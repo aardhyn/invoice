@@ -1,11 +1,11 @@
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{self, DeleteInvoiceTemplate, DeletedInvoiceTemplate};
 use rocket::{http::Status, serde::json::Json};
-
-use crate::util::response::APIResponse;
 
 #[post("/invoice.template.delete", data = "<data>")]
 pub fn invoice_template_delete(
   data: Json<DeleteInvoiceTemplate>,
+  _key: DevKey,
 ) -> APIResponse<DeletedInvoiceTemplate, String> {
   let data = data.into_inner();
   service::delete_invoice_template(data).map_or_else(

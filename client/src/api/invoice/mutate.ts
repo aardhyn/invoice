@@ -26,6 +26,7 @@ export function useDraftInvoiceMutation() {
       const res = await fetch(endpoint("invoice.draft.mutate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(mutation),
       });
       const data = await res.json();

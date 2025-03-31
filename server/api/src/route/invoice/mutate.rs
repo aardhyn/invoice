@@ -1,13 +1,13 @@
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{
   self, DraftInvoiceMutation, MutateDraftInvoiceError, MutatedDraftInvoice,
 };
 use rocket::{http::Status, serde::json::Json};
 
-use crate::util::response::APIResponse;
-
 #[post("/invoice.draft.mutate", data = "<data>")]
 pub fn invoice_draft_mutate(
   data: Json<DraftInvoiceMutation>,
+  _key: DevKey,
 ) -> APIResponse<MutatedDraftInvoice, String> {
   let data = data.into_inner();
   service::mutate_draft_invoice(data).map_or_else(

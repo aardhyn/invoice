@@ -18,6 +18,7 @@ export function useLineItemMutation() {
       const res = await fetch(endpoint("invoice.draft.line_item.mutate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(lineItem),
       });
       const data = await res.json();

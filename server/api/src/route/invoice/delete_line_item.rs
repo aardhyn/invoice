@@ -1,4 +1,4 @@
-use crate::util::response::APIResponse;
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{self, DeletedLineItem};
 use rocket::{http::Status, serde::json::Json};
 use serde::Deserialize;
@@ -14,6 +14,7 @@ pub struct LineItemDeletion {
 #[post("/invoice.draft.line_item.delete", data = "<data>")]
 pub fn invoice_line_item_delete(
   data: Json<LineItemDeletion>,
+  _key: DevKey,
 ) -> APIResponse<DeletedLineItem, String> {
   let data = data.into_inner();
   service::delete_line_item(data.invoice_id, data.line_item_key).map_or_else(

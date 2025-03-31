@@ -1,10 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  INVOICE_QUERY_KEY,
-  type CreateLineItem,
-  endpoint,
-  queryClient,
-} from "api";
+import { INVOICE_QUERY_KEY, type CreateLineItem, endpoint, queryClient } from "api";
 import { Uuid } from "common";
 
 export type CreateLineItemParams = {
@@ -23,6 +18,7 @@ export function useLineItemCreateMutation() {
       const res = await fetch(endpoint("invoice.draft.line_item.create"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(lineItem),
       });
       const data = await res.json();

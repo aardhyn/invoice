@@ -13,6 +13,7 @@ export function useLineItemOrderMutation() {
       return fetch(endpoint("invoice.draft.line_item.order"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(lineItem),
       });
     },

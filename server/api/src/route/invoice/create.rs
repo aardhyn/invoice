@@ -1,10 +1,12 @@
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{self, CreateInvoice, CreatedInvoice};
 use rocket::{http::Status, serde::json::Json};
 
-use crate::util::response::APIResponse;
-
 #[post("/invoice.create", data = "<data>")]
-pub fn invoice_create(data: Json<CreateInvoice>) -> APIResponse<CreatedInvoice, String> {
+pub fn invoice_create(
+  data: Json<CreateInvoice>,
+  _key: DevKey,
+) -> APIResponse<CreatedInvoice, String> {
   let data = data.into_inner();
   service::create_invoice(data).map_or_else(
     |error| {

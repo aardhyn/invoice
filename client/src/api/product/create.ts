@@ -20,6 +20,7 @@ export function useProductCreateMutation() {
       const res = await fetch(endpoint("product.create"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(product),
       });
       const data = await res.json();

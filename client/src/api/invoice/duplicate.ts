@@ -17,6 +17,7 @@ export function useInvoiceDuplicateMutation() {
       const res = await fetch(endpoint("invoice.duplicate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(invoice),
       });
       const data = await res.json();

@@ -22,6 +22,7 @@ export function useBusinessCreateMutation() {
       const res = await fetch(endpoint("business.create"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // fixme: this might be a bad idea...
         body: JSON.stringify(business),
       });
       const data = await res.json();

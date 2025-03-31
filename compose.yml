@@ -30,6 +30,7 @@ services:
       - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}
       - API_PORT=${API_PORT}
       - API_ALLOW_ORIGIN=${API_ALLOW_ORIGIN}
+      - API_DEV_KEY=${API_DEV_KEY}
     ports:
       - "${API_PORT}:${API_PORT}"
     depends_on:
@@ -89,6 +90,7 @@ services:
       - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}
       - API_PORT=${API_PORT}
       - API_ALLOW_ORIGIN=${API_ALLOW_ORIGIN}
+      - API_DEV_KEY=${API_DEV_KEY}
     ports:
       - "${API_PORT}:${API_PORT}"
     depends_on:

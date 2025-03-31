@@ -11,6 +11,7 @@ export function useInvoiceTemplateDeleteMutation() {
       return fetch(endpoint("invoice.template.delete"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(invoiceTemplate),
       });
     },

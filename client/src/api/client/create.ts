@@ -1,11 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  CLIENT_LIST_QUERY_KEY,
-  type CreateContact,
-  endpoint,
-  isAPIResponse,
-  queryClient,
-} from "api";
+import { CLIENT_LIST_QUERY_KEY, type CreateContact, endpoint, isAPIResponse, queryClient } from "api";
 import { invariant } from "common";
 
 export type CreateClient = {
@@ -26,6 +20,7 @@ export function useClientCreateMutation() {
       const res = await fetch(endpoint("client.create"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(client),
       });
       const data = await res.json();

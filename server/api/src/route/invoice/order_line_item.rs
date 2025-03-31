@@ -1,4 +1,4 @@
-use crate::util::response::APIResponse;
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{self, OrderLineItems, OrderedLineItems};
 use rocket::{http::Status, serde::json::Json};
 use serde::Deserialize;
@@ -13,6 +13,7 @@ pub struct LineItemReordering {
 #[post("/invoice.draft.line_item.order", data = "<data>")]
 pub fn invoice_line_items_reorder(
   data: Json<LineItemReordering>,
+  _key: DevKey,
 ) -> APIResponse<OrderedLineItems, String> {
   let data = data.into_inner();
   service::order_line_items(data.invoice_id, data.line_item).map_or_else(

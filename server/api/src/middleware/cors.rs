@@ -1,6 +1,7 @@
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
 use rocket::{Request, Response};
+use std::env;
 
 pub struct CORS;
 
@@ -20,8 +21,14 @@ impl Fairing for CORS {
   }
 
   async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
-    response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
-    response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+    let allow_origins =
+      env::var("API_ALLOW_ORIGIN").expect("API_ALLOW_ORIGIN environment variable not found!");
+    println!("origins: {allow_origins}");
+    response.set_header(Header::new("Access-Control-Allow-Origin", allow_origins));
+    response.set_header(Header::new(
+      "Access-Control-Allow-Headers",
+      "Origin, Content-Type, Accept",
+    ));
     response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
     response.set_header(Header::new(
       "Access-Control-Allow-Methods",

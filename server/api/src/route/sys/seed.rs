@@ -1,10 +1,9 @@
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{self, SeedResult};
 use rocket::http::Status;
 
-use crate::util::response::APIResponse;
-
 #[post("/sys.seed")]
-pub fn system_seed() -> APIResponse<SeedResult, String> {
+pub fn system_seed(_key: DevKey) -> APIResponse<SeedResult, String> {
   service::sys_seed().map_or_else(
     |error| match error {
       service::SeedError::AlreadySeeded => APIResponse {

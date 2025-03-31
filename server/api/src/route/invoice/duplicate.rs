@@ -1,10 +1,12 @@
+use crate::{middleware::dev_key::DevKey, util::response::APIResponse};
 use repository::service::{self, DuplicateInvoice, DuplicatedInvoice};
 use rocket::{http::Status, serde::json::Json};
 
-use crate::util::response::APIResponse;
-
 #[post("/invoice.duplicate", data = "<data>")]
-pub fn invoice_duplicate(data: Json<DuplicateInvoice>) -> APIResponse<DuplicatedInvoice, String> {
+pub fn invoice_duplicate(
+  data: Json<DuplicateInvoice>,
+  _key: DevKey,
+) -> APIResponse<DuplicatedInvoice, String> {
   let data = data.into_inner();
   service::duplicate_invoice(data).map_or_else(
     |error| {
