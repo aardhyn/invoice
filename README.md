@@ -52,4 +52,4 @@ make prod
 
 ### API
 
-API documentation is available on [Postman](https://www.postman.com/aardhyn/invoice/overview).
+API documentation is available on [Postman](https://documenter.getpostman.com/view/22285722/2sB2cRDPxj#b6f50fc6-3c30-453a-8a80-4e75030f632f).
